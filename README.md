@@ -6,7 +6,7 @@ Provides a functional handle to nokogiri (鋸) for use in constructing html temp
 
 Add this to your gemfile:
 
-  gem 'gara'
+    gem 'gara'
 
 Rename your application.html.erb to application.html.gara.
 
