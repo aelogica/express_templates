@@ -20,4 +20,6 @@ Gem::Specification.new do |s|
   s.add_dependency "nokogiri"
 
   s.add_development_dependency "rails", "~> 4.1.4"
+  s.add_development_dependency "pry"
+
 end
