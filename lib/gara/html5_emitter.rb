@@ -26,24 +26,27 @@ module Gara
                  :var, :video,
                  :wbr]
 
-  module Html5Methods
-    Gara::HTML5_TAGS.each do |tag|
-      Gara.define_delegate tag, on: self, to: "@gara_delegate_target"
-    end
-  end
-
   class Html5Emitter
+
+    module TagMethods
+      Gara::HTML5_TAGS.each do |tag|
+        Gara::Delegator.define_delegate tag, on: self
+      end
+    end
+
     attr_accessor :target
     def initialize
-      self.target = Nokogiri::HTML::Builder.new
+      @gara_delegate = @doc = Nokogiri::HTML::Builder.new
+      extend TagMethods
     end
 
-    def delegated_methods
-      return Gara::Html5Methods
+    def registered_methods
+      return TagMethods
     end
 
     def to_html
-      target.to_html
+      @doc.to_html
     end
+
   end
 end

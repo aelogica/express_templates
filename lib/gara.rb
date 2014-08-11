@@ -1,7 +1,4 @@
 module Gara
-  require 'gara/delegate_helper'
-  extend DelegateHelper
-
   require 'gara/template/handler'
   require 'gara/delegator'
   require 'gara/html5_emitter'
