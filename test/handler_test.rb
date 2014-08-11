@@ -55,4 +55,20 @@ class HandlerTest < ActiveSupport::TestCase
     @template = new_template
     assert_equal with_doctype("<h1>Hello</h1>\n"), render
   end
+
+  test "nesting elements with ruby block structure" do
+    @template = new_template("ul { li 'one' ; li 'two' ; li 'three' }")
+    assert_equal with_doctype("<ul>\n<li>one</li>\n<li>two</li>\n<li>three</li>\n</ul>\n"), render
+  end
+
+  test "class names" do
+    @template = new_template("p.whatever.another 'Lorum Ipsum' ")
+    assert_equal with_doctype("<p class=\"whatever another\">Lorum Ipsum</p>\n"), render
+  end
+
+  test "other attributes" do
+    @template = new_template("p('Lorum Ipsum', style: 'align: right;')")
+    assert_equal with_doctype("<p style=\"align: right;\">Lorum Ipsum</p>\n"), render
+  end
+
 end
