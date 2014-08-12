@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    gara (0.0.1)
-      nokogiri
+    gara (0.1.0)
+      nokogiri (~> 1.6)
 
 GEM
   remote: https://rubygems.org/
@@ -98,5 +98,5 @@ PLATFORMS
 
 DEPENDENCIES
   gara!
-  pry
-  rails (~> 4.1.4)
+  pry (~> 0)
+  rails (~> 4.1)
