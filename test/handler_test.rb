@@ -53,22 +53,28 @@ class HandlerTest < ActiveSupport::TestCase
 
   test "html generates <h1>Hello</h1> by default" do
     @template = new_template
-    assert_equal with_doctype("<h1>Hello</h1>\n"), render
+    assert_equal "<h1>Hello</h1>", render
   end
 
   test "nesting elements with ruby block structure" do
     @template = new_template("ul { li 'one' ; li 'two' ; li 'three' }")
-    assert_equal with_doctype("<ul>\n<li>one</li>\n<li>two</li>\n<li>three</li>\n</ul>\n"), render
+    assert_equal "<ul>\n<li>one</li>\n<li>two</li>\n<li>three</li>\n</ul>", render
   end
 
   test "class names" do
     @template = new_template("p.whatever.another 'Lorum Ipsum' ")
-    assert_equal with_doctype("<p class=\"whatever another\">Lorum Ipsum</p>\n"), render
+    assert_equal "<p class=\"whatever another\">Lorum Ipsum</p>", render
   end
 
   test "other attributes" do
     @template = new_template("p('Lorum Ipsum', style: 'align: right;')")
-    assert_equal with_doctype("<p style=\"align: right;\">Lorum Ipsum</p>\n"), render
+    assert_equal "<p style=\"align: right;\">Lorum Ipsum</p>", render
   end
+
+  test "real document has doctype and newline" do
+    @template = new_template("html { body { h1 \"hello\" } }")
+    assert_equal with_doctype("<html><body><h1>hello</h1></body></html>\n"), render
+  end
+
 
 end

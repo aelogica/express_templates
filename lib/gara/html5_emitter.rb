@@ -36,7 +36,8 @@ module Gara
 
     attr_accessor :target
     def initialize
-      @gara_delegate = @doc = Nokogiri::HTML::Builder.new
+      @doc = Nokogiri::HTML::DocumentFragment.parse("")
+      @gara_delegate = Nokogiri::HTML::Builder.with(@doc)
       extend TagMethods
     end
 
@@ -45,7 +46,13 @@ module Gara
     end
 
     def to_html
-      @doc.to_html
+      nodes = @doc.children
+      if nodes.length.eql?(1) && nodes.first.name.eql?("html")
+        # necessary to include doctype - TODO: avoid calling to_html twice
+        Nokogiri::HTML::Document.parse( @doc.to_html ).to_html
+      else
+        @doc.to_html
+      end
     end
 
   end

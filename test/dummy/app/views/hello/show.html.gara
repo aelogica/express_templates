@@ -1,2 +1,2 @@
 h1 "Hello"
-# p 'Find me in app/views/hello/show.html.gara'
+p 'Find me in app/views/hello/show.html.gara'
