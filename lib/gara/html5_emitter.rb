@@ -24,7 +24,7 @@ module Gara
                  :tr, :track,
                  :u, :ul,
                  :var, :video,
-                 :wbr]
+                 :wbr, :<<]
 
   class Html5Emitter
 
