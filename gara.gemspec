@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = Gara::VERSION
   s.authors     = ["Steven Talcott Smith"]
   s.email       = ["steve@aelogica.com"]
-  s.homepage    = "http://gara.github.io"
+  s.homepage    = "https://github.com/aelogica/gara"
   s.summary     = "Write HTML templates in plain Ruby using Nokogiri."
   s.description = "Instead of Erb or HAML, write templates in plain Ruby using Nokogiri."
   s.license     = "MIT"
