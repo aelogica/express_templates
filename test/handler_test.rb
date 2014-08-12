@@ -76,5 +76,10 @@ class HandlerTest < ActiveSupport::TestCase
     assert_equal with_doctype("<html><body><h1>hello</h1></body></html>\n"), render
   end
 
+  test "locals work" do
+    @template = new_template "h1 title"
+    @template.locals = [:title]
+    assert_equal "<h1>Foo</h1>", render(title: 'Foo')
+  end
 
 end
