@@ -45,7 +45,7 @@ module Gara
       return TagMethods
     end
 
-    def to_html
+    def emit
       nodes = @doc.children
       if nodes.length.eql?(1) && nodes.first.name.eql?("html")
         # necessary to include doctype - TODO: avoid calling to_html twice

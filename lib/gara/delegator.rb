@@ -12,15 +12,15 @@ module Gara
     end
 
 
-    def initialize(view_context, emitter = Html5Emitter.new)
+    def initialize(view_context, emitter)
       @emitter = emitter
       view_context.instance_variable_set(:@gara_delegate, emitter)
       view_context.extend(emitter.registered_methods)
       yield if block_given?
     end
 
-    def to_html
-      emitter.to_html
+    def render
+      @emitter.emit
     end
 
   end

@@ -6,7 +6,7 @@ module Gara
       end
 
       def call(template)
-        %Q(Gara::Delegator.new(self) { #{template.source} }.to_html)
+        %Q(Gara.render(self) { #{template.source} })
       end
 
     end
