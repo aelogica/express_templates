@@ -12,12 +12,12 @@ Rename your application.html.erb to application.html.gara.
 
 Change your template to look like this.
 
-    html lang: "en" {
+    html(lang: "en") {
       head {
         meta charset: 'utf-8'
         meta name: 'viewport', content: "width=device-width, initial-scale=1.0"
-        title { yield(:title) || '' }
-        stylesheet_link_tag "application", media: all, 'data-turbolinks-track' => true
+        title yield(:title)
+        stylesheet_link_tag "application", media: 'all', 'data-turbolinks-track' => true
         javascript_include_tag 'application', 'data-turbolinks-track' => true
         csrf_meta_tags
       }
