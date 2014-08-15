@@ -49,7 +49,7 @@ module Gara
       nodes = @doc.children
       if nodes.length.eql?(1) && nodes.first.name.eql?("html")
         # necessary to include doctype - TODO: avoid calling to_html twice
-        Nokogiri::HTML::Document.parse( @doc.to_html ).to_html
+        Nokogiri::HTML::Document.parse( @doc.to_html ).to_xhtml(indent: 2)
       else
         @doc.to_html
       end

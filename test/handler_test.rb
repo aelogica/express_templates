@@ -73,7 +73,7 @@ class HandlerTest < ActiveSupport::TestCase
 
   test "real document has doctype and newline" do
     @template = new_template("html { body { h1 \"hello\" } }")
-    assert_equal with_doctype("<html><body><h1>hello</h1></body></html>\n"), render
+    assert_equal with_doctype("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n  <body>\n    <h1>hello</h1>\n  </body>\n</html>\n"), render
   end
 
   test "locals work" do
