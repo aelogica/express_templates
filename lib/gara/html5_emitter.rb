@@ -28,21 +28,30 @@ module Gara
 
   class Html5Emitter
 
-    module TagMethods
+    module TagMethodsWithAfterProcessor
       Gara::HTML5_TAGS.each do |tag|
-        Gara::Delegator.define_delegate tag, on: self
+        Gara::Delegator.define_delegate tag, on: self, after_processor: -> (ctx, result) { ctx << result }
       end
     end
+
 
     attr_accessor :target
     def initialize
       @doc = Nokogiri::HTML::DocumentFragment.parse("")
       @gara_delegate = Nokogiri::HTML::Builder.with(@doc)
-      extend TagMethods
     end
 
-    def registered_methods
-      return TagMethods
+    def add_methods_to(context)
+      proc_hash = HTML5_TAGS.inject({}) { |hash, tag|
+          hash[tag] = -> (*args) { self.send(tag, *args) ; yield if block_given? }
+          hash
+        }
+      proc_hash.each do |method_name, proc|
+        class << context
+          binding.pry
+          define_method(method_name, &proc)
+        end
+      end
     end
 
     def emit

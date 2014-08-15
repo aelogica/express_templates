@@ -5,6 +5,7 @@ class HandlerTest < ActiveSupport::TestCase
   GARAHandler = Gara::Template::Handler.new
 
   DEFAULT_DOCTYPE = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\">"
+  A_LINK = %Q(<a href="#">link</a>)
 
   class LookupContext
     def disable_cache
@@ -25,6 +26,10 @@ class HandlerTest < ActiveSupport::TestCase
 
     def lookup_context
       @lookup_context ||= LookupContext.new
+    end
+
+    def link_helper
+      A_LINK
     end
   end
 
@@ -81,5 +86,22 @@ class HandlerTest < ActiveSupport::TestCase
     @template.locals = [:title]
     assert_equal "<h1>Foo</h1>", render(title: 'Foo')
   end
+
+  test "helpers returning html work without funny syntax" do
+    @template = new_template("li { link_helper } ")
+    without_self = render
+    @template = new_template("li { self << link_helper }")
+    with_self = render
+    assert_equal with_self, without_self
+  end
+
+  test "helpers returning html work without funny syntax in sequence within a block" do
+    @template = new_template("li { link_helper ; link_helper } ")
+    without_self = render
+    @template = new_template("li { self << link_helper ; self << link_helper }")
+    with_self = render
+    assert_equal with_self, without_self
+  end
+
 
 end
