@@ -40,12 +40,12 @@ class GaraTest < ActiveSupport::TestCase
     end
   end
 
-  test "another emitter may be supplied" do
-    result = Gara.render(self, TestEmitter.new) {
-      component1 {
-        component2
-      }
-    }
-    assert_equal "stuff and more stuff", result
-  end
+  # test "another emitter may be supplied" do
+  #   result = Gara.render(self, TestEmitter.new) {
+  #     component1 {
+  #       component2
+  #     }
+  #   }
+  #   assert_equal "stuff and more stuff", result
+  # end
 end

@@ -24,33 +24,44 @@ module Gara
                  :tr, :track,
                  :u, :ul,
                  :var, :video,
-                 :wbr, :<<]
+                 :wbr]
 
   class Html5Emitter
 
-    module TagMethodsWithAfterProcessor
-      Gara::HTML5_TAGS.each do |tag|
-        Gara::Delegator.define_delegate tag, on: self, after_processor: -> (ctx, result) { ctx << result }
-      end
+    def self.debug(msg)
+      puts msg if ENV['DEBUG']
     end
 
-
-    attr_accessor :target
     def initialize
       @doc = Nokogiri::HTML::DocumentFragment.parse("")
       @gara_delegate = Nokogiri::HTML::Builder.with(@doc)
     end
 
     def add_methods_to(context)
-      proc_hash = HTML5_TAGS.inject({}) { |hash, tag|
-          hash[tag] = -> (*args) { self.send(tag, *args) ; yield if block_given? }
+      eigenclass_of_context = 
+        class << context ; self ; end
+
+      builder = @gara_delegate                   # create a local binding so we can access builder in an instance of Context
+      proc_hash = HTML5_TAGS.inject({}) do |hash, tag|
+          hash[tag] = -> (*args, &block) { 
+            begin
+              builder.public_send(tag, *args) do # public send is necessary due to send accessing private method Kernel#p
+                unless block.nil?
+                  result = block.call            # necessary to make sure block executes in Context not Builder
+                  self << result if result.kind_of? String
+                end
+              end
+            rescue Exception => e
+              binding.pry
+            end
+          }
           hash
-        }
-      proc_hash.each do |method_name, proc|
-        class << context
-          binding.pry
-          define_method(method_name, &proc)
         end
+      proc_hash.each do |method_name, proc|
+        eigenclass_of_context.send(:define_method, method_name, &proc)
+      end
+      eigenclass_of_context.send(:define_method, :<<) do |string|
+        builder << string
       end
     end
 
