@@ -38,17 +38,19 @@ module Gara
     end
 
     def add_methods_to(context)
-      eigenclass_of_context = 
-        class << context ; self ; end
 
       builder = @gara_delegate                   # create a local binding so we can access builder in an instance of Context
       proc_hash = HTML5_TAGS.inject({}) do |hash, tag|
-          hash[tag] = -> (*args, &block) { 
+          hash[tag] = -> (*args, &block) {
             begin
               builder.public_send(tag, *args) do # public send is necessary due to send accessing private method Kernel#p
                 unless block.nil?
                   result = block.call            # necessary to make sure block executes in Context not Builder
-                  self << result if result.kind_of? String
+                  if result.kind_of?(String)
+                    self << result               # add any string returned to the document so that: p { "works" } yields "<p>works</p>"
+                  else
+                    result
+                  end
                 end
               end
             rescue Exception => e
@@ -57,12 +59,37 @@ module Gara
           }
           hash
         end
+
+
+      # Open the eigenclass of the passed in context so we can add the procs created above as tag methods
+      eigenclass_of_context = 
+        class << context ; self ; end
       proc_hash.each do |method_name, proc|
         eigenclass_of_context.send(:define_method, method_name, &proc)
       end
       eigenclass_of_context.send(:define_method, :<<) do |string|
-        builder << string
+        builder << string if string.kind_of?(String)
       end
+
+      helper_methods = eigenclass_of_context.instance_methods
+      helper_methods -= HTML5_TAGS
+      helper_methods -= Object.instance_methods
+      helper_methods.reject! {|method| method.to_s.match(/(_\d+_\d+$)|(lookup_context)|(<<)/) }
+
+      helper_methods.each do |method|
+
+        eigenclass_of_context.class_eval do
+          define_method method do |*args, &block_for_helper|
+            result = super(*args, &block_for_helper)
+            if result.kind_of? String
+              self << result
+            else
+              result
+            end
+          end
+        end
+      end
+
     end
 
     def emit
