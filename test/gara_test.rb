@@ -22,8 +22,8 @@ class GaraTest < ActiveSupport::TestCase
 
   class TestEmitter
     module DelegatedMethods
-      def component1 ; @gara_delegate.component1 ; yield if block_given? ; end
-      def component2 ; @gara_delegate.component2 ; yield if block_given? ; end
+      def component1 ; @delegate.component1 ; yield if block_given? ; end
+      def component2 ; @delegate.component2 ; yield if block_given? ; end
     end
 
     def initialize
@@ -32,8 +32,9 @@ class GaraTest < ActiveSupport::TestCase
     def component1 ; @doc << "stuff " ; end
     def component2 ; @doc << "and more stuff" ; end
 
-    def registered_methods
-      return DelegatedMethods
+    def add_methods_to(context)
+      context.instance_variable_set(:@delegate, self)
+      context.extend(DelegatedMethods)
     end
     def emit
       @doc

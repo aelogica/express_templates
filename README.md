@@ -22,7 +22,7 @@ Change your template to look like this.
         csrf_meta_tags
       }
       body {
-        self << yield
+        yield
         javascript_include_tag "application"
       }
     }
