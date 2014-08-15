@@ -99,7 +99,6 @@ class HandlerTest < ActiveSupport::TestCase
 
   test "helpers returning html work in sequence within a block" do
     @template = new_template("li { link_helper ; link_helper } ")
-    without_self = render
     assert_equal "<li>\n#{A_LINK}#{A_LINK}\n</li>", render
   end
 
