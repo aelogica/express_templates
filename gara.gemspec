@@ -21,5 +21,6 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rails", "~> 4.1"
   s.add_development_dependency "pry", "~> 0"
-
+  s.add_development_dependency "erubis", "~> 2.7"
+  s.add_development_dependency "haml", "~> 4.0"
 end

@@ -16,10 +16,6 @@ class GaraTest < ActiveSupport::TestCase
     assert_equal "<ul>\n<li>one</li>\n<li>two</li>\n<li>three</li>\n</ul>", result
   end
 
-  test "performance is okay" do
-
-  end
-
   class TestEmitter
     module DelegatedMethods
       def component1 ; @delegate.component1 ; yield if block_given? ; end
