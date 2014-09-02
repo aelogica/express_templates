@@ -87,7 +87,6 @@ HAML
     duration_haml = time(100) { Haml::Engine.new(HAML_EXAMPLE).render(self) }
     duration_gara = time(100) { eval("Gara.render(self) { #{GARA_EXAMPLE} }") }
     assert_operator 2.0, :>, (duration_gara/duration_haml)
-
   end
 
 end
