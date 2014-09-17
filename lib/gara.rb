@@ -2,6 +2,8 @@ module Gara
   require 'gara/template/handler'
   require 'gara/html5_emitter'
   require 'gara/renderer'
+  require 'gara/expander'
+  require 'gara/components'
   require 'gara/context'
   extend Renderer
   if defined?(Rails)
