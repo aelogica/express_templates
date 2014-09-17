@@ -1,11 +1,13 @@
 module Gara
   module Renderer
     def render context=nil, template_source=nil, &block
-      if block
-        eval(context.instance_eval(&block).map(&:compile).join(';'))
+      expander = Gara::Expander.new(nil)
+      expanded_template = if block
+        (expander.expand(&block).map(&:compile).join(';'))
       else
-        context.expand(template_source).map(&:compile).join(";")
+        expander.expand(template_source).map(&:compile).join(";")
       end
+      context.instance_eval expanded_template
     end
   end
 end

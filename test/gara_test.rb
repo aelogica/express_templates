@@ -6,7 +6,7 @@ class GaraTest < ActiveSupport::TestCase
   end
 
   test "Gara.render renders a template" do
-    result = Gara.render(Gara::Expander.new(nil)) do
+    result = Gara.render(self) do
       ul {
         li 'one'
         li 'two'

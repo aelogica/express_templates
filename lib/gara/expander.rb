@@ -10,8 +10,12 @@ module Gara
       @stack = [] ; @frame = -1
     end
 
-    def expand(source)
-      eval(source)
+    def expand(source=nil, &block)
+      if source
+        eval(source)
+      else
+        instance_eval &block
+      end
     end
 
     # Search the component module space for a class corresponding to
