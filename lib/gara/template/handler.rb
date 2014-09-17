@@ -6,8 +6,8 @@ module Gara
       end
 
       def call(template)
-        # eval'd in context (self is a view context)
-        %Q(Gara.render(self) { #{template.source} })
+        # returns a string to be eval'd
+        Gara.render(Gara::Expander.new(template), template.source)
       end
 
     end
