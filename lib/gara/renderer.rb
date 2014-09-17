@@ -1,7 +1,7 @@
 module Gara
   module Renderer
-    def render context, &block
-      context.capture(&block) if block_given?
+    def render context=nil, &block
+      eval(context.instance_eval(&block).map(&:compile).join(';'))
     end
   end
 end
