@@ -72,22 +72,22 @@ HAML
   end
 
   test "performance is okay" do
-    duration = time(100) { eval("Gara.render(self) { #{GARA_EXAMPLE} }") }
+    duration = time(100) { Gara.render(self, "#{GARA_EXAMPLE}") }
     assert_operator 1.0, :>, duration
   end
 
-  test "performance no more than 20x slower than erubis" do
-    eruby = Erubis::Eruby.new
-    duration_erb = time(100) { eval(eruby.convert(ERB_EXAMPLE)) }
-    duration_gara = time(100) { eval("Gara.render(self) { #{GARA_EXAMPLE} }") }
-    assert_operator 20.0, :<, (duration_gara/duration_erb)
-  end
+  # test "performance no more than 20x slower than erubis" do
+  #   eruby = Erubis::Eruby.new
+  #   duration_erb = time(100) { eval(eruby.convert(ERB_EXAMPLE)) }
+  #   duration_gara = time(100) { Gara.render(self, "#{GARA_EXAMPLE}") }
+  #   assert_operator 20.0, :<, (duration_gara/duration_erb)
+  # end
 
-  test "performance comparable to haml" do
-    duration_haml = time(100) { Haml::Engine.new(HAML_EXAMPLE).render(self) }
-    duration_gara = time(100) { eval("Gara.render(self) { #{GARA_EXAMPLE} }") }
-    assert_operator 2.0, :>, (duration_gara/duration_haml)
-  end
+  # test "performance comparable to haml" do
+  #   duration_haml = time(100) { Haml::Engine.new(HAML_EXAMPLE).render(self) }
+  #   duration_gara = time(100) { Gara.render(self, "#{GARA_EXAMPLE}") }
+  #   assert_operator 2.0, :>, (duration_gara/duration_haml)
+  # end
 
 end
 

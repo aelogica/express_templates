@@ -5,14 +5,10 @@ module Gara
 
     INDENT = '  '
 
-    def initialize(child_or_options=nil, *children)
+    def initialize(*children_or_options)
       @children = []
-      if child_or_options.kind_of?(Hash)
-        @children += children unless children.empty?
-      else
-        @children << child_or_options if child_or_options
-        @children += children unless children.empty?
-      end
+      @options = {}.with_indifferent_access
+      _process(*children_or_options)
     end
 
     def self.macro_name
@@ -21,17 +17,34 @@ module Gara
 
     def macro_name ; self.class.macro_name end
 
+    def html_options
+      @options.each_pair.map do |name, value|
+        %Q(#{name}=\\"#{value}\\")
+      end.join(" ")
+    end
+
     def start_tag
-      "<#{macro_name}>"
+      "<#{macro_name}#{html_options.empty? ? '' : ' '+html_options}>"
     end
 
     def close_tag
       "</#{macro_name}>"
     end
 
+    def add_css_class(css_class)
+      @options['class'] ||= ''
+      @options['class'] = (@options['class'].split + [css_class]).join(" ")
+    end
+
+    def method_missing(name, *args)
+      add_css_class(name)
+      _process(*args) unless args.empty?
+      return self
+    end
+
     def compile
       ruby_fragments = @children.map do |child|
-        if child.kind_of?(Gara::Component)
+        if child.respond_to?(:compile)
           child.compile
         else
           %Q("#{child}")
@@ -63,6 +76,17 @@ module Gara
         indent = INDENT*depth
         code.empty? ? code : " {\n#{_indent(code)}\n}\n"
       end
+
+      def _process(*children_or_options)
+        children_or_options.each do |child_or_option|
+          if child_or_option.kind_of?(Hash)
+            @options.merge!(child_or_option)
+          else
+            @children << child_or_option
+          end
+        end
+      end
+
 
   end
 end

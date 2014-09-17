@@ -7,7 +7,7 @@ module Gara
 
       def call(template)
         # returns a string to be eval'd
-        Gara.render(Gara::Expander.new(template), template.source)
+        Gara::Expander.expand(template, template.source)
       end
 
     end

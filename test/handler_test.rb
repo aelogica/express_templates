@@ -61,7 +61,7 @@ class HandlerTest < ActiveSupport::TestCase
     class << controller
       def view_context_class ; Context ; end
     end
-    @context = Gara::Context.new(nil, {}, controller)
+    @context = Context.new(nil, {}, controller)
   end
 
 
@@ -72,7 +72,8 @@ class HandlerTest < ActiveSupport::TestCase
 
   test "html generates <h1>Hello</h1> by default" do
     @template = new_template
-    assert_equal "<h1>Hello</h1>", render
+    result = render
+    assert_equal "<h1>Hello</h1>", result
   end
 
   test "nesting elements with ruby block structure" do
@@ -80,14 +81,14 @@ class HandlerTest < ActiveSupport::TestCase
     assert_equal "<ul><li>one</li><li>two</li><li>three</li></ul>", render
   end
 
-  # test "class names" do
-  #   @template = new_template("p.whatever.another 'Lorum Ipsum' ")
-  #   assert_equal "<p class=\"whatever another\">Lorum Ipsum</p>", render
-  # end
+  test "class names" do
+    @template = new_template("p.whatever.another 'Lorum Ipsum' ")
+    assert_equal "<p class=\"whatever another\">Lorum Ipsum</p>", render
+  end
 
-  # test "other attributes" do
-  #   @template = new_template("p('Lorum Ipsum', style: 'align: right;')")
-  #   assert_equal "<p style=\"align: right;\">Lorum Ipsum</p>", render
+  # test "string in block works" do
+  #   @template = new_template "h1 { 'foo' } "
+  #   assert_equal "<h1>foo</h1>", render
   # end
 
   # test "real document has doctype and newline" do
@@ -95,26 +96,28 @@ class HandlerTest < ActiveSupport::TestCase
   #   assert_equal with_doctype("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n  <body>\n    <h1>hello</h1>\n  </body>\n</html>\n"), render
   # end
 
-  # test "locals work" do
-  #   @template = new_template "h1 title"
-  #   @template.locals = [:title]
-  #   assert_equal "<h1>Foo</h1>", render(title: 'Foo')
-  # end
 
-  # test "string in block works" do
-  #   @template = new_template "h1 { 'foo' } "
-  #   assert_equal "<h1>foo</h1>", render
-  # end
+  test "other attributes" do
+    @template = new_template("p('Lorum Ipsum', style: 'align: right;')")
+    assert_equal "<p style=\"align: right;\">Lorum Ipsum</p>", render
+  end
 
-  # test "helpers returning html when alone in a block" do
-  #   @template = new_template("li { link_helper } ")
-  #   assert_equal "<li>#{A_LINK}</li>", render
-  # end
+  test "locals work" do
+    @template = new_template "h1 my_title"
+    @template.locals = [:my_title]
+    assert_equal "<h1>Foo</h1>", render(my_title: 'Foo')
+  end
 
-  # test "helpers returning html work in sequence within a block" do
-  #   @template = new_template("li { link_helper ; link_helper } ")
-  #   assert_equal "<li>\n#{A_LINK}#{A_LINK}\n</li>", render
-  # end
+
+  test "helpers returning html when alone in a block" do
+    @template = new_template("li { link_helper } ")
+    assert_equal "<li>#{A_LINK}</li>", render
+  end
+
+  test "helpers returning html work in sequence within a block" do
+    @template = new_template("li { link_helper ; link_helper } ")
+    assert_equal "<li>#{A_LINK}#{A_LINK}</li>", render
+  end
 
 
 end
