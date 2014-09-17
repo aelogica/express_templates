@@ -6,6 +6,8 @@ class ExpanderTest < ActiveSupport::TestCase
   class Gara::Components::Bar < Gara::Component ; end
   class Gara::Components::Baz < Gara::Component ; end
 
+  Gara::Expander.register_macros_for(Gara::Components::Foo,Gara::Components::Bar,Gara::Components::Baz)
+
   test ".expand returns a string"  do
     source = "foo"
     result = Gara::Expander.expand(nil, source)
@@ -33,7 +35,7 @@ class ExpanderTest < ActiveSupport::TestCase
   end
 
   test "#expand of macros with args returns a component with two children" do
-    source = 'foo { bar ; baz }'
+    source = 'foo { bar(fiz: "buzz") ; baz }'
     result = Gara::Expander.new(nil).expand(source)
     assert_equal 2, result.first.children.size
     assert_kind_of Gara::Components::Bar, result.first.children.first

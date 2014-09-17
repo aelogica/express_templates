@@ -1,5 +1,8 @@
 module Gara
   module Renderer
+    # render accepts source or block, expands to macros
+    # compiles the resulting macros 
+    # and then evaluates the resulting string of ruby in the context provided
     def render context=nil, template_source=nil, &block
       expander = Gara::Expander.new(nil)
       expanded_template = if block

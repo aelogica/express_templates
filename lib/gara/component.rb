@@ -15,9 +15,11 @@ module Gara
       end
     end
 
-    def macro_name
-      @macro_name ||= self.class.to_s.split('::').last.underscore
+    def self.macro_name
+      @macro_name ||= to_s.split('::').last.underscore
     end
+
+    def macro_name ; self.class.macro_name end
 
     def start_tag
       "<#{macro_name}>"
