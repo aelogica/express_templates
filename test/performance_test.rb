@@ -80,7 +80,7 @@ HAML
     eruby = Erubis::Eruby.new
     duration_erb = time(100) { eval(eruby.convert(ERB_EXAMPLE)) }
     duration_gara = time(100) { Gara.render(self, "#{GARA_EXAMPLE}") }
-    assert_operator 3.0, :>, (duration_gara/duration_erb)
+    assert_operator 4.0, :>, (duration_gara/duration_erb)
   end
 
   test "performance comparable to haml" do
