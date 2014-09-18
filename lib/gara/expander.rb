@@ -19,7 +19,9 @@ module Gara
 
     def expand(source=nil, &block)
       if source
-        instance_eval(source)
+        modified = source.gsub(/(\W)(yield)(\.*)?/, '\1 (stack << Gara::Components::Yielder.new(\3))')
+        modified.gsub!(/(\W)(@\w+)(\W)?/, '\1 (stack << Gara::Components::Wrapper.new("\2") )\3')
+        instance_eval(modified)
         stack.current
       else
         instance_eval &block

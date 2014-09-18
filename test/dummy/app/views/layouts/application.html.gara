@@ -9,7 +9,7 @@ html(lang: "en") {
     csrf_meta_tags
   }
   body {
-    concat yield
+    yield
     javascript_include_tag "application"
   }
 }
