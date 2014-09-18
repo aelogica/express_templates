@@ -2,10 +2,6 @@ require 'test_helper'
 
 class HelloControllerTest < ActionController::TestCase
 
-  test "view context class should be Gara::Context" do
-    assert HelloController.new.view_context.class == Gara::Context
-  end
-
   test "should get show" do
     get :show
     assert_response :success
