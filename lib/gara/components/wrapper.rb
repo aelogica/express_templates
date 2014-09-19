@@ -28,10 +28,12 @@ module Gara
             last_arg = ''
             if args.last.is_a?(Hash) # expand a hash
               unless args.last.empty?
+                # This approach has limitations - will only work on structures of
+                # immediate values
                 last_arg = args.last.inspect.match(/^\{(.*)\}$/)[1]
-                last_arg.gsub!(/:(\w+)=>/, '\1: ')
+                last_arg.gsub!(/:(\w+)=>/, '\1: ') # use ruby 2 hash syntax
               else
-                last_arg = "{}"
+                last_arg = "{}" # empty hash
               end
             else
               last_arg = args.last.inspect
