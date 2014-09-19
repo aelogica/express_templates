@@ -1,6 +1,6 @@
-# Gara (柄)
+# Gara
 
-Provides a functional handle to nokogiri (鋸) for use in constructing html templates in plain Ruby as an alternative to Erb or HAML.
+Provides a macro-ish DSL for use in constructing html templates in plain Ruby as an alternative to Erb or HAML.
 
 ## Usage
 

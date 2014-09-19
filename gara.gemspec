@@ -10,14 +10,12 @@ Gem::Specification.new do |s|
   s.authors     = ["Steven Talcott Smith"]
   s.email       = ["steve@aelogica.com"]
   s.homepage    = "https://github.com/aelogica/gara"
-  s.summary     = "Write HTML templates in plain Ruby using Nokogiri."
-  s.description = "Instead of Erb or HAML, write templates in plain Ruby using Nokogiri."
+  s.summary     = "Write HTML templates in plain Ruby."
+  s.description = "Instead of Erb or HAML, write templates in plain Ruby."
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["test/**/*"]
-
-  s.add_dependency "nokogiri", "~> 1.6"
 
   s.add_development_dependency "rails", "~> 4.1"
   s.add_development_dependency "pry", "~> 0"
