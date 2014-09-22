@@ -3,7 +3,7 @@ require 'test_helper'
 class ExpanderStackTest < ActiveSupport::TestCase
 
   def new_stack
-    Gara::Expander::Stack.new
+    ExpressTemplates::Expander::Stack.new
   end
 
   test "#current is empty" do

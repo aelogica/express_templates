@@ -1,5 +1,5 @@
-require 'gara/components'
-module Gara
+require 'express_templates/components'
+module ExpressTemplates
   class Expander
 
     cattr_accessor :module_search_space
@@ -19,8 +19,8 @@ module Gara
 
     def expand(source=nil, &block)
       if source
-        modified = source.gsub(/(\W)(yield)(\.*)?/, '\1 (stack << Gara::Components::Yielder.new(\3))')
-        modified.gsub!(/(\W)(@\w+)(\W)?/, '\1 (stack << Gara::Components::Wrapper.new("\2") )\3')
+        modified = source.gsub(/(\W)(yield)(\.*)?/, '\1 (stack << ExpressTemplates::Components::Yielder.new(\3))')
+        modified.gsub!(/(\W)(@\w+)(\W)?/, '\1 (stack << ExpressTemplates::Components::Wrapper.new("\2") )\3')
         instance_eval(modified, @template.inspect)
         stack.current
       else
@@ -56,17 +56,17 @@ module Gara
     end
 
 
-    @module_search_space = [Gara::Components]
+    @module_search_space = [ExpressTemplates::Components]
 
     @module_search_space.each do |mod|
       register_macros_for(*
         mod.constants.map { |const| [mod.to_s, const.to_s].join("::").constantize }.
-          select { |klass| klass.ancestors.include? (Gara::Component) }
+          select { |klass| klass.ancestors.include? (ExpressTemplates::Component) }
       )
     end
 
     def method_missing(name, *args)
-      stack.current << Gara::Components::Wrapper.new(name.to_s, *args)
+      stack.current << ExpressTemplates::Components::Wrapper.new(name.to_s, *args)
       nil
     end
 

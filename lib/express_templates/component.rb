@@ -1,4 +1,4 @@
-module Gara
+module ExpressTemplates
   class Component
 
     attr_accessor :children
@@ -57,7 +57,7 @@ module Gara
 
     def to_template(depth = 0)
       template_fragments = @children.map do |child|
-        if child.kind_of?(Gara::Component)
+        if child.kind_of?(ExpressTemplates::Component)
           child.to_template(depth+1)
         else
           child

@@ -1,3 +1,3 @@
-module Gara
+module ExpressTemplates
   VERSION = "0.1.7"
 end

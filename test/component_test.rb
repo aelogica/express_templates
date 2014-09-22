@@ -2,8 +2,8 @@ require 'test_helper'
 
 class ComponentTest < ActiveSupport::TestCase
 
-  class Bare < Gara::Component ; end
-  class Sub < Gara::Component ; end
+  class Bare < ExpressTemplates::Component ; end
+  class Sub < ExpressTemplates::Component ; end
 
   def bare_component(*args)
     Bare.new(*args)

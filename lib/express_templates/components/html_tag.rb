@@ -1,6 +1,6 @@
-module Gara
+module ExpressTemplates
   module Components
-    class HtmlTag < Gara::Component
+    class HtmlTag < ExpressTemplates::Component
       TAGS = [ :a, :abbr, :address, :area, :article, :aside, :audio,
                :b, :base, :bdi, :bdo, :blockquote, :body, :br, :button,
                :canvas, :caption, :cite, :code, :col, :colgroup,
@@ -29,7 +29,7 @@ module Gara
 
     HtmlTag::TAGS.each do |tag|
       klass = tag.to_s.titleize
-      Gara::Components.module_eval "class #{klass} < HtmlTag ; end"
+      ExpressTemplates::Components.module_eval "class #{klass} < HtmlTag ; end"
     end
 
   end

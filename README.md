@@ -1,4 +1,4 @@
-# Gara
+# ExpressTemplates
 
 Provides a macro-ish DSL for use in constructing html templates in plain Ruby as an alternative to Erb or HAML.
 
@@ -6,9 +6,9 @@ Provides a macro-ish DSL for use in constructing html templates in plain Ruby as
 
 Add this to your gemfile:
 
-    gem 'gara'
+    gem 'express_templates'
 
-Rename your application.html.erb to application.html.gara.
+Rename your application.html.erb to application.html.et.
 
 Change your template to look like this.
 
@@ -30,24 +30,24 @@ Change your template to look like this.
 
 Everything should work as you would expect.
 
-Set your editor syntax for .gara files to Ruby.
+Set your editor syntax for .et files to Ruby.
 
-### Helpers
+### How It Works
 
-Helpers defined on the view context which return strings will have this strings inserted as markup in the dob.
+ExpressTemplates works via a good-enough stand in for a true macro system in Ruby which would make this type of thing considerably easier.
+
+Basically, we use these "macros" and Ruby's block structure to build up a tree of components corresponding to the HTML structure of a document fragment.  Each HTML5 tag is a component available in the form of a macro.  Unrecognized identifiers are wrapped for later evaluation, presumably in a ViewContext.
+
+yield and local variables which we may expect to be available in a view context are also wrapped for evaluation later.
 
 ## Background
 
-The motivation for this gem is simple.  The bondage of HAML is unnecessary.  The clutter of Erb is unsightly.
+Sufficent motivation for this gem can be explained thusly:  The bondage of HAML is unnecessary.  The clutter of Erb is unsightly.
 
-I want to reduce cognative load, increase development speed and reduce errors.  To this end I want to keep as much as possible to "one syntax per file".
+I generall prefer "one syntax per file" for reasons of cognative load and maintainability.
 
-With a little imagination Ruby can map to HTML easily using its block structure.  This facilitates construction of an internal DSL that is "Just Ruby."
+Ultimately my objective with ExpressTemplates is to get away from writing HTML directly and to use this as a substrate for building pages out of higher-level, reusable components which include not only DOM elements but also behaviors.
 
-Ultimately my objective with Gara is to get away from writing HTML directly and to use this as a substrate for building pages out of higher-level, reusable components which include not only DOM elements but also behaviors.
-
-This is a quick subsititue for a realish macro system -- something that accepts and transforms sexp returned from Ripper.
-
-This is a key aspect of the AppExpress platform at [appexpress.io](http://appexpress.io).
+ExpressTemplates are part of the AppExpress platform at [appexpress.io](http://appexpress.io).
 
 This project rocks and uses MIT-LICENSE.

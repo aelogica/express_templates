@@ -2,7 +2,7 @@ require 'test_helper'
 
 class HandlerTest < ActiveSupport::TestCase
 
-  GARAHandler = Gara::Template::Handler.new
+  GARAHandler = ExpressTemplates::Template::Handler.new
 
   DEFAULT_DOCTYPE = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\">"
   A_LINK = %Q(<a href="#">link</a>)
@@ -66,8 +66,8 @@ class HandlerTest < ActiveSupport::TestCase
 
 
   test "our handler is registered" do
-    handler = ActionView::Template.registered_template_handler("gara")
-    assert_equal Gara::Template::Handler, handler
+    handler = ActionView::Template.registered_template_handler("et")
+    assert_equal ExpressTemplates::Template::Handler, handler
   end
 
   test "html generates <h1>Hello</h1> by default" do

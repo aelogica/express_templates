@@ -1,4 +1,4 @@
-module Gara
+module ExpressTemplates
   module Components
     class Yielder
       def initialize(*args)

@@ -1,12 +1,12 @@
 require 'test_helper'
 
-class GaraTest < ActiveSupport::TestCase
+class ExpressTemplatesTest < ActiveSupport::TestCase
   test "we have a module" do
-    assert_kind_of Module, Gara
+    assert_kind_of Module, ExpressTemplates
   end
 
-  test "Gara.render renders a template" do
-    result = Gara.render(self) do
+  test "ExpressTemplates.render renders a template" do
+    result = ExpressTemplates.render(self) do
       ul {
         li 'one'
         li 'two'

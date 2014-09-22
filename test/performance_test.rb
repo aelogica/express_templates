@@ -72,21 +72,21 @@ HAML
   end
 
   test "performance is okay" do
-    duration = time(100) { Gara.render(self, "#{GARA_EXAMPLE}") }
+    duration = time(100) { ExpressTemplates.render(self, "#{GARA_EXAMPLE}") }
     assert_operator 1.0, :>, duration
   end
 
   test "performance no more than 3x slower than erubis" do
     eruby = Erubis::Eruby.new
     duration_erb = time(100) { eval(eruby.convert(ERB_EXAMPLE)) }
-    duration_gara = time(100) { Gara.render(self, "#{GARA_EXAMPLE}") }
-    assert_operator 3.0, :>, (duration_gara/duration_erb)
+    duration_express_templates = time(100) { ExpressTemplates.render(self, "#{GARA_EXAMPLE}") }
+    assert_operator 3.0, :>, (duration_express_templates/duration_erb)
   end
 
   test "performance better than haml" do
     duration_haml = time(100) { Haml::Engine.new(HAML_EXAMPLE).render(self) }
-    duration_gara = time(100) { Gara.render(self, "#{GARA_EXAMPLE}") }
-    assert_operator 0.5, :>, (duration_gara/duration_haml)
+    duration_express_templates = time(100) { ExpressTemplates.render(self, "#{GARA_EXAMPLE}") }
+    assert_operator 0.5, :>, (duration_express_templates/duration_haml)
   end
 
 end

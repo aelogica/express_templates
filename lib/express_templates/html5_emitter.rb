@@ -1,4 +1,4 @@
-module Gara
+module ExpressTemplates
 
   HTML5_TAGS = [ :a, :abbr, :address, :area, :article, :aside, :audio,
                  :b, :base, :bdi, :bdo, :blockquote, :body, :br, :button,

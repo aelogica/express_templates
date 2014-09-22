@@ -1,4 +1,4 @@
-module Gara
+module ExpressTemplates
   module Template
     class Handler
       def self.call(template)
@@ -7,7 +7,7 @@ module Gara
 
       def call(template)
         # returns a string to be eval'd
-        Gara::Expander.expand(template, template.source)
+        ExpressTemplates::Expander.expand(template, template.source)
       end
 
     end

@@ -1,4 +1,4 @@
-module Gara
+module ExpressTemplates
   module Components
     # wrap locals and helpers for evaluation during render
     class Wrapper
