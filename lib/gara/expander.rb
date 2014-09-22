@@ -44,12 +44,12 @@ module Gara
                   # anything stored on stack.current or on stack.next is added as a child
                   # this is a bit problematic in the case where we would have
                   # blocks and helpers or locals mixed
-                  component.new(*(args.push(*(stack.current + stack.next))))
+                  component.new(*(args.push(*(stack.current))))
                 ensure
                   stack.ascend!
                 end
               else
-                component.new(*(args.push(*(stack.next))))
+                component.new(*(args))
               end
         end
       end
@@ -66,12 +66,8 @@ module Gara
     end
 
     def method_missing(name, *args)
-      # if @stack[@frame+1].nil?
-      #   Gara::Components::Wrapper.new(name.to_s, *args)
-      # else
-        stack.next << Gara::Components::Wrapper.new(name.to_s, *args)
-        nil
-      # end
+      stack.current << Gara::Components::Wrapper.new(name.to_s, *args)
+      nil
     end
 
     class Stack

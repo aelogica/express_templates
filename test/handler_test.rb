@@ -103,11 +103,10 @@ class HandlerTest < ActiveSupport::TestCase
   end
 
   test "locals work" do
-    @template = new_template "h1 my_title"
+    @template = new_template "h1 { my_title }"
     @template.locals = [:my_title]
     assert_equal "<h1>Foo</h1>", render(my_title: 'Foo')
   end
-
 
   test "helpers returning html when alone in a block" do
     @template = new_template("li { link_helper } ")

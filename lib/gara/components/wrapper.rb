@@ -19,6 +19,10 @@ module Gara
         _compile
       end
 
+      def children
+        []
+      end
+
       private
         def _compile
           if @args.empty?

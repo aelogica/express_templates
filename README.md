@@ -23,7 +23,7 @@ Change your template to look like this.
         csrf_meta_tags
       }
       body {
-        self << yield
+        yield
         javascript_include_tag "application"
       }
     }
@@ -36,14 +36,6 @@ Set your editor syntax for .gara files to Ruby.
 
 Helpers defined on the view context which return strings will have this strings inserted as markup in the dob.
 
-### Note
-
-When in doubt you may always use the following to insert markup.
-
-    self << something_returning_markup
-
-If you find something is not appearing at all or looking strange in your markup, try this.  For now, it is required for the standard use of yield in the application template when yield is not the last statement in a block.
-
 ## Background
 
 The motivation for this gem is simple.  The bondage of HAML is unnecessary.  The clutter of Erb is unsightly.
@@ -52,7 +44,9 @@ I want to reduce cognative load, increase development speed and reduce errors.  
 
 With a little imagination Ruby can map to HTML easily using its block structure.  This facilitates construction of an internal DSL that is "Just Ruby."
 
-Ultimately my objective with Gara is to get away from writing HTML directly and to use this as a substrate for building pages out of higher-level, reusable components which include not only DOM elements but also behaviors.  
+Ultimately my objective with Gara is to get away from writing HTML directly and to use this as a substrate for building pages out of higher-level, reusable components which include not only DOM elements but also behaviors.
+
+This is a quick subsititue for a realish macro system -- something that accepts and transforms sexp returned from Ripper.
 
 This is a key aspect of the AppExpress platform at [appexpress.io](http://appexpress.io).
 
