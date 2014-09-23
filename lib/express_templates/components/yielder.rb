@@ -7,7 +7,7 @@ module ExpressTemplates
 
       def compile
         if @arg
-          "yield(#{@arg})"
+          "yield(#{@arg.inspect})" # usually a symbol but may be string
         else
           "yield"
         end

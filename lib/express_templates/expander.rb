@@ -9,7 +9,7 @@ module ExpressTemplates
     def self.expand(template, source)
       expanded = new(template).expand(source)
       compiled = expanded.map(&:compile)
-      return compiled.join("+")
+      return compiled.join("+").tap {|s| puts("\n"+template.inspect+"\n"+s) if ENV['DEBUG'].eql?('true') }
     end
 
     def initialize(template)
@@ -19,7 +19,7 @@ module ExpressTemplates
 
     def expand(source=nil, &block)
       if source
-        modified = source.gsub(/(\W)(yield)(\.*)?/, '\1 (stack << ExpressTemplates::Components::Yielder.new(\3))')
+        modified = source.gsub(/(\W)(yield)(\([^\)]*\))?/, '\1 (stack << ExpressTemplates::Components::Yielder.new\3)')
         modified.gsub!(/(\W)(@\w+)(\W)?/, '\1 (stack << ExpressTemplates::Components::Wrapper.new("\2") )\3')
         instance_eval(modified, @template.inspect)
         stack.current
