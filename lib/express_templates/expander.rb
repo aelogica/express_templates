@@ -66,7 +66,7 @@ module ExpressTemplates
     end
 
     def method_missing(name, *args)
-      stack.current << ExpressTemplates::Components::Wrapper.new(name.to_s, *args)
+      stack << ExpressTemplates::Components::Wrapper.new(name.to_s, *args)
       nil
     end
 
