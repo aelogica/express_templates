@@ -1,9 +1,9 @@
 require 'test_helper'
 
-class ComponentTest < ActiveSupport::TestCase
+class TagTest < ActiveSupport::TestCase
 
-  class Bare < ExpressTemplates::Component ; end
-  class Sub < ExpressTemplates::Component ; end
+  class Bare < ExpressTemplates::Markup::Tag ; end
+  class Sub < ExpressTemplates::Markup::Tag ; end
 
   def bare_component(*args)
     Bare.new(*args)
@@ -72,6 +72,10 @@ class ComponentTest < ActiveSupport::TestCase
 )
     assert_equal expected, Bare.new(Sub.new(Sub.new)).to_template
   end
+
+  # test "proc option values are evaluated"
+
+  # test "hash option values are converted to json"
 
 
 end

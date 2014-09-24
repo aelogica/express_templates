@@ -1,5 +1,5 @@
 module ExpressTemplates
-  module Components
+  module Markup
     class Yielder
       def initialize(*args)
         @arg = args.first

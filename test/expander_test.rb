@@ -2,9 +2,9 @@ require 'test_helper'
 
 class ExpanderTest < ActiveSupport::TestCase
 
-  class Foo < ExpressTemplates::Component ; end
-  class Bar < ExpressTemplates::Component ; end
-  class Baz < ExpressTemplates::Component ; end
+  class Foo < ExpressTemplates::Markup::Tag ; end
+  class Bar < ExpressTemplates::Markup::Tag ; end
+  class Baz < ExpressTemplates::Markup::Tag ; end
 
   ExpressTemplates::Expander.register_macros_for(Foo,Bar,Baz)
 
@@ -17,7 +17,7 @@ class ExpanderTest < ActiveSupport::TestCase
   test "#expand returns an array containing a component" do
     source = "foo"
     result = ExpressTemplates::Expander.new(nil).expand(source)
-    assert_kind_of ExpressTemplates::Component, result.first
+    assert_kind_of ExpressTemplates::Markup::Tag, result.first
   end
 
   test "#expand of 'foo { foo } returns a component with a child component" do
@@ -47,10 +47,18 @@ class ExpanderTest < ActiveSupport::TestCase
     result = ExpressTemplates::Expander.new(nil).expand(source)
     assert_equal 0, result.first.children.size
     assert_equal 1, result[1].children.size
-    assert_kind_of ExpressTemplates::Components::Wrapper, result.first
+    assert_kind_of ExpressTemplates::Markup::Wrapper, result.first
     assert_kind_of Foo, result[1]
-    assert_kind_of ExpressTemplates::Components::Wrapper, result[1].children.first
+    assert_kind_of ExpressTemplates::Markup::Wrapper, result[1].children.first
   end
+
+  # test "control flow"
+
+  # test "helpers can take blocks" 
+  # do
+  #   source = "helper do foo ; end"
+  #   result = ExpressTemplates::Expander.new(nil).expand(source)
+  # end
 
 
 end

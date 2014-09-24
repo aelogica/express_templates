@@ -19,12 +19,12 @@ module ExpressTemplates
 
     def expand(source=nil, &block)
       if source
-        modified = source.gsub(/(\W)(yield)(\([^\)]*\))?/, '\1 (stack << ExpressTemplates::Components::Yielder.new\3)')
-        modified.gsub!(/(\W)(@\w+)(\W)?/, '\1 (stack << ExpressTemplates::Components::Wrapper.new("\2") )\3')
+        modified = source.gsub(/(\W)(yield)(\([^\)]*\))?/, '\1 (stack << ExpressTemplates::Markup::Yielder.new\3)')
+        modified.gsub!(/(\W)(@\w+)(\W)?/, '\1 (stack << ExpressTemplates::Markup::Wrapper.new("\2") )\3')
         instance_eval(modified, @template.inspect)
         stack.current
       else
-        instance_eval &block
+        instance_exec &block
         stack.current
       end
     end
@@ -56,17 +56,17 @@ module ExpressTemplates
     end
 
 
-    @module_search_space = [ExpressTemplates::Components]
+    @module_search_space = [ExpressTemplates::Markup, ExpressTemplates::Components]
 
     @module_search_space.each do |mod|
       register_macros_for(*
         mod.constants.map { |const| [mod.to_s, const.to_s].join("::").constantize }.
-          select { |klass| klass.ancestors.include? (ExpressTemplates::Component) }
+          select { |klass| klass.ancestors.include? (ExpressTemplates::Markup::Tag) }
       )
     end
 
     def method_missing(name, *args)
-      stack << ExpressTemplates::Components::Wrapper.new(name.to_s, *args)
+      stack << ExpressTemplates::Markup::Wrapper.new(name.to_s, *args)
       nil
     end
 

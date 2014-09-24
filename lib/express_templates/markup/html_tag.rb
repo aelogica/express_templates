@@ -1,6 +1,6 @@
 module ExpressTemplates
-  module Components
-    class HtmlTag < ExpressTemplates::Component
+  module Markup
+    class HtmlTag < Tag
       TAGS = [ :a, :abbr, :address, :area, :article, :aside, :audio,
                :b, :base, :bdi, :bdo, :blockquote, :body, :br, :button,
                :canvas, :caption, :cite, :code, :col, :colgroup,
@@ -29,7 +29,7 @@ module ExpressTemplates
 
     HtmlTag::TAGS.each do |tag|
       klass = tag.to_s.titleize
-      ExpressTemplates::Components.module_eval "class #{klass} < HtmlTag ; end"
+      ExpressTemplates::Markup.module_eval "class #{klass} < ExpressTemplates::Markup::HtmlTag ; end"
     end
 
   end

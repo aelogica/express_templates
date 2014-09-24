@@ -1,5 +1,5 @@
 module ExpressTemplates
-  module Components
+  module Markup
     # wrap locals and helpers for evaluation during render
     class Wrapper
 

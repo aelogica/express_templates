@@ -76,11 +76,11 @@ HAML
     assert_operator 1.0, :>, duration
   end
 
-  test "performance no more than 3x slower than erubis" do
+  test "performance no more than 3.5x slower than erubis" do
     eruby = Erubis::Eruby.new
     duration_erb = time(100) { eval(eruby.convert(ERB_EXAMPLE)) }
     duration_express_templates = time(100) { ExpressTemplates.render(self, "#{GARA_EXAMPLE}") }
-    assert_operator 3.0, :>, (duration_express_templates/duration_erb)
+    assert_operator 3.5, :>, (duration_express_templates/duration_erb)
   end
 
   test "performance better than haml" do
