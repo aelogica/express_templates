@@ -34,5 +34,17 @@ class BaseTest < ActiveSupport::TestCase
     assert_equal '<span>bar</span><span>baz</span>', Context.new.instance_eval(compiled)
   end
 
+  class ForEachLogic < ExpressTemplates::Components::Base
+    emits markup: -> {
+      span { item }
+    }
+
+    for_each(:@foo)
+  end
+
+  test ".for_each iterates markup for each value" do
+    compiled = ForEachLogic.new.compile
+    assert_equal '<span>bar</span><span>baz</span>', Context.new.instance_eval(compiled)
+  end
 
 end

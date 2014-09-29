@@ -17,12 +17,16 @@ module ExpressTemplates
         @control_flow = block
       end
 
+      def self.for_each(iterator)
+        using_logic {|markup_code| eval(iterator.to_s).map { |item| eval(markup_code) }.join }
+      end
+
       def insert(label)
         _lookup(label)
       end
 
       def compile
-        if _control_flow
+        if _provides_logic?
           "#{self.class.to_s}.control(self, '#{self.class._lookup(:markup)}')"
         else
           self.class._lookup(:markup)
@@ -35,8 +39,8 @@ module ExpressTemplates
 
       private 
 
-        def _control_flow
-          self.class._control_flow
+        def _provides_logic?
+          !!self.class._control_flow
         end
 
         def self._control_flow
