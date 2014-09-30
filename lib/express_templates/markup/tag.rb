@@ -20,7 +20,12 @@ module ExpressTemplates
 
       def html_options
         @options.each_pair.map do |name, value|
-          %Q(#{name}=\\"#{value}\\")
+          case
+          when code = value.match(/\{\{(.*)\}\}/).try(:[], 1)
+            %Q(#{name}=\\"\#{#{code}}\\")
+          else
+            %Q(#{name}=\\"#{value}\\")
+          end
         end.join(" ")
       end
 
@@ -51,9 +56,13 @@ module ExpressTemplates
             %Q("#{child}")
           end
         end
-        ruby_fragments.unshift %Q("#{start_tag}")
-        ruby_fragments.push %Q("#{close_tag}")
-        ruby_fragments.reject {|frag| frag.empty? }.join("+")
+        unless ruby_fragments.empty?
+          ruby_fragments.unshift %Q("#{start_tag}")
+          ruby_fragments.push %Q("#{close_tag}")
+          ruby_fragments.reject {|frag| frag.empty? }.join("+")
+        else
+          %Q("#{start_tag.gsub(/>$/, ' />')}")
+        end
       end
 
       def to_template(depth = 0)

@@ -5,29 +5,29 @@ class TagTest < ActiveSupport::TestCase
   class Bare < ExpressTemplates::Markup::Tag ; end
   class Sub < ExpressTemplates::Markup::Tag ; end
 
-  def bare_component(*args)
+  def bare_tag(*args)
     Bare.new(*args)
   end
 
-  def sub_component(*args)
+  def sub_tag(*args)
     Sub.new(*args)
   end
 
 
   test "#macro_name returns the name of the class" do
-    assert_equal 'bare', bare_component.macro_name
+    assert_equal 'bare', bare_tag.macro_name
   end
 
   test "#compile returns a string" do
-    assert_kind_of String, bare_component.compile
+    assert_kind_of String, bare_tag.compile
   end
 
   test "has no children" do
-    assert_empty bare_component.children
+    assert_empty bare_tag.children
   end
 
   def bare_with_2_children
-    component = bare_component "child1", "child2"
+    tag = bare_tag "child1", "child2"
   end
 
   test "can be created with children" do
@@ -40,30 +40,30 @@ class TagTest < ActiveSupport::TestCase
   end
 
   test "#start_tag is my macro_name as an xml start tag" do
-    assert_equal "<#{bare_component.macro_name}>", bare_component.start_tag
+    assert_equal "<#{bare_tag.macro_name}>", bare_tag.start_tag
   end
 
   test "#close_tag is my macro_name as an xml close tag" do
-    assert_equal "</#{bare_component.macro_name}>", bare_component.close_tag
+    assert_equal "</#{bare_tag.macro_name}>", bare_tag.close_tag
   end
 
-  def component_with_subcomponent
-    bare_component sub_component
+  def tag_with_subtag
+    bare_tag sub_tag
   end
 
-  test "#compile on component_with_subcomponent returns a string which when eval'd looks like '<bare><sub></sub></bare>'" do
-    assert_equal '<bare><sub></sub></bare>', eval(component_with_subcomponent.compile)
+  test "#compile on tag_with_subtag returns a string which when eval'd looks like '<bare><sub></sub></bare>'" do
+    assert_equal '<bare><sub /></bare>', eval(tag_with_subtag.compile)
   end
 
-  test "#to_template on bare_component returns 'bare'" do
-    assert_equal 'bare', bare_component.to_template
+  test "#to_template on bare_tag returns 'bare'" do
+    assert_equal 'bare', bare_tag.to_template
   end
 
-  test "#to_template on component_with_subcomponent returns 'bare {\n  sub\n}\n'" do
-    assert_equal "bare {\n  sub\n}\n", component_with_subcomponent.to_template
+  test "#to_template on tag_with_subtag returns 'bare {\n  sub\n}\n'" do
+    assert_equal "bare {\n  sub\n}\n", tag_with_subtag.to_template
   end
 
-  test "#to_template on nested components indents properly'" do
+  test "#to_template on nested tags indents properly'" do
     expected = %Q(bare {
   sub {
     sub
@@ -73,7 +73,16 @@ class TagTest < ActiveSupport::TestCase
     assert_equal expected, Bare.new(Sub.new(Sub.new)).to_template
   end
 
-  # test "proc option values are evaluated"
+  test "double bracketed option values are substituted for evaluation in context" do
+    assert_equal '"<bare should_eval_in_context=\"#{foo}\" />"', bare_tag(should_eval_in_context: "{{foo}}").compile
+  end
+
+  # todo?
+  # test "proc option values are evaluated in context"
+
+  test "empty tags use abbreviated empty tag form" do
+    assert_equal '"<bare />"', bare_tag.compile
+  end
 
   # test "hash option values are converted to json"
 
