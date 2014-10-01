@@ -14,6 +14,10 @@ class BaseTest < ActiveSupport::TestCase
     assert_equal %Q("<h1>"+"<span>"+"Some stuff"+"</span>"+"</h1>"), NoLogic.new.compile
   end
 
+  test "components register themselves as macros" do
+    assert ExpressTemplates::Expander.instance_methods.include?(:no_logic)
+  end
+
   class SomeLogic < ECB
     emits markup: -> {
       span { foo }
@@ -38,7 +42,7 @@ class BaseTest < ActiveSupport::TestCase
 
   class ForEachLogic < ECB
     emits -> {
-      span { item }
+      span { foo }
     }
 
     for_each(:@foo)
@@ -50,28 +54,31 @@ class BaseTest < ActiveSupport::TestCase
   end
 
   class MultiFragments < ECB
-    def self.markup
-      return -> {
-        h1 { span "something" }
-      }
-    end
 
-    renders markup: markup,
-    wrapper: -> {
-      head {
-        # yield
-      }
-    }
+    fragments item:  -> {
+                          li { foo }
+                        },
 
-    using_logic { |c|
-      c.content_for(:wrapper) {
-        c.render(:markup)
-      }
-    }
+              wrapper: -> {
+                            ul {
+                              _yield
+                            }
+                          }
+
+    for_each :@foo, emit: :item
+
+    wrap_with :wrapper
+
   end
 
-  test "renders is synonymous for emits" do
-    assert_equal ExpressTemplates.compile(&MultiFragments.markup), MultiFragments[:markup]
+  test "fragments and renders are synonyms for emits" do
+    assert_equal MultiFragments.method(:emits), MultiFragments.method(:fragments)
+    assert_equal MultiFragments.method(:emits), MultiFragments.method(:renders)
+  end
+
+  test ".wrap_with wraps via _yield special handler" do
+    compiled = MultiFragments.new.compile
+    assert_equal "<ul><li>bar</li><li>baz</li></ul>", Context.new.instance_eval(compiled)
   end
 
 end

@@ -66,6 +66,17 @@ class ExpanderTest < ActiveSupport::TestCase
     assert_equal 1, child_of_first_child.children.size
     assert_kind_of ExpressTemplates::Markup::Tag, child_of_first_child.children.first
   end
+
+  class Special
+    def self.render(label)
+      :dummy
+    end
+  end
+
+  test "initializer accepts special handlers hash" do
+    source = "render(:markup)"
+    assert_equal [:dummy], ExpressTemplates::Expander.new(nil, render: Special).expand(source)
+  end
   # test "control flow"
 
   # test "helpers can take blocks" 

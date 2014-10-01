@@ -4,11 +4,12 @@ module ExpressTemplates
 
     cattr_accessor :module_search_space
 
-    attr_accessor :stack
+    attr_accessor :stack, :handlers
 
-    def initialize(template)
+    def initialize(template, handlers = {})
       @template = template
       @stack = Stack.new
+      @handlers = handlers
     end
 
     def expand(source=nil, &block)
@@ -62,7 +63,11 @@ module ExpressTemplates
     end
 
     def method_missing(name, *args)
-      stack << ExpressTemplates::Markup::Wrapper.new(name.to_s, *args)
+      if handlers.keys.include?(name)
+        stack << handlers[name].send(name, *args)
+      else
+        stack << ExpressTemplates::Markup::Wrapper.new(name.to_s, *args)
+      end
       nil
     end
 

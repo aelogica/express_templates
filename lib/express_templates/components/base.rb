@@ -1,6 +1,16 @@
 module ExpressTemplates
   module Components
+
     class Base
+
+      def self.inherited(klass)
+        ExpressTemplates::Expander.register_macros_for klass
+      end
+
+      # should be moved into a module shared with Tag
+      def self.macro_name
+        to_s.split('::').last.underscore
+      end
 
       def self.emits(*args)
         if args.first.respond_to? :call
@@ -21,12 +31,46 @@ module ExpressTemplates
         @control_flow = block
       end
 
-      def self.for_each(iterator)
-        using_logic {|component| eval(iterator.to_s).map { |item| eval(component[:markup]) }.join }
+      # takes an :@variable assumed to be available in context
+      # and iterates rendering the markup fragment specified by the emit: option
+      # defaults to the fragment labeled :markup
+      def self.for_each(iterator, emit: :markup)
+        var_name = iterator.to_s.gsub(/^@/,'').singularize.to_sym
+        using_logic do |component|
+          eval(iterator.to_s).map do |item|
+            b = binding
+            b.local_variable_set(var_name, item)
+            b.eval(component[emit], __FILE__)
+          end.join
+        end
       end
 
-      def insert(label)
+      def self.wrap_with(fragment)
+        prior_logic = @control_flow
+        using_logic do |component|
+          component._wrap_using(fragment, self, &prior_logic)
+        end
+      end
+
+      def self.content_for(label, &block)
         _lookup(label)
+      end
+
+      def self.insert(label)
+        eval(_lookup(label))
+      end
+
+      def self._wrap_using(label, context=nil, &to_be_wrapped)
+        body = ''
+        if to_be_wrapped && context
+          body = render(context, &to_be_wrapped)
+        end
+        insert(label).gsub(/\{\{_yield\}\}/, body)
+      end
+
+
+      def self._yield(*args)
+        "{{_yield}}"
       end
 
       def compile
@@ -37,14 +81,18 @@ module ExpressTemplates
         end
       end
 
-      def self.render(context)
-        context.instance_exec(self, &@control_flow)
+      def self.render(context, &block)
+        flow = block || @control_flow
+        context.instance_exec(self, &flow)
       end
 
       private 
 
+        # change to use ExpressTemplates.compile?
         def self._compile(block)
-          ExpressTemplates::Expander.new(nil).expand(&block).map(&:compile).join("+")
+          special_handlers = {insert: self, _yield: self}
+
+          ExpressTemplates::Expander.new(nil, special_handlers).expand(&block).map(&:compile).join("+")
         end
 
         def _provides_logic?
@@ -65,17 +113,12 @@ module ExpressTemplates
           @compiled_template_code[name] or raise "no compiled template code for: #{name}"
         end
 
-        def self.[](name)
-          _lookup(name)
-        end
-
-        def _lookup(name)
-          self.class._lookup(name)
-        end
     end
 
     class << Base
       alias_method :renders, :emits
+      alias_method :fragments, :emits
+      alias_method :[], :_lookup
     end
 
   end
