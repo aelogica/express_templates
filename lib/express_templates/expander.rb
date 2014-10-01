@@ -48,13 +48,11 @@ module ExpressTemplates
     def self.register_macros_for(*components)
       components.each do |component|
         define_method(component.macro_name.to_sym) do |*args, &block|
+            # this could potentially be improved to use #process_children!
             stack << if block
                 begin
                   stack.descend!
                   block.call
-                  # anything stored on stack.current or on stack.next is added as a child
-                  # this is a bit problematic in the case where we would have
-                  # blocks and helpers or locals mixed
                   component.new(*(args.push(*(stack.current)).push(self)))
                 ensure
                   stack.ascend!
