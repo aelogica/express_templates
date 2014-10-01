@@ -29,9 +29,8 @@ module ExpressTemplates
       end
     end
 
-    def process_children!(&block)
+    def process_children!(parent, &block)
       begin
-        parent = stack.current.last
         stack.descend!
         instance_exec &block
         parent.children += stack.current
@@ -43,23 +42,14 @@ module ExpressTemplates
     # define a "macro" method for a component
     # these methods accept args which are passed to the
     # initializer for the component
-    # blocks supplied are evaluated and any returned objects are
-    # added as children to the component
+    # blocks supplied are evaluated and children added to the "stack"
+    # are added as children to the component
     def self.register_macros_for(*components)
       components.each do |component|
         define_method(component.macro_name.to_sym) do |*args, &block|
-            # this could potentially be improved to use #process_children!
-            stack << if block
-                begin
-                  stack.descend!
-                  block.call
-                  component.new(*(args.push(*(stack.current)).push(self)))
-                ensure
-                  stack.ascend!
-                end
-              else
-                component.new(*(args.push(self)))
-              end
+            new_component = component.new(*(args.push(self)))
+            process_children!(new_component, &block) unless block.nil?
+            stack << new_component
         end
       end
     end

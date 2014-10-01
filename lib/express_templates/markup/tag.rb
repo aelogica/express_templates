@@ -49,7 +49,7 @@ module ExpressTemplates
         _process(*args) unless args.empty?
         if children # in the case where CSS classes are specified via method
           unless @expander.nil?
-            @expander.process_children! &children
+            @expander.process_children! self, &children
           else
             raise "block passed without expander"
           end
