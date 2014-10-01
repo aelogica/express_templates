@@ -73,5 +73,10 @@ module ExpressTemplates
           self.class._lookup(name)
         end
     end
+
+    class << Base
+      alias_method :renders, :emits
+    end
+
   end
 end

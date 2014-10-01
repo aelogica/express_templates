@@ -8,12 +8,6 @@ class ExpanderTest < ActiveSupport::TestCase
 
   ExpressTemplates::Expander.register_macros_for(Foo,Bar,Baz)
 
-  test ".expand returns a string"  do
-    source = "foo"
-    result = ExpressTemplates::Expander.expand(nil, source)
-    assert_kind_of String, result
-  end
-
   test "#expand returns an array containing a component" do
     source = "foo"
     result = ExpressTemplates::Expander.new(nil).expand(source)

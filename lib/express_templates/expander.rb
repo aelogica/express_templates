@@ -6,27 +6,24 @@ module ExpressTemplates
 
     attr_accessor :stack
 
-    def self.expand(template, source)
-      expanded = new(template).expand(source)
-      compiled = expanded.map(&:compile)
-      return compiled.join("+").tap {|s| puts("\n"+template.inspect+"\n"+s) if ENV['DEBUG'].eql?('true') }
-    end
-
     def initialize(template)
       @template = template
       @stack = Stack.new
     end
 
     def expand(source=nil, &block)
-      if source
+      case
+      when block.nil? && source
         modified = source.gsub(/(\W)(yield)(\([^\)]*\))?/, '\1 (stack << ExpressTemplates::Markup::Yielder.new\3)')
         modified.gsub!(/(\W)(@\w+)(\W)?/, '\1 (stack << ExpressTemplates::Markup::Wrapper.new("\2") )\3')
         instance_eval(modified, @template.inspect)
-        stack.current
-      else
+      when block
         instance_exec &block
         stack.current
+      else
+        raise ArgumentError
       end
+      stack.current
     end
 
     def process_children!(parent, &block)

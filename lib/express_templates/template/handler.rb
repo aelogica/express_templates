@@ -7,7 +7,7 @@ module ExpressTemplates
 
       def call(template)
         # returns a string to be eval'd
-        ExpressTemplates::Expander.expand(template, template.source)
+        ExpressTemplates.compile(template)
       end
 
     end
