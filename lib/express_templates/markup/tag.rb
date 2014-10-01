@@ -99,7 +99,8 @@ module ExpressTemplates
 
         def _process(*children_or_options)
           children_or_options.each do |child_or_option|
-            if child_or_option.kind_of?(Hash)
+            case
+            when child_or_option.kind_of?(Hash)
               @options.merge!(child_or_option)
             else
               @children << child_or_option

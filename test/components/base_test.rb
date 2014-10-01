@@ -17,9 +17,9 @@ class BaseTest < ActiveSupport::TestCase
       span { foo }
     }
 
-    using_logic { |markup_code|
+    using_logic { |component|
       @foo.map do |foo|
-        eval(markup_code)
+        eval(component[:markup])
       end.join
     }
   end
@@ -30,12 +30,12 @@ class BaseTest < ActiveSupport::TestCase
 
   test ".using_logic controls the markup generation" do
     compiled = SomeLogic.new.compile
-    assert_equal 'BaseTest::SomeLogic.control(self, \'"<span>"+"#{foo}"+"</span>"\')', compiled
+    assert_equal 'BaseTest::SomeLogic.render(self)', compiled
     assert_equal '<span>bar</span><span>baz</span>', Context.new.instance_eval(compiled)
   end
 
   class ForEachLogic < ExpressTemplates::Components::Base
-    emits markup: -> {
+    emits -> {
       span { item }
     }
 
