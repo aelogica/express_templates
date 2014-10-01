@@ -34,7 +34,7 @@ module ExpressTemplates
         parent = stack.current.last
         stack.descend!
         instance_exec &block
-        parent.children << stack.current
+        parent.children += stack.current
         stack.ascend!
       end
       stack.current

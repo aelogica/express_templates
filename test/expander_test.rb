@@ -58,6 +58,20 @@ class ExpanderTest < ActiveSupport::TestCase
     assert_equal 1, result[0].children.size
   end
 
+  test "#expand doesn't yield [] for children" do
+    source = %Q(ul(class: 'title-area') {
+  li.name {
+    a("Something", href: '#', disabled: true)
+  }
+  li(class:"ugly markup") {
+    a(href: "#") { span "menu item" }
+  }
+})
+    result = ExpressTemplates::Expander.new(nil).expand(source)
+    child_of_first_child = result.first.children.first
+    assert_equal 1, child_of_first_child.children.size
+    assert_kind_of ExpressTemplates::Markup::Tag, child_of_first_child.children.first
+  end
   # test "control flow"
 
   # test "helpers can take blocks" 
