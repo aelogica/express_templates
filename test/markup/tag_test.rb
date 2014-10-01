@@ -94,6 +94,10 @@ class TagTest < ActiveSupport::TestCase
     assert_equal '"<bare class=\"foo\">"+"<sub />"+"</bare>"', (bare_tag.foo(sub_tag)).compile
   end
 
+  test "CSS classes specified with underscored method get translated to dashed" do
+    assert_equal '"<bare class=\"foo-bar\" />"', bare_tag._foo_bar.compile
+  end
+
   # test "hash option values are converted to json"
 
 

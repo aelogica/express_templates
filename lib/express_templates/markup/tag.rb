@@ -41,7 +41,8 @@ module ExpressTemplates
 
       def add_css_class(css_class)
         @options['class'] ||= ''
-        @options['class'] = (@options['class'].split + [css_class]).join(" ")
+        css_class = css_class.to_s.gsub('_', '-').gsub(/^-/,'') if css_class.to_s.match /^_.*_/
+        @options['class'] = (@options['class'].split + [css_class]).uniq.join(" ")
       end
 
       def method_missing(name, *args, &children)
