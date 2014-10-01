@@ -84,6 +84,16 @@ class TagTest < ActiveSupport::TestCase
     assert_equal '"<bare />"', bare_tag.compile
   end
 
+  test "method missing returns self" do
+    tag = bare_tag
+    assert_equal tag, tag.foo
+  end
+
+  # the block form of this is tested in expander
+  test "children still evaluated after css class provided via method syntax" do
+    assert_equal '"<bare class=\"foo\">"+"<sub />"+"</bare>"', (bare_tag.foo(sub_tag)).compile
+  end
+
   # test "hash option values are converted to json"
 
 

@@ -9,6 +9,8 @@ module ExpressTemplates
       def initialize(*children_or_options)
         @children = []
         @options = {}.with_indifferent_access
+        # expander passes itself as last arg
+        @expander = children_or_options.pop if children_or_options.last.kind_of?(ExpressTemplates::Expander)
         _process(*children_or_options)
       end
 
@@ -21,7 +23,7 @@ module ExpressTemplates
       def html_options
         @options.each_pair.map do |name, value|
           case
-          when code = value.match(/\{\{(.*)\}\}/).try(:[], 1)
+          when code = value.to_s.match(/\{\{(.*)\}\}/).try(:[], 1)
             %Q(#{name}=\\"\#{#{code}}\\")
           else
             %Q(#{name}=\\"#{value}\\")
@@ -42,9 +44,16 @@ module ExpressTemplates
         @options['class'] = (@options['class'].split + [css_class]).join(" ")
       end
 
-      def method_missing(name, *args)
+      def method_missing(name, *args, &children)
         add_css_class(name)
         _process(*args) unless args.empty?
+        if children # in the case where CSS classes are specified via method
+          unless @expander.nil?
+            @expander.process_children! &children
+          else
+            raise "block passed without expander"
+          end
+        end
         return self
       end
 

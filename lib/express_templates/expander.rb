@@ -29,6 +29,17 @@ module ExpressTemplates
       end
     end
 
+    def process_children!(&block)
+      begin
+        parent = stack.current.last
+        stack.descend!
+        instance_exec &block
+        parent.children << stack.current
+        stack.ascend!
+      end
+      stack.current
+    end
+
     # define a "macro" method for a component
     # these methods accept args which are passed to the
     # initializer for the component
@@ -44,12 +55,12 @@ module ExpressTemplates
                   # anything stored on stack.current or on stack.next is added as a child
                   # this is a bit problematic in the case where we would have
                   # blocks and helpers or locals mixed
-                  component.new(*(args.push(*(stack.current))))
+                  component.new(*(args.push(*(stack.current)).push(self)))
                 ensure
                   stack.ascend!
                 end
               else
-                component.new(*(args))
+                component.new(*(args.push(self)))
               end
         end
       end
@@ -82,7 +93,8 @@ module ExpressTemplates
 
       def dump
         puts "Current frame: #{@frame}"
-        puts all.map(&:inspect).join("\n")
+        require 'pp'
+        pp all
       end
 
       def <<(child)

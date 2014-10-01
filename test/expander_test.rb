@@ -42,7 +42,7 @@ class ExpanderTest < ActiveSupport::TestCase
     assert_kind_of Baz, result.first.children.last
   end
 
-  test "#expand correctly allocated helpers and parameters xxx" do
+  test "#expand correctly allocated helpers and parameters" do
     source = 'helper ; foo { buzz }'
     result = ExpressTemplates::Expander.new(nil).expand(source)
     assert_equal 0, result.first.children.size
@@ -50,6 +50,12 @@ class ExpanderTest < ActiveSupport::TestCase
     assert_kind_of ExpressTemplates::Markup::Wrapper, result.first
     assert_kind_of Foo, result[1]
     assert_kind_of ExpressTemplates::Markup::Wrapper, result[1].children.first
+  end
+
+  test "#expand works with css class specification syntax xxx" do
+    source = 'foo.active { baz }'
+    result = ExpressTemplates::Expander.new(nil).expand(source)
+    assert_equal 1, result[0].children.size
   end
 
   # test "control flow"
