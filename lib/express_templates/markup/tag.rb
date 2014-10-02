@@ -1,22 +1,14 @@
 module ExpressTemplates
   module Markup
     class Tag
+      include ExpressTemplates::Macro
 
       attr_accessor :children
 
       INDENT = '  '
 
-      def initialize(*children_or_options)
-        @children = []
-        @options = {}.with_indifferent_access
-        # expander passes itself as last arg
-        @expander = children_or_options.pop if children_or_options.last.kind_of?(ExpressTemplates::Expander)
-        _process(*children_or_options)
-      end
-
-      # These should be in Macro but must remain here for performance reasons.
-      # To verify replace these lines with:
-      # include ExpressTemplates::Macro
+      # These come from Macro but must remain overridden here for performance reasons.
+      # To verify, comment these two methods and
       # run rake test and observe the performance hit.  Why?
       def self.macro_name
         @macro_name ||= to_s.split('::').last.underscore
@@ -100,17 +92,6 @@ module ExpressTemplates
         def _blockify(code, depth)
           indent = INDENT*depth
           code.empty? ? code : " {\n#{_indent(code)}\n}\n"
-        end
-
-        def _process(*children_or_options)
-          children_or_options.each do |child_or_option|
-            case
-            when child_or_option.kind_of?(Hash)
-              @options.merge!(child_or_option)
-            else
-              @children << child_or_option
-            end
-          end
         end
 
     end
