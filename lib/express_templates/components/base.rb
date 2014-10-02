@@ -53,10 +53,6 @@ module ExpressTemplates
         end
       end
 
-      def content_for(label, &block)
-        _lookup(label)
-      end
-
       def insert(label)
         eval(_lookup(label))
       end
