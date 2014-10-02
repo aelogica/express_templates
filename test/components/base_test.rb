@@ -76,9 +76,9 @@ class BaseTest < ActiveSupport::TestCase
 
   end
 
-  test "fragments and renders are synonyms for emits" do
+  test "fragments and has_markup are synonyms for emits" do
     assert_equal MultiFragments.method(:emits), MultiFragments.method(:fragments)
-    assert_equal MultiFragments.method(:emits), MultiFragments.method(:renders)
+    assert_equal MultiFragments.method(:emits), MultiFragments.method(:has_markup)
   end
 
   test ".wrap_with wraps via _yield special handler" do

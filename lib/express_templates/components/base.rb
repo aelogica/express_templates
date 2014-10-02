@@ -8,19 +8,15 @@ module ExpressTemplates
       end
 
 
-      def emits(*args)
-        if args.first.respond_to? :call
-          _store :markup, _compile(args.first)
+      def emits(*args, &template_code)
+        if args.first.respond_to?(:call) or template_code
+          _store :markup, _compile(args.first||template_code) # default fragment is named :markup
         else
           args.first.to_a.each do |name, block|
             raise ArgumentError unless name.is_a?(Symbol) and block.is_a?(Proc)
             _store(name, _compile(block))
           end
         end
-      end
-
-      def has_markup(&block)
-        emits(markup: block)
       end
 
       def using_logic(&block)
@@ -141,8 +137,8 @@ module ExpressTemplates
     end
 
     class << Base
-      alias_method :renders, :emits
       alias_method :fragments, :emits
+      alias_method :has_markup, :emits
     end
 
 
