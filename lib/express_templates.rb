@@ -1,4 +1,5 @@
 module ExpressTemplates
+  require 'express_templates/macro'
   require 'express_templates/markup'
   require 'express_templates/components'
   require 'express_templates/template/handler'

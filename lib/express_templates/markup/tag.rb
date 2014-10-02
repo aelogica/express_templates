@@ -14,11 +14,16 @@ module ExpressTemplates
         _process(*children_or_options)
       end
 
+      # These should be in Macro but must remain here for performance reasons.
+      # To verify replace these lines with:
+      # include ExpressTemplates::Macro
+      # run rake test and observe the performance hit.  Why?
       def self.macro_name
         @macro_name ||= to_s.split('::').last.underscore
       end
 
       def macro_name ; self.class.macro_name end
+
 
       def html_options
         @options.each_pair.map do |name, value|
