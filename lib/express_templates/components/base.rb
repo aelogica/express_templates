@@ -90,9 +90,13 @@ module ExpressTemplates
         end
       end
 
-      def self.render(context, &block)
-        flow = block || @control_flow
-        context.instance_exec(self, &flow)
+      def self.render(context, fragment=nil, &block)
+        if fragment
+          context.instance_eval(_lookup(fragment))
+        else
+          flow = block || @control_flow
+          context.instance_exec(self, &flow)
+        end
       end
 
       private 

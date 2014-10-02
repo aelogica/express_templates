@@ -18,6 +18,11 @@ class BaseTest < ActiveSupport::TestCase
     assert ExpressTemplates::Expander.instance_methods.include?(:no_logic)
   end
 
+  test ".render accepts a fragment name" do
+    assert_equal '<h1><span>Some stuff</span></h1>', NoLogic.render(self, :markup)
+  end
+
+
   class SomeLogic < ECB
     emits markup: -> {
       span { foo }
