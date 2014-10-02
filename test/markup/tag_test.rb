@@ -78,7 +78,7 @@ class TagTest < ActiveSupport::TestCase
   end
 
   test "double bracketed child values are substituted for evaluation in context" do
-    assert_equal '"<bare>"+foo+"</bare>"', bare_tag("{{foo}}").compile
+    assert_equal '"<bare>"+"#{foo}"+"</bare>"', bare_tag("{{foo}}").compile
   end
 
 
