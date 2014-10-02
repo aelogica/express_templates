@@ -65,7 +65,7 @@ class BaseTest < ActiveSupport::TestCase
                             }
                           }
 
-    for_each :@foo, emit: :item
+    for_each -> { @foo }, as: 'foo', emit: :item
 
     wrap_with :wrapper
 
