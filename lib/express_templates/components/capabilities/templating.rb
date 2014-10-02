@@ -1,7 +1,7 @@
 module ExpressTemplates
   module Components
     module Capabilities
-      module Emits
+      module Templating
         def self.included(base)
           base.class_eval do
             extend ClassMethods

@@ -29,7 +29,7 @@ module ExpressTemplates
     #
     class Base
       include ExpressTemplates::Macro
-      include Capabilities::Emits
+      include Capabilities::Templating
       include Capabilities::Rendering
       include Capabilities::Wrapping
       include Capabilities::Iterating
