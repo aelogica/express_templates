@@ -60,7 +60,11 @@ module ExpressTemplates
           if child.respond_to?(:compile)
             child.compile
           else
-            %Q("#{child}")
+            if code = child.to_s.match(/\{\{(.*)\}\}/).try(:[], 1)
+              %Q("\#\{#{code}\}")
+            else
+              %Q("#{child}")
+            end
           end
         end
         unless ruby_fragments.empty?
