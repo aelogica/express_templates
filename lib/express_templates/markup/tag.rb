@@ -55,6 +55,10 @@ module ExpressTemplates
         return self
       end
 
+      def should_not_abbreviate?
+        false
+      end
+
       def compile
         ruby_fragments = @children.map do |child|
           if child.respond_to?(:compile)
@@ -68,11 +72,13 @@ module ExpressTemplates
           end
         end
         unless ruby_fragments.empty?
-          ruby_fragments.unshift %Q("#{start_tag}")
-          ruby_fragments.push %Q("#{close_tag}")
-          ruby_fragments.reject {|frag| frag.empty? }.join("+")
+          _wrap_with_tags(ruby_fragments)
         else
-          %Q("#{start_tag.gsub(/>$/, ' />')}")
+          if should_not_abbreviate?
+            _wrap_with_tags(ruby_fragments)
+          else
+            %Q("#{start_tag.gsub(/>$/, ' />')}")
+          end
         end
       end
 
@@ -89,6 +95,13 @@ module ExpressTemplates
       end
 
       private
+
+        def _wrap_with_tags(ruby_fragments)
+          ruby_fragments.unshift %Q("#{start_tag}")
+          ruby_fragments.push %Q("#{close_tag}")
+          ruby_fragments.reject {|frag| frag.empty? }.join("+")
+        end
+
         def _indent(code)
           code.split("\n").map {|line| INDENT + line }.join("\n")
         end

@@ -89,6 +89,10 @@ class TagTest < ActiveSupport::TestCase
     assert_equal '"<bare />"', bare_tag.compile
   end
 
+  test "empty i tag does does not use abbreviated form since it is used for icons" do
+    assert_equal '"<i>"+"</i>"', ExpressTemplates::Markup::I.new.compile
+  end
+
   test "method missing returns self" do
     tag = bare_tag
     assert_equal tag, tag.foo

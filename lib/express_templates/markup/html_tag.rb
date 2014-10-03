@@ -32,5 +32,11 @@ module ExpressTemplates
       ExpressTemplates::Markup.module_eval "class #{klass} < ExpressTemplates::Markup::HtmlTag ; end"
     end
 
+    I.class_eval do
+      def should_not_abbreviate?
+        true
+      end
+    end
+
   end
 end
