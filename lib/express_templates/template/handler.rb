@@ -7,7 +7,7 @@ module ExpressTemplates
 
       def call(template)
         # returns a string to be eval'd
-        ExpressTemplates.compile(template)
+        "(#{ExpressTemplates.compile(template)}).html_safe"
       end
 
     end
