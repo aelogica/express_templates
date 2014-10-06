@@ -55,6 +55,35 @@ module ExpressTemplates
             _lookup(label)
           end
 
+          # Stores a block given for later evaluation in context.
+          #
+          # Example:
+          #
+          #       class TitleComponent < ECB
+          #         helper :title_helper do
+          #           @resource.name
+          #         end
+          #
+          #         emits {
+          #           h1 {
+          #             title_helper
+          #           }
+          #         }
+          #
+          #       end
+          #
+          # In this example <tt>@resource.name</tt> is evaluated in the
+          # provided context during page rendering and not during template
+          # expansion or compilation.
+          #
+          # This is the recommended for encapsulation of "helper" type
+          # functionality which is of concern only to the component and
+          # used only in its own markup fragments.
+          def helper(name, &block)
+            _helpers[name] = block
+            _define_helper_method name
+          end
+
           private
 
             def _store(name, ruby_string)
@@ -69,10 +98,30 @@ module ExpressTemplates
 
             # change to use ExpressTemplates.compile?
             def _compile(block)
-              special_handlers = {insert: self, _yield: self}
-
+              special_handlers = {insert: self, _yield: self}.merge(Hash[*(_helpers.keys.map {|k| [k, self] }.flatten)])
               ExpressTemplates::Expander.new(nil, special_handlers).expand(&block).map(&:compile).join("+")
             end
+
+            def _helpers
+              @helpers ||= Hash.new
+            end
+
+            def _define_helper_method(name)
+              method_definition= <<-RUBY
+                class << self
+                  define_method(:#{name}) do |context=nil|
+                    if context
+                      context.instance_exec &_helpers[:#{name}]
+                    else
+                      %Q("+#{self.to_s}.#{name}(self)+")
+                    end
+                  end
+                end
+              RUBY
+              # binding.pry
+              eval(method_definition)
+            end
+
 
         end
 

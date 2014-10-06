@@ -86,4 +86,30 @@ class BaseTest < ActiveSupport::TestCase
     assert_equal "<ul><li>bar</li><li>baz</li></ul>", Context.new.instance_eval(compiled)
   end
 
+  class Helpers < ECB
+    helper :title_helper, &-> { @foo.first }
+
+    emits {
+      h1 {
+        title_helper
+      }
+    }
+
+  end
+
+  test "helpers defined in component are evaluated in context" do
+    compiled = Helpers.new.compile
+    assert_equal "<h1>bar</h1>", Context.new.instance_eval(compiled)
+  end
+
+  class NullComponent < ECB
+    using_logic {
+      nil
+    }
+  end
+
+  test "render should not return a nil" do
+    compiled = NullComponent.new.compile
+    assert_equal "", Context.new.instance_eval(compiled)
+  end
 end

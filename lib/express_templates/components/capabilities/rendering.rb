@@ -16,10 +16,10 @@ module ExpressTemplates
 
           def render(context, fragment=nil, &block)
             if fragment
-              context.instance_eval(_lookup(fragment))
+              context.instance_eval(_lookup(fragment)) || ''
             else
               flow = block || @control_flow
-              context.instance_exec(self, &flow)
+              context.instance_exec(self, &flow) || ''
             end
           end
 

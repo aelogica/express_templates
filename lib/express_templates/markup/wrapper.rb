@@ -28,7 +28,7 @@ module ExpressTemplates
           if @args.empty?
             return name
           else
-            args_string = args.slice(0..-2).map(&:inspect).join(', ')
+            args_string = args.slice(0..-2).map(&:inspect).map(&:_remove_double_braces).join(', ')
             last_arg = ''
             if args.last.is_a?(Hash) # expand a hash
               unless args.last.empty?
@@ -40,12 +40,18 @@ module ExpressTemplates
                 last_arg = "{}" # empty hash
               end
             else
-              last_arg = args.last.inspect
+              last_arg = args.last.inspect._remove_double_braces
             end
             args_string << (args_string.empty? ? last_arg : ", #{last_arg}")
             return "#{name}(#{args_string})"
           end
         end
     end
+  end
+end
+
+class String
+  def _remove_double_braces
+    match(/\{\{(.*)\}\}/).try(:[], 1) || self
   end
 end

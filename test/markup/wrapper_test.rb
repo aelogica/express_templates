@@ -20,4 +20,9 @@ class WrapperTest < ActiveSupport::TestCase
     assert_equal '', eval(ExpressTemplates::Markup::Wrapper.new('nil').compile)
   end
 
+  test "double-braced args are evaluated in context" do
+    wrapper = ExpressTemplates::Markup::Wrapper.new('foo', "{{xyz}}", "{{zyx}}", bar: "baz")
+    assert_equal '"#{foo(xyz, zyx, bar: "baz")}"', wrapper.compile
+  end
+
 end

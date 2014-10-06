@@ -17,16 +17,22 @@ module ExpressTemplates
             end
           end
 
-          def insert(label)
-            eval(_lookup(label))
-          end
-
           def _wrap_using(label, context=nil, &to_be_wrapped)
             body = ''
             if to_be_wrapped && context
               body = render(context, &to_be_wrapped)
             end
-            insert(label).gsub(/\{\{_yield\}\}/, body)
+            if compiled_src = _lookup(label)
+              if context.nil?
+                eval(compiled_src).gsub(/\{\{_yield\}\}/, body)
+              else
+                ctx = context.instance_eval("binding")
+                ctx.local_variable_set(:_yield, body)
+                ctx.eval(compiled_src)
+              end
+            else
+              raise "No wrapper fragment provided for '#{label}'"
+            end
           end
 
           def _yield(*args)
