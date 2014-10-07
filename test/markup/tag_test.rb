@@ -81,6 +81,11 @@ class TagTest < ActiveSupport::TestCase
     assert_equal '"<bare>"+"#{foo}"+"</bare>"', bare_tag("{{foo}}").compile
   end
 
+  test "data option value hashes are converted to data attributes similar to haml" do
+    assert_equal %("<bare data-one=\"two\" data-three=\"four\" />"),
+                 bare_tag(data: {one: 'two', three: 'four'}).compile
+  end
+
 
   # todo?
   # test "proc option values are evaluated in context"
