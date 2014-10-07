@@ -21,7 +21,7 @@ module ExpressTemplates
         @options.each_pair.map do |name, value|
           case
           when name.to_sym.eql?(:data) && value.kind_of?(Hash)
-            value.each_pair.map {|k,v| %Q(data-#{k}="#{v}") }.join(" ")
+            value.each_pair.map {|k,v| %Q(data-#{k}=\\"#{v}\\") }.join(" ")
           when code = value.to_s.match(/^\{\{(.*)\}\}$/).try(:[], 1)
             %Q(#{name}=\\"\#{#{code}}\\")
           else

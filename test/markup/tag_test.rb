@@ -82,8 +82,13 @@ class TagTest < ActiveSupport::TestCase
   end
 
   test "data option value hashes are converted to data attributes similar to haml" do
-    assert_equal %("<bare data-one=\"two\" data-three=\"four\" />"),
+    assert_equal %("<bare data-one=\\"two\\" data-three=\\"four\\" />"),
                  bare_tag(data: {one: 'two', three: 'four'}).compile
+  end
+
+  test "data option value hashes can take immediate values" do
+    assert_equal %("<bare data-foo=\\"true\\" data-bar=\\"42\\" data-baz=\\"blah\\" />"),
+                 bare_tag(data: {foo: true, bar: 42, baz: 'blah'}).compile
   end
 
 
