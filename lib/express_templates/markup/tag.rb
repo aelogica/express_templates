@@ -20,7 +20,7 @@ module ExpressTemplates
       def html_options
         @options.each_pair.map do |name, value|
           case
-          when code = value.to_s.match(/\{\{(.*)\}\}/).try(:[], 1)
+          when code = value.to_s.match(/^\{\{(.*)\}\}$/).try(:[], 1)
             %Q(#{name}=\\"\#{#{code}}\\")
           else
             %Q(#{name}=\\"#{value}\\")
