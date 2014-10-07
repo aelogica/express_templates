@@ -110,11 +110,15 @@ module ExpressTemplates
               method_definition= <<-RUBY
                 class << self
                   define_method(:#{name}) do |context=nil|
-                    if context
-                      context.instance_exec &_helpers[:#{name}]
-                    else
-                      %Q("+#{self.to_s}.#{name}(self)+")
-                    end
+                    begin
+                      if context
+                        context.instance_exec &_helpers[:#{name}]
+                      else
+                        %Q("+#{self.to_s}.#{name}(self)+")
+                      end
+                    rescue => e
+                      raise "#{name} raised: \#\{e.to_s\}"
+                    end.to_s
                   end
                 end
               RUBY

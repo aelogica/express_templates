@@ -15,11 +15,16 @@ module ExpressTemplates
           end
 
           def render(context, fragment=nil, &block)
-            if fragment
-              context.instance_eval(_lookup(fragment)) || ''
-            else
-              flow = block || @control_flow
-              context.instance_exec(self, &flow) || ''
+            begin
+              if fragment
+                context.instance_eval(_lookup(fragment)) || ''
+              else
+                flow = block || @control_flow
+                context.instance_exec(self, &flow) || ''
+              end
+            rescue => e
+              binding.pry if ENV['DEBUG'].eql?("true")
+              raise "Rendering error in #{self}: #{e.to_s}"
             end
           end
 
