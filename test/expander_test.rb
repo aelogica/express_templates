@@ -85,5 +85,12 @@ class ExpanderTest < ActiveSupport::TestCase
   #   result = ExpressTemplates::Expander.new(nil).expand(source)
   # end
 
+  test "non-interpolated string children containing string interpolations will interpolate in context" do
+    source = 'p %q(some text #{helper})'
+    result = ExpressTemplates::Expander.new(nil).expand(source)
+    assert_equal %q("<p>"+"some text #{helper}"+"</p>"), result.first.compile
+  end
+
+
 
 end
