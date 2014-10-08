@@ -30,7 +30,7 @@ module ExpressTemplates
               @args = args.dup
               @config = {}
               _process_args!(args)
-              super
+              super(*args)
             end
           end
         end
@@ -83,7 +83,7 @@ module ExpressTemplates
               if args.first.kind_of?(Symbol)
                 config.merge!(id: args.shift)
               end
-              args.each do |arg|
+              while arg = args.shift
                 if arg.kind_of?(Hash)
                   config.merge!(arg)
                 end
