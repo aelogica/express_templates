@@ -31,6 +31,8 @@ module ExpressTemplates
               case
               when child_or_option.kind_of?(Hash)
                 @options.merge!(child_or_option)
+              when child_or_option.kind_of?(Symbol)
+                @options.merge!(id: child_or_option.to_s)
               else
                 @children << child_or_option
               end

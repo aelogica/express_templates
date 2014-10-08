@@ -117,6 +117,10 @@ class TagTest < ActiveSupport::TestCase
     assert_equal '"<bare class=\"foo-bar\" />"', bare_tag._foo_bar.compile
   end
 
+  test "dom ID may be passed as a symbol" do
+    assert_equal '"<bare id=\"foo\" />"', bare_tag(:foo).compile
+  end
+
   # test "hash option values are converted to json"
 
 
