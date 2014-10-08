@@ -84,7 +84,11 @@ module ExpressTemplates
             _define_helper_method name
           end
 
-          private
+          def special_handlers
+            {insert: self, _yield: self}.merge(Hash[*(_helpers.keys.map {|k| [k, self] }.flatten)])
+          end
+
+          protected
 
             def _store(name, ruby_string)
               @compiled_template_code ||= Hash.new
@@ -98,9 +102,12 @@ module ExpressTemplates
 
             # change to use ExpressTemplates.compile?
             def _compile(block)
-              special_handlers = {insert: self, _yield: self}.merge(Hash[*(_helpers.keys.map {|k| [k, self] }.flatten)])
               ExpressTemplates::Expander.new(nil, special_handlers).expand(&block).map(&:compile).join("+")
             end
+
+
+          private
+
 
             def _helpers
               @helpers ||= Hash.new

@@ -4,12 +4,13 @@ module ExpressTemplates
 
     cattr_accessor :module_search_space
 
-    attr_accessor :stack, :handlers
+    attr_accessor :stack, :handlers, :locals
 
-    def initialize(template, handlers = {})
+    def initialize(template, handlers = {}, locals = {})
       @template = template
       @stack = Stack.new
       @handlers = handlers
+      @locals = locals
     end
 
     def expand(source=nil, &block)
@@ -61,6 +62,8 @@ module ExpressTemplates
     end
 
     def method_missing(name, *args)
+      return locals[name] if locals.keys.include?(name)
+
       if handlers.keys.include?(name)
         stack << handlers[name].send(name, *args)
       else
