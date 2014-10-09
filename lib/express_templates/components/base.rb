@@ -5,7 +5,9 @@ module ExpressTemplates
   # Components provide self-contained reusable view code meant to be shared
   # within a project or across many projects through a library of components
   #
-  # See <tt>Components::Base</tt> below for more infomation.
+  # Components gain their functionality through inclusion of Capabilities.
+  #
+  # Most Components are descendents of Components::Base.
   #
   module Components
 
@@ -15,17 +17,25 @@ module ExpressTemplates
     # used to encapsulate common view patterns, behavior and functionality in
     # reusable classes that can be shared within and across projects.
     #
-    # Our intention here is to create a base framework for a library of reusable
+    # Components intended to provide a base framework for a library of reusable
     # components to cut development time across a multitude of projects.
     #
-    # Components gain their functionality through including <tt>Capabilities</tt>.
+    # Components gain their functionality through including Capabilities.
     #
     # Example capabilities include:
     #
-    #   * Storing ExpressTemplate fragments
-    #   * Compiling into a template fragment for evaluation in a View Context
-    #   * Specifying rendering logic to be executed in the View Context
-    #   * Incorporating Javascript behaviors that execute in the page
+    # * Managing related ExpressTemplate fragments
+    # * Compiling template fragments for evaluation in a View Context
+    # * Specifying rendering logic to be executed in the View Context
+    # * Potentially referencing external assets that may be required
+    #   for the component to work.
+    #
+    # Components::Base includes the following capabilities:
+    #
+    # * Capabilities::Templating
+    # * Capabilities::Rendering
+    # * Capabilities::Wrapping
+    # * Capabilities::Iterating
     #
     class Base
       include ExpressTemplates::Macro

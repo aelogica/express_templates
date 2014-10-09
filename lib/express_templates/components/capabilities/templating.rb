@@ -1,11 +1,19 @@
 module ExpressTemplates
   module Components
     module Capabilities
+
+      # The Templating capability module provides Components with the ability
+      # to store, reference and compile template fragments.
+      #
+      # It extends the including class with Templating::ClassMethods.
+      #
+      # It also provides helpers which are snippets of code in the form of
+      # lambdas that may be evaluated in the view context.
+      #
       module Templating
         def self.included(base)
           base.class_eval do
             extend ClassMethods
-            include InstanceMethods
           end
           class << base
             alias_method :fragments, :emits
@@ -153,11 +161,8 @@ module ExpressTemplates
               eval(method_definition)
             end
 
-
         end
 
-        module InstanceMethods
-        end
 
       end
     end

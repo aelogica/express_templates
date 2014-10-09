@@ -1,6 +1,31 @@
 module ExpressTemplates
   module Components
     module Capabilities
+
+      # Add the ability for a component template to wrap or decorate a fragment
+      # with another fragment.
+      #
+      # The insertion point for the inner fragment is marked with <tt>_yield</tt>
+      #
+      # Example:
+      #
+      #   class MenuComponent < ExpressTemplates::Components::Base
+      #
+      #     fragments :menu_item, -> { li { menu_link(item) } },
+      #               :menu_wrapper, -> { ul { _yield } }
+      #
+      #     for_each -> { menu_items }
+      #
+      #     wrap_with :wrapper
+      #
+      #   end
+      #
+      # Note this example also uses Capabilities::Iterating.
+      #
+      # Provides:
+      #
+      # * Wrapping::ClassMethods
+      #
       module Wrapping
         def self.included(base)
           base.class_eval do
