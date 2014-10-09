@@ -17,12 +17,12 @@ module ExpressTemplates
             end
           end
 
-          def _wrap_using(label, context=nil, &to_be_wrapped)
+          def _wrap_using(label, context=nil, options={}, &to_be_wrapped)
             body = ''
-            if to_be_wrapped && context
-              body = render(context, &to_be_wrapped)
+            if to_be_wrapped
+              body = render((context||Object.new), &to_be_wrapped)
             end
-            if compiled_src = _lookup(label)
+            if compiled_src = _lookup(label, options)
               if context.nil?
                 eval(compiled_src).gsub(/\{\{_yield\}\}/, body)
               else

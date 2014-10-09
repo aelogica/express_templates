@@ -10,9 +10,9 @@ module ExpressTemplates
         end
 
         module ClassMethods
-          def render_with_children(context, *child_markup_src)
-            _wrap_using(:markup,context) do
-              child_markup_src.join
+          def render_with_children(context, locals = {}, child_markup_src = nil)
+            _wrap_using(:markup, context, locals) do
+              child_markup_src
             end
           end
 
@@ -28,7 +28,9 @@ module ExpressTemplates
           end
 
           def compile
-            "#{self.class.to_s}.render_with_children(self, #{children.map(&:compile).join(', ')})"
+            locals = (expand_locals rescue nil).inspect
+            children_markup = children.map(&:compile).join('+')
+            "#{self.class.to_s}.render_with_children(self, #{locals}, (#{children_markup}))"
           end
 
         end

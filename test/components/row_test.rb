@@ -8,4 +8,9 @@ class RowTest < ActiveSupport::TestCase
     assert ETC::Row.ancestors.include?(ETC::Capabilities::Configurable)
   end
 
+  test "id is optional" do
+    compiled_src = ETC::Row.new(nil).compile
+    assert_equal '<div class="row"></div>', eval(compiled_src)
+  end
+
 end

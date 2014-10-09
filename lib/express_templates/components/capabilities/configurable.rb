@@ -36,17 +36,20 @@ module ExpressTemplates
         end
 
         module ClassMethods
-          # Override Rendering::ClassMethods.render to process options
-          def render(context, fragment=nil, &block)
-            raise "not implemented yet"
-          end
-
 
           protected
 
             # Override to delay compilation
-            def _compile(block)
-              block
+            def _compile_fragment(block, options = {})
+              if options.delete(:force_compile)
+                super(block, options)
+              else
+                block
+              end
+            end
+
+            def _lookup(name, options = {})
+              super(name, options.merge(force_compile: true))
             end
 
         end
@@ -59,25 +62,11 @@ module ExpressTemplates
 
           alias :my :config
 
-          def [] key
-            config[key]
-          end
-
-          def compile
-            if _provides_logic?
-              "#{self.class.to_s}.render(self, #{options.inspect})"
-            else
-              _compile_with_options self.class[:markup]
-            end
+          def expand_locals
+            {my: config}
           end
 
           private
-
-            def _compile_with_options(block)
-              special_handlers = self.class.special_handlers
-              expander = ExpressTemplates::Expander.new(nil, special_handlers, my: self)
-              expander.expand(&block).map(&:compile).join("+")
-            end
 
             def _process_args!(args)
               if args.first.kind_of?(Symbol)

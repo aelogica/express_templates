@@ -42,11 +42,11 @@ module ExpressTemplates
           # 
           def emits(*args, &template_code)
             if args.first.respond_to?(:call) or template_code
-              _store :markup, _compile(args.first||template_code) # default fragment is named :markup
+              _store :markup, _compile_fragment(args.first||template_code) # default fragment is named :markup
             else
               args.first.to_a.each do |name, block|
                 raise ArgumentError unless name.is_a?(Symbol) and block.is_a?(Proc)
-                _store(name, _compile(block))
+                _store(name, _compile_fragment(block))
               end
             end
           end
@@ -90,19 +90,40 @@ module ExpressTemplates
 
           protected
 
-            def _store(name, ruby_string)
-              @compiled_template_code ||= Hash.new
-              @compiled_template_code[name] = ruby_string
+            # Stores a fragment for use during compilation and rendering
+            # of a component.
+            def _store(name, fragment)
+              @fragments ||= Hash.new
+              @fragments[name] = fragment
             end
 
-            def _lookup(name)
-              @compiled_template_code ||= Hash.new
-              @compiled_template_code[name] or raise "no compiled template code for: #{name}"
+            # Looks up a template fragment for this component and returns
+            # compiled template code.
+            #
+            # If the template fragment is not already compiled, it compiles it
+            # with the supplied options as locals.  Locals may be used within
+            # the template during expansion.
+            #
+            # Returns a string containing ruby code which evaluates to markup.
+            def _lookup(name, options = {})
+              @fragments ||= Hash.new
+              fragment = @fragments[name] or raise "no template fragment supplied for: #{name}"
+              if fragment.kind_of?(Proc)
+                _compile_fragment(fragment, options)
+              else
+                fragment
+              end
             end
 
-            # change to use ExpressTemplates.compile?
-            def _compile(block)
-              ExpressTemplates::Expander.new(nil, special_handlers).expand(&block).map(&:compile).join("+")
+            # Expands and compiles the supplied block representing a
+            # template fragment.
+            #
+            # Any supplied options are passed as locals for use during expansion.
+            #
+            # Returns a string containing ruby code which evaluates to markup.
+            def _compile_fragment(block, options = {})
+              expander = ExpressTemplates::Expander.new(nil, special_handlers, options)
+              expander.expand(&block).map(&:compile).join("+")
             end
 
 
@@ -129,7 +150,6 @@ module ExpressTemplates
                   end
                 end
               RUBY
-              # binding.pry
               eval(method_definition)
             end
 
