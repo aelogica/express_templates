@@ -76,7 +76,7 @@ module ExpressTemplates
             if _provides_logic?
               "#{self.class.to_s}.render(self)"
             else
-              self.class[:markup]
+              lookup :markup
             end
           end
 

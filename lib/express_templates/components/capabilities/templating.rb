@@ -14,6 +14,7 @@ module ExpressTemplates
         def self.included(base)
           base.class_eval do
             extend ClassMethods
+            include InstanceMethods
           end
           class << base
             alias_method :fragments, :emits
@@ -167,6 +168,14 @@ module ExpressTemplates
               RUBY
               eval(method_definition)
             end
+
+        end
+
+        module InstanceMethods
+
+          def lookup(fragment_name)
+            self.class[fragment_name]
+          end
 
         end
 

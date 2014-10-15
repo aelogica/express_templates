@@ -39,7 +39,7 @@ module ExpressTemplates
 
           protected
 
-            # Override to delay compilation
+            # Override Templating._compile_fragment to delay compilation
             def _compile_fragment(block, options = {})
               if options.delete(:force_compile)
                 super(block, options)
@@ -65,6 +65,12 @@ module ExpressTemplates
           def expand_locals
             {my: config}
           end
+
+          # Override Templating#lookup to pass locals
+          def lookup(fragment_name)
+            self.class.send(:_lookup, fragment_name, expand_locals)
+          end
+
 
           private
 
