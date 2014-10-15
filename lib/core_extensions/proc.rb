@@ -2,8 +2,9 @@ require 'ripper'
 require 'pp'
 class Proc
 
-  TOKEN_PAIRS = {[:on_lbrace, '{'] => [:on_rbrace, '}'],
-                 [:on_kw, 'do']    => [:on_kw, 'end']}
+  TOKEN_PAIRS = {[:on_lbrace, '{']  => [:on_rbrace, '}'],
+                 [:on_kw, 'do']     => [:on_kw, 'end'],
+                 [:on_tlambeg, '{'] => [:on_rbrace, '}']}
 
   # Make a best effort to provide the source for a block
   # based on extracting a string from Proc#source_location.
