@@ -50,9 +50,13 @@ module ExpressTemplates
             else
               var_name = as
             end
-            using_logic do |component|
+            using_logic do |component, options|
               collection = if iterator.kind_of?(Proc)
-                instance_exec(&iterator)
+                if iterator.arity.eql?(1)
+                  instance_exec(options, &iterator)
+                else
+                  instance_exec &iterator
+                end
               else
                 eval(iterator.to_s)
               end

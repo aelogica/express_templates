@@ -53,7 +53,8 @@ module ExpressTemplates
                 context.instance_eval(_lookup(fragment, opts)) || ''
               else
                 flow = context_logic_block || @control_flow
-                context.instance_exec(self, &flow) || ''
+                exec_args = [self, opts].take(flow.arity)
+                context.instance_exec(*exec_args, &flow) || ''
               end
             rescue => e
               binding.pry if ENV['DEBUG'].eql?("true")
