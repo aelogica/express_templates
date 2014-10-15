@@ -36,15 +36,29 @@ module ExpressTemplates
         module ClassMethods
 
           def wrap_with(fragment)
-            @wrapper_name = fragment
+            wrapper_name(fragment)
             prior_logic = @control_flow
             using_logic do |component|
               component._wrap_it(self, &prior_logic)
             end
           end
 
-          def wrapper_name
-            @wrapper_name || :markup
+          def wrapper_name(name = nil)
+            if name.nil?
+              @wrapper_name || :markup
+            else
+              @wrapper_name = name
+            end
+          end
+
+          # added back in for compatability with prior interface
+          # should probably be refactored away
+          def _wrap_using(fragment, context=nil, options={}, &to_be_wrapped)
+            old_wrapper_name = @wrapper_name
+            @wrapper_name = fragment
+            result = _wrap_it(context, options, &to_be_wrapped)
+            @wrapper_name = old_wrapper_name
+            return result
           end
 
           def _wrap_it(context=nil, options={}, &to_be_wrapped)
