@@ -15,7 +15,7 @@ module ExpressTemplates
         #     emits { p.line { _yield } }
         #   end
         #
-        # You would then use this component like so:
+        # You might then use this component like so:
         #
         #   line "In", "Xanadu", "did", "Kubla", "Khan"
         #   line { "A stately pleasure-dome decree :" }
