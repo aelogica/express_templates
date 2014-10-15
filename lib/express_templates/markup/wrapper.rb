@@ -5,9 +5,10 @@ module ExpressTemplates
 
       attr_accessor :name, :args
 
-      def initialize(name, *args)
+      def initialize(name, *args, &block)
         @name = name
         @args = args
+        @block_src = block ? block.source : nil
       end
 
       def compile
@@ -25,9 +26,9 @@ module ExpressTemplates
 
       private
         def _compile
-          if @args.empty?
-            return name
-          else
+          string = "#{name}"
+
+          if !@args.empty?
             args_string = args.slice(0..-2).map(&:inspect).map(&:_remove_double_braces).join(', ')
             last_arg = ''
             if args.last.is_a?(Hash) # expand a hash
@@ -43,8 +44,14 @@ module ExpressTemplates
               last_arg = args.last.inspect._remove_double_braces
             end
             args_string << (args_string.empty? ? last_arg : ", #{last_arg}")
-            return "#{name}(#{args_string})"
+            string << "(#{args_string})"
           end
+
+          if @block_src
+            string << " #{@block_src}"
+          end
+
+          return string
         end
     end
   end

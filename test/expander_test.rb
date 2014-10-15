@@ -77,20 +77,22 @@ class ExpanderTest < ActiveSupport::TestCase
     source = "render(:markup)"
     assert_equal [:dummy], ExpressTemplates::Expander.new(nil, render: Special).expand(source)
   end
-  # test "control flow"
 
-  # test "helpers can take blocks" 
-  # do
-  #   source = "helper do foo ; end"
-  #   result = ExpressTemplates::Expander.new(nil).expand(source)
-  # end
+  test "helpers can take blocks" do
+    result = ExpressTemplates::Expander.new(nil).expand do
+      helper do
+        foo
+      end
+    end
+    assert_equal %q("#{helper do
+        foo
+      end}"), result.first.compile
+  end
 
   test "non-interpolated string children containing string interpolations will interpolate in context" do
     source = 'p %q(some text #{helper})'
     result = ExpressTemplates::Expander.new(nil).expand(source)
     assert_equal %q("<p>"+"some text #{helper}"+"</p>"), result.first.compile
   end
-
-
 
 end

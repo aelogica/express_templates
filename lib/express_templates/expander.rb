@@ -64,13 +64,13 @@ module ExpressTemplates
       )
     end
 
-    def method_missing(name, *args)
+    def method_missing(name, *args, &block)
       return locals[name] if locals.keys.include?(name)
 
       if handlers.keys.include?(name)
         stack << handlers[name].send(name, *args)
       else
-        stack << ExpressTemplates::Markup::Wrapper.new(name.to_s, *args)
+        stack << ExpressTemplates::Markup::Wrapper.new(name.to_s, *args, &block)
       end
       nil
     end

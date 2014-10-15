@@ -1,4 +1,5 @@
 module ExpressTemplates
+  require 'core_extensions/proc'
   require 'express_templates/macro'
   require 'express_templates/markup'
   require 'express_templates/components'

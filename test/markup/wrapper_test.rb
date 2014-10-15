@@ -25,4 +25,11 @@ class WrapperTest < ActiveSupport::TestCase
     assert_equal '"#{foo(xyz, zyx, bar: "baz")}"', wrapper.compile
   end
 
+  test "initializer block is preserved in compile" do
+    wrapper = ExpressTemplates::Markup::Wrapper.new('foo') { whatever }
+    assert_equal '"#{foo { whatever }}"', wrapper.compile
+    wrapper = ExpressTemplates::Markup::Wrapper.new('foo', 'bar') { whatever }
+    assert_equal '"#{foo("bar") { whatever }}"', wrapper.compile
+  end
+
 end
