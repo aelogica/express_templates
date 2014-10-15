@@ -29,7 +29,10 @@ module ExpressTemplates
     def process_children!(parent, &block)
       begin
         stack.descend!
-        instance_exec &block
+        result = instance_exec &block
+        if stack.current.empty? && result.is_a?(String)
+          stack << result
+        end
         parent.children += stack.current
         stack.ascend!
       end

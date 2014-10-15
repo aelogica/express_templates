@@ -86,10 +86,10 @@ class HandlerTest < ActiveSupport::TestCase
     assert_equal "<p class=\"whatever another\">Lorum Ipsum</p>", render
   end
 
-  # test "string in block works" do
-  #   @template = new_template "h1 { 'foo' } "
-  #   assert_equal "<h1>foo</h1>", render
-  # end
+  test "string in block works" do
+    @template = new_template "h1 { 'foo' } "
+    assert_equal "<h1>foo</h1>", render
+  end
 
   # test "real document has doctype and newline" do
   #   @template = new_template("html { body { h1 \"hello\" } }")
