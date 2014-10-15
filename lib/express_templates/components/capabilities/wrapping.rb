@@ -36,18 +36,23 @@ module ExpressTemplates
         module ClassMethods
 
           def wrap_with(fragment)
+            @wrapper_name = fragment
             prior_logic = @control_flow
             using_logic do |component|
-              component._wrap_using(fragment, self, &prior_logic)
+              component._wrap_it(self, &prior_logic)
             end
           end
 
-          def _wrap_using(label, context=nil, options={}, &to_be_wrapped)
+          def wrapper_name
+            @wrapper_name || :markup
+          end
+
+          def _wrap_it(context=nil, options={}, &to_be_wrapped)
             body = ''
             if to_be_wrapped
               body = render((context||Object.new), &to_be_wrapped)
             end
-            if compiled_src = _lookup(label, options)
+            if compiled_src = _lookup(wrapper_name, options)
               if context.nil?
                 eval(compiled_src).gsub(/\{\{_yield\}\}/, body)
               else
@@ -56,7 +61,7 @@ module ExpressTemplates
                 ctx.eval(compiled_src)
               end
             else
-              raise "No wrapper fragment provided for '#{label}'"
+              raise "No wrapper fragment provided for '#{wrapper_name}'"
             end
           end
 

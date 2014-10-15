@@ -37,7 +37,7 @@ module ExpressTemplates
 
         module ClassMethods
           def render_with_children(context, locals = {}, child_markup_src = nil)
-            _wrap_using(:markup, context, locals) do
+            _wrap_it(context, locals) do |component|
               child_markup_src
             end
           end
