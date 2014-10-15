@@ -23,8 +23,13 @@ class ConfigurableTest < ActiveSupport::TestCase
   class ConfigurableContainerComponent < ETC::Base
     include ETC::Capabilities::Configurable
     include ETC::Capabilities::Parenting
+
+    # make sure a helper can take arguments
+    helper(:name) {|name| name.to_s }
+
     emits {
       div(my[:id]) {
+        h1 { name(my[:id]) }
         _yield
       }
     }
@@ -32,7 +37,7 @@ class ConfigurableTest < ActiveSupport::TestCase
 
   test "a configurable component may have also be a container" do
     html = ExpressTemplates.render { configurable_container_component(:foo) { p "bar" }}
-    assert_equal '<div id="foo"><p>bar</p></div>', html
+    assert_equal '<div id="foo"><h1>foo</h1><p>bar</p></div>', html
   end
 
 end
