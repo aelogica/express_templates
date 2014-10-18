@@ -151,7 +151,7 @@ module ExpressTemplates
                   define_method(:#{name}) do |*args|
                     helper_args = %w(self)
                     helper_args += args.map(&:inspect)
-                    '"+#{self.to_s}._#{name}('+helper_args.join(', ')+')+"'
+                    '\#\{#{self.to_s}._#{name}('+helper_args.join(', ')+')\}'
                   end
 
                   # called during rendering in view context
