@@ -121,7 +121,7 @@ class TagTest < ActiveSupport::TestCase
     assert_equal '"<bare id=\"foo\" />"', bare_tag(:foo).compile
   end
 
-  # test "hash option values are converted to json"
+  # test "proc option values are evaluated in context"
 
 
 end
