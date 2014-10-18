@@ -6,10 +6,17 @@ class Proc
                  [:on_kw, 'do']     => [:on_kw, 'end'],
                  [:on_tlambeg, '{'] => [:on_rbrace, '}']}
 
-  # Make a best effort to provide the source for a block
-  # based on extracting a string from Proc#source_location.
+  # Make a best effort to provide the original source for a block
+  # based on extracting a string from the file identified in
+  # Proc#source_location using Ruby's tokenizer.
   #
-  # We have the starting line number of the block
+  # This works for first block declared on a line in a source
+  # file.  If additional blocks are specified inside the first block
+  # on the same line as the start of the block, only the outer-most
+  # block declaration will be identified as a the block we want.
+  #
+  # If you require only the source of blocks-within-other-blocks, start them
+  # on a new line as would be best practice for clarity and readability.
   def source
     file, line_no = source_location
     raise "no line number provided for source_location: #{self}" if line_no.nil?
