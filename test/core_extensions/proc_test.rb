@@ -2,8 +2,8 @@ require 'test_helper'
 
 class ProcTest < ActiveSupport::TestCase
 
-  def return_block(&block)
-    return block
+  def return_block(lambda = nil, &block)
+    return block || lambda
   end
 
   test "#source returns a proc's source" do
@@ -30,6 +30,12 @@ class ProcTest < ActiveSupport::TestCase
     block = return_block { whatever { another } }
     assert_equal '{ whatever { another } }', block.source
   end
+
+  # TODO: make work (with arguments)
+  # test "#source works with a stabby lambda" do
+  #   block = return_block -> (something) { whatever }
+  #   assert_equal '-> { whatever }', block.source
+  # end
 
 
 end
