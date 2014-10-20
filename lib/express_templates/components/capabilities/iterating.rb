@@ -44,7 +44,9 @@ module ExpressTemplates
           # An <tt>:as</tt> option specifies the local variable name for each
           # item in the collection for use in the fragment.  Defaults to: <tt>item</tt>
           #
-          def for_each(iterator, as: :item, emit: :markup)
+          # An <tt>:empty</tt> option specifies a fragment to use for the
+          # empty state when the iterator returns an empty collection.
+          def for_each(iterator, as: :item, emit: :markup, empty: nil)
             if iterator.kind_of?(Symbol)
               var_name = iterator.to_s.gsub(/^@/,'').singularize.to_sym
             else
@@ -60,11 +62,15 @@ module ExpressTemplates
               else
                 eval(iterator.to_s)
               end
-              collection.map do |item|
-                b = binding
-                b.local_variable_set(var_name, item)
-                b.eval(component[emit], __FILE__)
-              end.join
+              if collection.empty?
+                component[empty]
+              else
+                collection.map do |item|
+                  b = binding
+                  b.local_variable_set(var_name, item)
+                  b.eval(component[emit], __FILE__)
+                end.join
+              end
             end
           end
         end

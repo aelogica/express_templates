@@ -35,11 +35,15 @@ module ExpressTemplates
 
         module ClassMethods
 
-          def wrap_with(fragment)
+          def wrap_with(fragment, dont_wrap_if: -> {false} )
             wrapper_name(fragment)
             prior_logic = @control_flow
             using_logic do |component|
-              component._wrap_it(self, &prior_logic)
+              if instance_exec(&dont_wrap_if)
+                eval(component.render((self||Object.new), &prior_logic))
+              else
+                component._wrap_it(self, &prior_logic)
+              end
             end
           end
 
