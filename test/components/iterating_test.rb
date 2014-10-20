@@ -68,5 +68,18 @@ class IteratingTest < ActiveSupport::TestCase
     assert_equal '<p>Nothing here</p>', Context.new.instance_eval(compiled)
   end
 
+  class EmptyEmptyState < ECB
+    emits {
+      whatever
+    }
+
+    for_each -> { @empty }
+  end
+
+  test "if collection is empty and no empty fragment specified, empty string is rendered" do
+    compiled = EmptyEmptyState.new.compile
+    assert_equal '', Context.new.instance_eval(compiled)
+  end
+
 
 end

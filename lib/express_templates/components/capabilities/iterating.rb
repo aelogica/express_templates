@@ -63,7 +63,7 @@ module ExpressTemplates
                 eval(iterator.to_s)
               end
               if collection.empty?
-                component[empty]
+                empty ? component[empty] : ''
               else
                 collection.map do |item|
                   b = binding
