@@ -1,7 +1,7 @@
 module ExpressTemplates
   module Compiler
     def compile(template_or_src=nil, &block)
-      template, src = _normailze(template_or_src)
+      template, src = _normalize(template_or_src)
 
       expander = Expander.new(template)
 
@@ -13,7 +13,7 @@ module ExpressTemplates
     end
 
     private
-      def _normailze(template_or_src)
+      def _normalize(template_or_src)
         template, src = nil, nil
         if template_or_src.respond_to?(:source)
           template = template_or_src
