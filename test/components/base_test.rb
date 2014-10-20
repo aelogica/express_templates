@@ -2,8 +2,6 @@ require 'test_helper'
 
 class BaseTest < ActiveSupport::TestCase
 
-  ECB = ExpressTemplates::Components::Base
-
   class NoLogic < ExpressTemplates::Components::Base
     has_markup {
       h1 { span "Some stuff" }
@@ -45,45 +43,9 @@ class BaseTest < ActiveSupport::TestCase
     assert_equal '<span>bar</span><span>baz</span>', Context.new.instance_eval(compiled)
   end
 
-  class ForEachLogic < ECB
-    emits -> {
-      span { foo }
-    }
-
-    for_each(:@foo)
-  end
-
-  test ".for_each iterates markup for each value" do
-    compiled = ForEachLogic.new.compile
-    assert_equal '<span>bar</span><span>baz</span>', Context.new.instance_eval(compiled)
-  end
-
-  class MultiFragments < ECB
-
-    fragments item:  -> {
-                          li { foo }
-                        },
-
-              wrapper: -> {
-                            ul {
-                              _yield
-                            }
-                          }
-
-    for_each -> { @foo }, as: 'foo', emit: :item
-
-    wrap_with :wrapper
-
-  end
-
   test "fragments and has_markup are synonyms for emits" do
-    assert_equal MultiFragments.method(:emits), MultiFragments.method(:fragments)
-    assert_equal MultiFragments.method(:emits), MultiFragments.method(:has_markup)
-  end
-
-  test ".wrap_with wraps via _yield special handler" do
-    compiled = MultiFragments.new.compile
-    assert_equal "<ul><li>bar</li><li>baz</li></ul>", Context.new.instance_eval(compiled)
+    assert_equal SomeLogic.method(:emits), SomeLogic.method(:fragments)
+    assert_equal SomeLogic.method(:emits), SomeLogic.method(:has_markup)
   end
 
   class Helpers < ECB
