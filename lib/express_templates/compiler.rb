@@ -7,7 +7,7 @@ module ExpressTemplates
 
       compiled = expander.expand(src, &block).map(&:compile)
 
-      return compiled.join("+").tap do |s| 
+      return compiled.join("+").gsub('"+"', '').tap do |s|
         puts("\n"+template.inspect+"\n"+s) if ENV['DEBUG'].eql?('true')
       end
     end
