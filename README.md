@@ -14,23 +14,23 @@ Rename your application.html.erb to application.html.et.
 
 Change your template to look like this.
 
-<pre lang="ruby">
-    html(lang: "en") {
-      head {
-        meta charset: 'utf-8'
-        meta name: 'viewport', content: "width=device-width, initial-scale=1.0"
-        title {
-          content_for(:title)
-        }
-        stylesheet_link_tag "application", media: 'all', 'data-turbolinks-track' => true
-        csrf_meta_tags
-      }
-      body {
-        yield
-        javascript_include_tag "application"
-      }
+```
+html(lang: "en") {
+  head {
+    meta charset: 'utf-8'
+    meta name: 'viewport', content: "width=device-width, initial-scale=1.0"
+    title {
+      content_for(:title)
     }
-</pre>
+    stylesheet_link_tag "application", media: 'all', 'data-turbolinks-track' => true
+    csrf_meta_tags
+  }
+  body {
+    yield
+    javascript_include_tag "application"
+  }
+}
+```
 
 Everything should work as you would expect.
 
@@ -42,7 +42,7 @@ You will now have also be able to utilize components which are found with docume
 
 To understand ExpressTemplates, you must first understand the standard tools of ERB and Haml which have been with us for quite some time.
 
-<img src="https://raw.githubusercontent.com/aelogica/express_templates/master/diagrams/diagram_haml_erb.png" title="Diagram depciting Haml/Erb" style="align: center;">
+https://raw.githubusercontent.com/aelogica/express_templates/master/diagrams/diagram_haml_erb.png
 
 Both of these provide a language for embedding other languages.  Erb embeds Ruby between <% %> style tags.  This is similar to the way we worked with PHP and for those who can remember "embedded Perl" in 1990s.  Erb places no constraints on either the text into which the Ruby is embedded, nor on the Ruby which may be placed within the delimiters which comprise Erb's simple grammar.
 
