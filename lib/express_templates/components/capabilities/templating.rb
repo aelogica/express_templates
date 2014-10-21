@@ -151,7 +151,7 @@ module ExpressTemplates
                   define_method(:#{name}) do |*args|
                     helper_args = %w(self)
                     helper_args += args.map(&:inspect)
-                    '\#\{#{self.to_s}._#{name}('+helper_args.join(', ')+')\}'
+                    '\#\{#{self.to_s}._#{name}('+_interpolate(helper_args).join(', ')+')\}'
                   end
 
                   # called during rendering in view context
@@ -159,7 +159,7 @@ module ExpressTemplates
                     begin
                       helper_proc = _helpers[:#{name}]
                       helper_args = args.take(helper_proc.arity)
-                      context.instance_exec *helper_args, &_helpers[:#{name}]
+                      context.instance_exec *helper_args, &helper_proc
                     rescue => e
                       raise "#{name} raised: \#\{e.to_s\}"
                     end.to_s
@@ -167,6 +167,16 @@ module ExpressTemplates
                 end
               RUBY
               eval(method_definition)
+            end
+
+            def _interpolate(args)
+              args.map do |arg|
+                if arg.kind_of?(String) && match = arg.match(/"\{\{(.*)\}\}"/)
+                  match[1]
+                else
+                  arg
+                end
+              end
             end
 
         end
