@@ -6,15 +6,15 @@ Provides a DSL for HTML templates using a declarative style of Ruby as an altern
 
 Add this to your gemfile:
 
-<pre lang="ruby">
-    gem 'express_templates'
-</pre>
+```ruby
+gem 'express_templates'
+```
 
 Rename your application.html.erb to application.html.et.
 
 Change your template to look like this.
 
-```
+```ruby
 html(lang: "en") {
   head {
     meta charset: 'utf-8'
@@ -42,7 +42,7 @@ You will now have also be able to utilize components which are found with docume
 
 To understand ExpressTemplates, you must first understand the standard tools of ERB and Haml which have been with us for quite some time.
 
-https://raw.githubusercontent.com/aelogica/express_templates/master/diagrams/diagram_haml_erb.png
+[Haml/Erb Diagram](https://raw.githubusercontent.com/aelogica/express_templates/master/diagrams/diagram_haml_erb.png "Haml/Erb Diagram")
 
 Both of these provide a language for embedding other languages.  Erb embeds Ruby between <% %> style tags.  This is similar to the way we worked with PHP and for those who can remember "embedded Perl" in 1990s.  Erb places no constraints on either the text into which the Ruby is embedded, nor on the Ruby which may be placed within the delimiters which comprise Erb's simple grammar.
 
@@ -54,7 +54,7 @@ Both Haml and Erb compile down to Ruby code which must be eval()'d in a View Con
 
 ExpressTemplates introduces an earlier step in this process, "expansion", which may be likened to a kind of macro system.  This is introduced to facilitate reusable view components in the form of normal object-oriented Ruby classes.
 
-<img src="https://raw.githubusercontent.com/aelogica/express_templates/master/diagrams/diagram_express_templates.png" title="Diagram depciting Haml/Erb" style="align: center;">
+[Diagram depciting Haml/Erb](https://raw.githubusercontent.com/aelogica/express_templates/master/diagrams/diagram_express_templates.png "Diagram depciting Haml/Erb")
 
 ## Constraints - Important!
 
@@ -72,13 +72,13 @@ ExpressTemplates use Ruby's block structure and execution order to indicate pare
 
 Example:
 
-<pre lang="ruby">
-    ul {
-      li { "one" }
-      li "two"
-      li %Q(#{@three})
-    }
-</pre>
+```ruby
+ul {
+  li { "one" }
+  li "two"
+  li %Q(#{@three})
+}
+```
 
 Let us suppose that an @three variable exists in the view context with the value "three".  This would yield the following markup:
 
@@ -94,38 +94,38 @@ ExpressTemplates provide a framework for construction of components by encapsula
 
 A common need is for a list items such as in the above example to be generated from a collection or array of data.   Let us suppose we expect the view context to have:
 
-<pre lang="ruby">
-    @list = %w(one two three)
-</pre>
+```ruby
+@list = %w(one two three)
+```
 
 We can make a simple component like so:
 
-<pre lang="ruby">
-    class ListComponent < ExpressTemplates::Components::Base
-      emits inner: -> {
-                        li {
-                          item
-                        }
-                      },
-            outer: -> {
-                        ul {
-                          _yield
-                        }
-                      }
+```ruby
+class ListComponent < ExpressTemplates::Components::Base
+  emits inner: -> {
+                    li {
+                      item
+                    }
+                  },
+        outer: -> {
+                    ul {
+                      _yield
+                    }
+                  }
 
-      for_each -> { @list }, emit: :inner
+  for_each -> { @list }, emit: :inner
 
-      wrap_with :outer
-    end
-</pre>
+  wrap_with :outer
+end
+```
 
 This would be used in a view template just as if it were a tag, like so:
 
-<pre lang="ruby">
-    div.active {
-      list_component
-    }
-</pre>
+```ruby
+div.active {
+  list_component
+}
+```
 
 Now when the template renders, it will yield:
 
