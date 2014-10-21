@@ -12,6 +12,7 @@ Rename your application.html.erb to application.html.et.
 
 Change your template to look like this.
 
+<pre lang="ruby">
     html(lang: "en") {
       head {
         meta charset: 'utf-8'
@@ -27,6 +28,7 @@ Change your template to look like this.
         javascript_include_tag "application"
       }
     }
+</pre>
 
 Everything should work as you would expect.
 
@@ -68,15 +70,19 @@ ExpressTemplates use Ruby's block structure and execution order to indicate pare
 
 Example:
 
+<pre lang="ruby">
     ul {
       li { "one" }
       li "two"
       li %Q(#{@three})
     }
+</pre>
 
 Let us suppose that an @three variable exists in the view context with the value "three".  This would yield the following markup:
 
+<pre lang="html">
     <ul><li>one</li><li>two</li><li>three</li>
+</pre>
 
 yield and local variables which we may expect to be available in a ViewContext are also wrapped for evaluation later.
 
@@ -88,10 +94,13 @@ ExpressTemplates provide a framework for construction of components by encapsula
 
 A common need is for a list items such as in the above example to be generated from a collection or array of data.   Let us suppose we expect the view context to have:
 
+<pre lang="ruby">
     @list = %w(one two three)
+</pre>
 
 We can make a simple component like so:
 
+<pre lang="ruby">
     class ListComponent < ExpressTemplates::Components::Base
       emits inner: -> {
                         li {
@@ -108,16 +117,21 @@ We can make a simple component like so:
 
       wrap_with :outer
     end
+</pre>
 
 This would be used in a view template just as if it were a tag, like so:
 
+<pre lang="ruby">
     div.active {
       list_component
     }
+</pre>
 
 Now when the template renders, it will yield:
 
+<pre lang="html">
     <div class="active"><ul><li>one</li><li>two</li><li>three</li></ul></div>
+</pre>
 
 ## Background
 
