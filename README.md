@@ -1,6 +1,6 @@
 # ExpressTemplates
 
-Provides a macro-like DSL for use in constructing html templates in plain Ruby as an alternative to Erb or HAML.
+Provides a DSL for html templates using a declarative style of Ruby as an alternative to Erb or HAML.
 
 ## Usage
 
@@ -38,7 +38,7 @@ You will now have also be able to utilize components which are found with docume
 
 To understand ExpressTemplates, you must first understand the standard tools of ERB and Haml which have been with us for quite some time.
 
-<img src="https://raw.githubusercontent.com/aelogica/express_templates/master/diagrams/diagram_haml_erb.png" title="Diagram depciting Haml/Erb">
+<img src="https://raw.githubusercontent.com/aelogica/express_templates/master/diagrams/diagram_haml_erb.png" title="Diagram depciting Haml/Erb" align="center" width="90%">
 
 Both of these provide a language for embedding other languages.  Erb embeds Ruby between <% %> style tags.  This is similar to the way we worked with PHP and for those who can remember "embedded Perl" in 1990s.  Erb places no constraints on either the text into which the Ruby is embedded, nor on the Ruby which may be placed within the delimiters which comprise Erb's simple grammar.
 
@@ -50,7 +50,7 @@ Both Haml and Erb compile down to Ruby code which must be eval()'d in a View Con
 
 ExpressTemplates introduces an earlier step in this process, "expansion", which may be likened to a kind of macro system.  This is introduced to facilitate reusable view components in the form of normal object-oriented Ruby classes.
 
-<img src="https://raw.githubusercontent.com/aelogica/express_templates/master/diagrams/diagram_express_templates.png" title="Diagram depciting Haml/Erb">
+<img src="https://raw.githubusercontent.com/aelogica/express_templates/master/diagrams/diagram_express_templates.png" title="Diagram depciting Haml/Erb" align="center" width="90%">
 
 ## Constraints
 
