@@ -6,7 +6,9 @@ Provides a DSL for HTML templates using a declarative style of Ruby as an altern
 
 Add this to your gemfile:
 
+<pre lang="ruby">
     gem 'express_templates'
+</pre>
 
 Rename your application.html.erb to application.html.et.
 
@@ -80,9 +82,7 @@ Example:
 
 Let us suppose that an @three variable exists in the view context with the value "three".  This would yield the following markup:
 
-<pre lang="html">
     <ul><li>one</li><li>two</li><li>three</li>
-</pre>
 
 yield and local variables which we may expect to be available in a ViewContext are also wrapped for evaluation later.
 
@@ -129,9 +129,7 @@ This would be used in a view template just as if it were a tag, like so:
 
 Now when the template renders, it will yield:
 
-<pre lang="html">
     <div class="active"><ul><li>one</li><li>two</li><li>three</li></ul></div>
-</pre>
 
 ## Background
 
