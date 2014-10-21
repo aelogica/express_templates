@@ -35,6 +35,11 @@ module ExpressTemplates
 
         module ClassMethods
 
+          # Enclose whatever the component would already generate
+          # inside the specified fragment wherever we encounter _yield
+          #
+          # Note: this must come after any statements that affect the logic
+          # flow.
           def wrap_with(fragment, dont_wrap_if: -> {false} )
             wrapper_name(fragment)
             prior_logic = @control_flow
