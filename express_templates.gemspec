@@ -22,6 +22,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "pry", "~> 0"
   s.add_development_dependency "erubis", "~> 2.7"
   s.add_development_dependency "haml", "~> 4.0"
-  s.add_development_dependency "better_errors"
-  s.add_development_dependency "binding_of_caller"
+  s.add_development_dependency "better_errors", "~> 2.0"
+  s.add_development_dependency "binding_of_caller", "~> 0.7"
 end
