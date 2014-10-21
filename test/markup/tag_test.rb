@@ -51,7 +51,7 @@ class TagTest < ActiveSupport::TestCase
     bare_tag sub_tag
   end
 
-  test "#compile on tag_with_subtag returns a string which when eval'd looks like '<bare><sub></sub></bare>'" do
+  test "#compile on tag_with_subtag returns a string which when eval'd looks like '<bare><sub /></bare>'" do
     assert_equal '<bare><sub /></bare>', eval(tag_with_subtag.compile)
   end
 
