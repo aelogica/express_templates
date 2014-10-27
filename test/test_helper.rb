@@ -17,7 +17,7 @@ if ActiveSupport::TestCase.method_defined?(:fixture_path=)
 end
 
 ECB = ExpressTemplates::Components::Base
-
+ETC = ExpressTemplates::Components
 ET = ExpressTemplates
 
 Tag = ExpressTemplates::Markup::Tag

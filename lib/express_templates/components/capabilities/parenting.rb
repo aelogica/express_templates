@@ -55,18 +55,25 @@ module ExpressTemplates
 
           def compile
             locals = (expand_locals rescue nil).inspect
-            compiled_children = nil
             args = %w(self)
             args << locals
-            Indenter.for(:compile) do |indent, indent_with_newline|
-              compiled_children = children.map { |child| indent_with_newline + child.compile }.join("+")
-              compiled_children.gsub!('"+"', '') # avoid unnecessary string concatenation
-              args << compiled_children unless compiled_children.empty?
-            end
+            compiled_children = compile_children
+            args << compiled_children unless compiled_children.empty?
             closing_paren = compiled_children.empty? ? ')' : "\n#{Indenter.for(:compile)})"
             "#{self.class.to_s}.render_with_children(#{args.join(', ')}#{closing_paren}"
           end
 
+          def compile_children
+            compiled_children = nil
+            Indenter.for(:compile) do |indent, indent_with_newline|
+              compiled_children = children.map do |child|
+                indent_with_newline +
+                (child.compile rescue %Q("#{child}")) # Bare strings may be children
+              end.join("+")
+              compiled_children.gsub!('"+"', '') # avoid unnecessary string concatenation
+            end
+            return compiled_children
+          end
         end
       end
     end
