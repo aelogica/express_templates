@@ -4,7 +4,7 @@ module ExpressTemplates
       TAGS = [ :a, :abbr, :address, :area, :article, :aside, :audio,
                :b, :base, :bdi, :bdo, :blockquote, :body, :br, :button,
                :canvas, :caption, :cite, :code, :col, :colgroup,
-               :data, :datalist, :dd, :del, :details, :dfn, :div, :dl, :dt,
+               :data, :datalist, :dd, :del, :details, :dfn, :div, :dl, :dt, :doctype,
                :em, :embed,
                :fieldset, :figcaption, :figure, :footer, :form,
                :h1, :h2, :h3, :h4, :h5, :h6, :head, :header, :hr, :html,
@@ -35,6 +35,16 @@ module ExpressTemplates
     I.class_eval do
       def should_not_abbreviate?
         true
+      end
+    end
+
+    Doctype.class_eval do
+      def start_tag
+        '<!DOCTYPE html>'
+      end
+
+      def close_tag
+        ''
       end
     end
 
