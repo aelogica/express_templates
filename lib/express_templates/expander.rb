@@ -47,8 +47,14 @@ module ExpressTemplates
     def self.register_macros_for(*components)
       components.each do |component|
         define_method(component.macro_name.to_sym) do |*args, &block|
-            new_component = component.new(*(args.push(self)))
-            process_children!(new_component, &block) unless block.nil?
+            new_component = nil
+            # this is a code smell here.
+            if component.ancestors.include?(Components::Capabilities::Building)
+              new_component = component.new(*(args.push(self)), &block)
+            else
+              new_component = component.new(*(args.push(self)))
+              process_children!(new_component, &block) unless block.nil?
+            end
             stack << new_component
         end
       end
