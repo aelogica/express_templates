@@ -31,11 +31,28 @@ class ProcTest < ActiveSupport::TestCase
     assert_equal '{ whatever { another } }', block.source
   end
 
-  # TODO: make work (with arguments)
-  # test "#source works with a stabby lambda" do
-  #   block = return_block -> (something) { whatever }
-  #   assert_equal '-> { whatever }', block.source
-  # end
+  test "#source works with a stabby lambda" do
+    block = return_block -> (something) { whatever }
+    assert_equal '-> (something) { whatever }', block.source
+  end
 
+  test "#source_body returns the body of a proc" do
+    block = return_block -> { whatever }
+    assert_equal 'whatever', block.source_body
+  end
+
+  test "#source_body handles funky bodies" do
+    block = return_block do
+      something(funky) &-> { whatever }
+    end
+    assert_equal 'something(funky) &-> { whatever }', block.source_body
+  end
+
+  test "#source body raises exception for arity > 0" do
+    block = return_block -> (foo) { whatever }
+    assert_raises(RuntimeError) do
+      block.source_body
+    end
+  end
 
 end

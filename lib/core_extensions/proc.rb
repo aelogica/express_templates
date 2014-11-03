@@ -2,9 +2,13 @@ require 'ripper'
 require 'pp'
 class Proc
 
-  TOKEN_PAIRS = {[:on_lbrace, '{']  => [:on_rbrace, '}'],
+  TLAMBEG = [:on_tlambeg, "{"]
+  TLAMBDA = [:on_tlambda, "->"]
+  LBRACE  = [:on_lbrace, '{']
+
+  TOKEN_PAIRS = {LBRACE             => [:on_rbrace, '}'],
                  [:on_kw, 'do']     => [:on_kw, 'end'],
-                 [:on_tlambeg, '{'] => [:on_rbrace, '}']}
+                 TLAMBDA            => [:on_rbrace, '}']}
 
   # Make a best effort to provide the original source for a block
   # based on extracting a string from the file identified in
@@ -23,20 +27,54 @@ class Proc
     tokens =  Ripper.lex File.read(file)
     tokens_on_line = tokens.select {|pos, lbl, str| pos[0].eql?(line_no) }
     starting_token = tokens_on_line.detect do |pos, lbl, str| 
-      TOKEN_PAIRS.keys.include? [lbl, str] 
+        TOKEN_PAIRS.keys.include? [lbl, str]
     end
     starting_token_type = [starting_token[1], starting_token[2]]
     ending_token_type = TOKEN_PAIRS[starting_token_type]
     source_str = ""
-    remaining_tokens = tokens.slice(tokens.index(starting_token)..-1)
+    remaining_tokens = tokens[tokens.index(starting_token)..-1]
     nesting = -1
+    starting_nesting_token_types = if [TLAMBDA, LBRACE].include?(starting_token_type)
+      [TLAMBDA, LBRACE]
+    else
+      [starting_token_type]
+    end
+
     while token = remaining_tokens.shift
-      source_str << token[2]
-      nesting += 1 if [token[1], token[2]] == starting_token_type
-      is_ending_token = [token[1], token[2]].eql?(ending_token_type)
+      token = [token[1], token[2]] # strip position
+      source_str << token[1]
+      nesting += 1 if starting_nesting_token_types.include? token
+      is_ending_token = token.eql?(ending_token_type)
       break if is_ending_token && nesting.eql?(0)
       nesting -= 1 if is_ending_token
     end
-    source_str
+    @source ||= source_str
   end
+
+  # Examines the source of a proc to extract the body by
+  # removing the outermost block delimiters and any surrounding.
+  # whitespace.
+  #
+  # Raises exception if the block takes arguments.
+  #
+  def source_body
+    raise "Cannot extract proc body on non-zero arity" unless arity.eql?(0)
+    tokens = Ripper.lex source
+    body_start_idx = 2
+    body_end_idx = -1
+    if tokens[0][1].eql?(:on_tlambda)
+      body_start_idx = tokens.index(tokens.detect { |t| t[1].eql?(:on_tlambeg) }) + 1
+    end
+    body_tokens = tokens[body_start_idx..-1]
+
+    body_tokens.pop # ending token of proc
+    # remove trailing whitespace
+    body_tokens.pop while [:on_sp, :on_nl].include?(body_tokens[-1][1])
+    # remove leading whitespace
+    body_tokens.shift while [:on_sp, :on_nl].include?(body_tokens[0][1])
+
+    # put them back together
+    body_tokens.map {|token| token[2] }.join
+  end
+
 end
