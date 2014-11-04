@@ -61,6 +61,10 @@ module ExpressTemplates
         false
       end
 
+      def transform_close_tag?
+        true
+      end
+
       def compile
         ruby_fragments = @children.map do |child|
           if child.respond_to?(:compile)
@@ -78,8 +82,10 @@ module ExpressTemplates
         else
           if should_not_abbreviate?
             _wrap_with_tags(ruby_fragments)
-          else
+          elsif transform_close_tag?
             %Q("#{start_tag.gsub(/>$/, ' />')}")
+          else
+            %Q("#{start_tag}")
           end
         end
       end

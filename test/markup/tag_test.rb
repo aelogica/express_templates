@@ -121,7 +121,14 @@ class TagTest < ActiveSupport::TestCase
     assert_equal '"<bare id=\"foo\" />"', bare_tag(:foo).compile
   end
 
-  # test "proc option values are evaluated in context"
+  test "print doctype for HTML5 document version" do
+    assert_equal '"<!DOCTYPE html>"', ExpressTemplates::Markup::Doctype.new.compile
+  end
 
+  test "void tags do not have trailing slash" do
+    assert_equal '"<img>"', ExpressTemplates::Markup::Img.new.compile
+  end
+
+  # test "proc option values are evaluated in context"
 
 end
