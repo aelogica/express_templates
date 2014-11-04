@@ -125,6 +125,10 @@ class TagTest < ActiveSupport::TestCase
     assert_equal '"<!DOCTYPE html>"', ExpressTemplates::Markup::Doctype.new.compile
   end
 
+  test "void tags do not have trailing slash" do
+    assert_equal '"<img>"', ExpressTemplates::Markup::Img.new.compile
+  end
+
   # test "proc option values are evaluated in context"
 
 end
