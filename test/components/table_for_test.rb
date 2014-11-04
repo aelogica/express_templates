@@ -24,23 +24,25 @@ class TableForTest < ActiveSupport::TestCase
 
   EXAMPLE_COMPILED = -> {
 ExpressTemplates::Components::TableFor.render_in(self) {
-"<table id=\"items\">\n"+
-"  <thead>\n"+
-"    <tr>\n"+
-  [:name, :price].map do |header_name|
-"      <th class=\"#{header_name}\">#{titleize(header_name)}</th>\n"
-  end.join+
-"    </tr>\n"+
-"  </thead>\n"+
-"  <tbody>\n"+
+"<table id=\"items\">
+  <thead>
+    <tr>
+      <th class=\"name\">Name</th>
+      <th class=\"price\">Price</th>
+    </tr>
+  </thead>
+  <tbody>
+"+
   @items.map do |item, index|
-"    <tr id=\"item-#{item.try(:id)||index}\" class=\"item\">\n"+
-"      <td class=\"name\">#{item.name}</td>\n"+
-"      <td class=\"price\">#{format_price(item.price)}</td>\n"+
-"    </tr>\n"
+"    <tr id=\"item-#{item.try(:id)||index}\" class=\"item\">
+      <td class=\"name\">#{item.name}</td>
+      <td class=\"price\">#{format_price(item.price)}</td>
+    </tr>
+"
   end.join+
-"  </tbody>\n"+
-"</table>\n"
+"  </tbody>
+</table>
+"
 }
 }
 
@@ -84,13 +86,18 @@ HTML
   def example_compiled_src
     # necessary because the #source method is not perfect yet
     # ideally we would have #source_body
-    EXAMPLE_COMPILED.source.split("\n")[1..-1].join("\n")
+    EXAMPLE_COMPILED.source_body
+  end
+
+  test "example view code evaluates to example markup" do
+    assert_equal EXAMPLE_MARKUP, Context.new(items).instance_eval(EXAMPLE_COMPILED.source_body)
   end
 
   test "compiled source is legible and transparent" do
-    ctx, fragment = simple_table(items)
-    # binding.pry
-    assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
+    ExpressTemplates::Markup::Tag.formatted do
+      ctx, fragment = simple_table(items)
+      assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
+    end
   end
 
   test "compiled source renders the markup in the context" do

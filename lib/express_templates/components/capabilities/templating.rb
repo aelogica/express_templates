@@ -184,8 +184,8 @@ module ExpressTemplates
           #
           # Returns a string containing ruby code which evaluates to markup.
           def _compile_fragment(block, options = {})
-            @expander ||= initialize_expander(nil, self.class.special_handlers, options)
-            @expander.expand(&block).map(&:compile).join("+").gsub('"+"', '')
+            initialize_expander(nil, self.class.special_handlers, options)
+            expand(&block).map(&:compile).join("+").gsub('"+"', '')
           end
 
 

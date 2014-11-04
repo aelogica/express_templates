@@ -56,24 +56,15 @@ module ExpressTemplates
         @columns << Column.new(name, options)
       end
 
-      helper(:format_header) { |name| name.to_s.titleize }
-
-      def self.for_each(collection_name, &block)
-        %Q('@#{collection_name}.map { #{ yield()} }.join("\\\n")')
-      end
-
-      @helpers ||= {}
-      @helpers[:for_each] = method(:for_each)
-
       emits -> {
         table(my[:id]) {
           thead {
             tr {
-              for_each(:columns) { |column|
+              columns.each do |column|
                 th.send(column.name) {
                   column.title
                 }
-              }
+              end
             }
           }
           # tbody {
@@ -95,36 +86,12 @@ module ExpressTemplates
       end
 
       def compile
-        # binding.pry
         wrap_for_stack_trace(lookup(:markup))
       end
 
       def self.render_in(context, &view_code)
         context.instance_eval(&view_code)
       end
-
-      # def self.render_table_header(columns, options)
-      #   _wrap_it(nil, wrapper: :head) do |c|
-      #     columns.map do |column_name|
-      #       eval
-      #     end
-      #   end
-      # end
-
-      # def self.render_table(context, collection_name, columns)
-      #   collection = context.instance_eval("@#{collection_name}")
-      #   ctx = context.instance_eval("binding")
-      #   ctx.local_variable_set(:columns, columns)
-      #   table 
-      #   out = String.new
-
-      #   head = _wrap_it(ctx, wrapper: :head) do |c|
-      #     columns.map do |column_name|
-      #       eval(c.send(:_lookup, :head_cell, column_name: column_name))
-      #     end.join()
-      #   end
-      #   out
-      # end
 
       class Column
         attr :name, :options
@@ -137,7 +104,7 @@ module ExpressTemplates
           return "#{item_name}.#{name}"
         end
 
-        def header
+        def title
           @name.to_s.try(:titleize)
         end
       end
