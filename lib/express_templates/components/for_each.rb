@@ -21,7 +21,7 @@ module ExpressTemplates
       end
 
       def compile
-        %Q((#{@collection}.map do |#{@member}|#{compile_children}\n end).join)
+        %Q((#{@collection}.map do |#{@member}|#{compile_children}\nend).join)
       end
     end
   end

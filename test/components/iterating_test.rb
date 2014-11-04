@@ -17,8 +17,8 @@ class IteratingTest < ActiveSupport::TestCase
   test "#for_each expands to view logic" do
     compiled = ForEachLogic.new.compile
     assert_equal %q((@things.map do |thing|
-  "<span>#{thing}</span>"
- end).join), compiled
+"<span>#{thing}</span>"
+end).join), compiled
   end
 
   test "#for_each iterates markup for each value" do
