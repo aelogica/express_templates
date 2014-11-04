@@ -3,7 +3,7 @@ module ExpressTemplates
     class Column < Container
       include Capabilities::Configurable
 
-      emits {
+      emits -> {
         div.column(my[:id]) {
           _yield
         }

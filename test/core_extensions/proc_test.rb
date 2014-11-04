@@ -36,6 +36,13 @@ class ProcTest < ActiveSupport::TestCase
     assert_equal '-> (something) { whatever }', block.source
   end
 
+  test "#source work with a stabby lambda spanning lines" do
+    block = return_block -> {
+  whatever { foo }
+}
+    assert_equal "-> {\n  whatever { foo }\n}", block.source
+  end
+
   test "#source_body returns the body of a proc" do
     block = return_block -> { whatever }
     assert_equal 'whatever', block.source_body
@@ -53,6 +60,12 @@ class ProcTest < ActiveSupport::TestCase
     assert_raises(RuntimeError) do
       block.source_body
     end
+  end
+
+  test ".from_source stores source of a dynamicly built proc for later inspection" do
+    src = "-> { 'foo' }"
+    assert_equal src, Proc.from_source(src).source
+    assert_equal 'foo', Proc.from_source(src).call
   end
 
 end

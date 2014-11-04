@@ -89,7 +89,7 @@ HTML
 
   test "compiled source is legible and transparent" do
     ctx, fragment = simple_table(items)
-    binding.pry
+    # binding.pry
     assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
   end
 

@@ -18,7 +18,7 @@ module ExpressTemplates
     class Row < Container
       include Capabilities::Configurable
 
-      emits {
+      emits -> {
         div.row(my[:id]) {
           _yield
         }

@@ -7,7 +7,7 @@ module ExpressTemplates
     # An optional method may be speficied.  Defaults to 'post'.
     class FormRailsSupport < Base
       include Capabilities::Configurable
-      emits {
+      emits -> {
         div(style: 'display:none') {
           utf8_enforcer_tag
           method_tag(my[:id] || :post)

@@ -51,11 +51,13 @@ module ExpressTemplates
           # 
           def emits(*args, &template_code)
             if args.first.respond_to?(:call) or template_code
-              _store :markup, _compile_fragment(args.first||template_code) # default fragment is named :markup
+              fragment = (args.first||template_code)
+              raise "must use stabby lambda" unless fragment.lambda?
+              _store :markup, fragment# default fragment is named :markup
             else
               args.first.to_a.each do |name, block|
                 raise ArgumentError unless name.is_a?(Symbol) and block.is_a?(Proc)
-                _store(name, _compile_fragment(block))
+                _store(name, block)
               end
             end
           end
@@ -116,25 +118,8 @@ module ExpressTemplates
             # Returns a string containing ruby code which evaluates to markup.
             def _lookup(name, options = {})
               @fragments ||= Hash.new
-              fragment = @fragments[name] or raise "no template fragment supplied for: #{name}"
-              if fragment.kind_of?(Proc)
-                _compile_fragment(fragment, options)
-              else
-                fragment
-              end
+              @fragments[name] or binding.pry #raise "no template fragment supplied for: #{name}"
             end
-
-            # Expands and compiles the supplied block representing a
-            # template fragment.
-            #
-            # Any supplied options are passed as locals for use during expansion.
-            #
-            # Returns a string containing ruby code which evaluates to markup.
-            def _compile_fragment(block, options = {})
-              expander = ExpressTemplates::Expander.new(nil, special_handlers, options)
-              expander.expand(&block).map(&:compile).join("+")
-            end
-
 
           private
 
@@ -183,9 +168,26 @@ module ExpressTemplates
 
         module InstanceMethods
 
-          def lookup(fragment_name)
-            self.class[fragment_name]
+          def lookup(fragment_name, options={})
+            fragment = self.class[fragment_name]
+            if fragment.kind_of?(Proc)
+              _compile_fragment(fragment, options)
+            else
+              fragment
+            end
           end
+
+          # Expands and compiles the supplied block representing a
+          # template fragment.
+          #
+          # Any supplied options are passed as locals for use during expansion.
+          #
+          # Returns a string containing ruby code which evaluates to markup.
+          def _compile_fragment(block, options = {})
+            @expander ||= initialize_expander(nil, self.class.special_handlers, options)
+            @expander.expand(&block).map(&:compile).join("+").gsub('"+"', '')
+          end
+
 
         end
 

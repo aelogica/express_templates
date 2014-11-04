@@ -6,11 +6,16 @@ module ExpressTemplates
 
     attr_accessor :stack, :handlers, :locals
 
-    def initialize(template, handlers = {}, locals = {})
+    def initialize(*args)
+      initialize_expander(*args)
+    end
+
+    def initialize_expander(template, handlers = {}, locals = {})
       @template = template
       @stack = Stack.new
       @handlers = handlers
       @locals = locals
+      self
     end
 
     def expand(source=nil, &block)
@@ -74,7 +79,7 @@ module ExpressTemplates
       return locals[name] if locals.keys.include?(name)
 
       if handlers.keys.include?(name)
-        stack << handlers[name].send(name, *args)
+        stack << handlers[name].send(name, *args, &block)
       else
         stack << ExpressTemplates::Markup::Wrapper.new(name.to_s, *args, &block)
       end

@@ -28,7 +28,6 @@ module ExpressTemplates
             # Stores arguments for later processing, eg., compile time
             def initialize(*args)
               @args = args.dup
-              @config = {}
               _process_args!(args)
               super(*args)
             end
@@ -57,7 +56,7 @@ module ExpressTemplates
         module InstanceMethods
 
           def config
-            @config
+            @config ||= {}
           end
 
           alias :my :config
@@ -67,8 +66,8 @@ module ExpressTemplates
           end
 
           # Override Templating#lookup to pass locals
-          def lookup(fragment_name)
-            self.class.send(:_lookup, fragment_name, expand_locals)
+          def lookup(fragment_name, options = {})
+            super(fragment_name, options.merge(expand_locals))
           end
 
 

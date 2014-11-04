@@ -67,7 +67,7 @@ module ExpressTemplates
               when value.is_a?(Hash)
                 s << value.inspect
               when value.is_a?(Proc)
-                s << "(-> #{value.source}).call"
+                s << "(#{value.source}).call"
               else
                 s << value.inspect  # immediate values 1, 2.0, true etc
               end

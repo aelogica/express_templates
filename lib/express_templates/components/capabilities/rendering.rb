@@ -47,7 +47,13 @@ module ExpressTemplates
           # option position, this will render that fragment only.
           #
           def render(context, *opts, &context_logic_block)
-            fragment = opts.shift if opts.first.is_a?(Symbol)
+            fragment = if opts.first.is_a?(Symbol)
+              fragment_name = opts.shift
+              fragment = _lookup(fragment, opts)
+              if fragment.kind_of?(Proc)
+                fragment = self.new.lookup(fragment_name, opts)
+              end
+            end
             begin
               if fragment
                 context.instance_eval(_lookup(fragment, opts)) || ''

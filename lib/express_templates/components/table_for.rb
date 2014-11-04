@@ -45,6 +45,7 @@ module ExpressTemplates
 
       def initialize(*args)
         super(*args)
+        _process_args!(args) # from Configurable
         yield(self) if block_given?
       end
 
@@ -57,61 +58,45 @@ module ExpressTemplates
 
       helper(:format_header) { |name| name.to_s.titleize }
 
-
-      def view_code_for_cells
-        collection_name = @options[:id].to_s
-        item_name = collection_name.singularize
-        columns.map do |column|
-          %Q("      <td class="#{column.name}">#{column.format(item_name)}</td>\\n")
-        end.join("+\n")
+      def self.for_each(collection_name, &block)
+        %Q('@#{collection_name}.map { #{ yield()} }.join("\\\n")')
       end
 
-      def view_code_for_headers
-        binding.pry
-        columns.map do |column|
-          %Q("      <th class="#{column.name}">#{column.header}</th>\\n")
-        end.join("+\n")
-      end
+      @helpers ||= {}
+      @helpers[:for_each] = method(:for_each)
+
+      emits -> {
+        table(my[:id]) {
+          thead {
+            tr {
+              for_each(:columns) { |column|
+                th.send(column.name) {
+                  column.title
+                }
+              }
+            }
+          }
+          # tbody {
+          #   for_each_view_collection(my[:collection]) { |item|
+          #     tr {
+          #       for_each(:column) { |column|
+          #         td(item.dom_id, class: item.type) {
+          #           column.format(item)
+          #         }
+          #       }
+          #     }
+          #   }
+          # }
+        }
+      }
 
       def wrap_for_stack_trace(body)
         "ExpressTemplates::Components::TableFor.render_in(self) {\n#{body}\n}"
       end
 
-      def html(line)
-        line.split("\n").map do |line|
-          %Q("#{line.gsub(/\\"/, '\\\\\\"')}\\n")
-        end.join("+\n")
-      end
-
-      def view_code 
-        collection_name = @options[:id].to_s
-        item_name = collection_name.singularize
-
-        html(%Q(
-<table id=\"#{collection_name}\">
-  <thead>
-    <tr>
-)) +
-        view_code_for_headers +
-        html(%Q(
-    </tr>
-  </thead>
-  <tbody>
-)) +
-" @#{collection_name}.map do |#{item_name}, index|" +
-        html(%Q(
-    <tr id=\"#{item_name}-\#{#{item_name}.try(:id)||index}\" class=\"#{item_name}\">
-)) +
-        view_code_for_cells +
-        html(%Q(</tr>)) +
-" end.join+" +
-        html(%Q(
-  </tbody>
-</table>))
-      end
-
       def compile
-        wrap_for_stack_trace(view_code)
+        # binding.pry
+        wrap_for_stack_trace(lookup(:markup))
       end
 
       def self.render_in(context, &view_code)

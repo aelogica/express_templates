@@ -26,7 +26,7 @@ class ContainerTest < ActiveSupport::TestCase
   end
 
   class TestContainer < ETC::Container
-    emits { p { _yield } }
+    emits -> { p { _yield } }
   end
 
   test "Container#compile calls #compile on its children" do

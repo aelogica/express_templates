@@ -30,6 +30,13 @@ module ExpressTemplates
         def self.included(base)
           base.class_eval do
             extend ClassMethods
+            include InstanceMethods
+          end
+        end
+
+        module InstanceMethods
+          def compile
+            lookup :markup
           end
         end
 
@@ -37,19 +44,33 @@ module ExpressTemplates
 
           # Enclose whatever the component would already generate
           # inside the specified fragment wherever we encounter _yield
-          #
-          # Note: this must come after any statements that affect the logic
-          # flow.
-          def wrap_with(fragment, dont_wrap_if: -> {false} )
+          def wrap_with(fragment, dont_wrap_if: false )
             wrapper_name(fragment)
-            prior_logic = @control_flow
-            using_logic do |component|
-              if instance_exec(&dont_wrap_if)
-                eval(component.render((self||Object.new), &prior_logic))
-              else
-                component._wrap_it(self, &prior_logic)
-              end
+            wrapper_src = _lookup(fragment).source
+            inner_src = _lookup(:markup).source_body
+            wrapped_src = wrapper_src.gsub!(/\W_yield\W/, inner_src)
+
+            fragment_src = if dont_wrap_if
+              %Q(-> {
+  unless_block(Proc.from_source(#{dont_wrap_if.source.inspect}), alt: Proc.from_source(%q(-> {#{inner_src}}))) {
+    #{Proc.from_source(wrapped_src).source_body}
+  }
+})
+            else
+              wrapped_src
             end
+
+            _store :markup, Proc.from_source(fragment_src)
+
+
+            # prior_logic = @control_flow
+            # using_logic do |component|
+            #   if instance_exec(&dont_wrap_if)
+            #     eval(component.render((self||Object.new), &prior_logic))
+            #   else
+            #     component._wrap_it(self, &prior_logic)
+            #   end
+            # end
           end
 
           def wrapper_name(name = nil)
@@ -60,33 +81,33 @@ module ExpressTemplates
             end
           end
 
-          # added back in for compatability with prior interface
-          # should probably be refactored away
-          def _wrap_using(fragment, context=nil, options={}, &to_be_wrapped)
-            old_wrapper_name = @wrapper_name
-            @wrapper_name = fragment
-            result = _wrap_it(context, options, &to_be_wrapped)
-            @wrapper_name = old_wrapper_name
-            return result
-          end
+          # # added back in for compatability with prior interface
+          # # should probably be refactored away
+          # def _wrap_using(fragment, context=nil, options={}, &to_be_wrapped)
+          #   old_wrapper_name = @wrapper_name
+          #   @wrapper_name = fragment
+          #   result = _wrap_it(context, options, &to_be_wrapped)
+          #   @wrapper_name = old_wrapper_name
+          #   return result
+          # end
 
-          def _wrap_it(context=nil, options={}, &to_be_wrapped)
-            body = ''
-            if to_be_wrapped
-              body = render((context||Object.new), &to_be_wrapped)
-            end
-            if compiled_src = _lookup(wrapper_name, options)
-              if context.nil?
-                eval(compiled_src).gsub(/\{\{_yield\}\}/, body)
-              else
-                ctx = context.instance_eval("binding")
-                ctx.local_variable_set(:_yield, body)
-                ctx.eval(compiled_src)
-              end
-            else
-              raise "No wrapper fragment provided for '#{wrapper_name}'"
-            end
-          end
+          # def _wrap_it(context=nil, options={}, &to_be_wrapped)
+          #   body = ''
+          #   if to_be_wrapped
+          #     body = render((context||Object.new), &to_be_wrapped)
+          #   end
+          #   if compiled_src = _lookup(wrapper_name, options)
+          #     if context.nil?
+          #       eval(compiled_src).gsub(/\{\{_yield\}\}/, body)
+          #     else
+          #       ctx = context.instance_eval("binding")
+          #       ctx.local_variable_set(:_yield, body)
+          #       ctx.eval(compiled_src)
+          #     end
+          #   else
+          #     raise "No wrapper fragment provided for '#{wrapper_name}'"
+          #   end
+          # end
 
           def _yield(*args)
             "{{_yield}}"

@@ -17,7 +17,7 @@ class ConditionalityTest < ActiveSupport::TestCase
   class ConditionalRenderer < ExpressTemplates::Components::Base
     include ExpressTemplates::Components::Capabilities::Conditionality
 
-      emits {
+      emits -> {
         h1 "{{@title}}"
       }
 
