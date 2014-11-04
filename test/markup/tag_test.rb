@@ -14,6 +14,10 @@ class TagTest < ActiveSupport::TestCase
   end
 
 
+  # NOTE: Due to formatting html leading newlines may be
+  # required for test values.  These are stripped for the
+  # first tag during ExpressTemplates.compile
+
   test "#macro_name returns the name of the class" do
     assert_equal 'bare', bare_tag.macro_name
   end
@@ -122,6 +126,13 @@ class TagTest < ActiveSupport::TestCase
   end
 
   # test "proc option values are evaluated in context"
+
+  test "markup is indented" do
+    ExpressTemplates::Markup::Tag.formatted do
+      code = ExpressTemplates.compile &-> {ul { li { "*"*36 }}}
+      assert_equal "<ul>\n  <li>#{"*"*36}</li>\n</ul>\n", eval(code)
+    end
+  end
 
 
 end

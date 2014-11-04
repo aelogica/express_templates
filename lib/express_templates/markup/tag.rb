@@ -62,54 +62,80 @@ module ExpressTemplates
       end
 
       def compile
-        ruby_fragments = @children.map do |child|
-          if child.respond_to?(:compile)
-            child.compile
-          else
-            if code = child.to_s.match(/\{\{(.*)\}\}/).try(:[], 1)
-              %Q("\#\{#{code}\}")
+        ExpressTemplates::Indenter.for(:markup) do |whitespace|
+          ruby_fragments = @children.map do |child|
+            if child.respond_to?(:compile)
+              child.compile
             else
-              %Q("#{child}")
+              if code = child.to_s.match(/\{\{(.*)\}\}/).try(:[], 1)
+                %Q("\#\{#{code}\}")
+              else
+                %Q("#{child}")
+              end
             end
           end
-        end
-        unless ruby_fragments.empty?
-          _wrap_with_tags(ruby_fragments)
-        else
-          if should_not_abbreviate?
-            _wrap_with_tags(ruby_fragments)
+          unless ruby_fragments.empty?
+            _wrap_with_tags(ruby_fragments, whitespace)
           else
-            %Q("#{start_tag.gsub(/>$/, ' />')}")
+            if should_not_abbreviate?
+              _wrap_with_tags(ruby_fragments, whitespace)
+            else
+              %Q("#{start_tag.gsub(/>$/, ' />')}")
+            end
           end
         end
       end
 
-      def to_template(depth = 0)
-        template_fragments = @children.map do |child|
-          if child.respond_to?(:to_template)
-            child.to_template(depth+1)
-          else
-            child
+      def to_template
+        # ExpressTemplates::Indenter.for(:template) do
+          template_fragments = @children.map do |child|
+            if child.respond_to?(:to_template)
+              child.to_template
+            else
+              child
+            end
           end
+          macro_name + _blockify(template_fragments.join("\n"))
+        # end
+      end
+
+      def self.formatted
+        old_setting = Thread.current[:formatted]
+        begin
+          Thread.current[:formatted] = true
+          yield if block_given?
+        ensure
+          Thread.current[:formatted] = old_setting
         end
-        indent = INDENT*(depth+1)
-        macro_name + _blockify(template_fragments.join("\n#{indent}"), depth)
       end
 
       private
 
-        def _wrap_with_tags(ruby_fragments)
-          ruby_fragments.unshift %Q("#{start_tag}")
-          ruby_fragments.push %Q("#{close_tag}")
+        def _wrap_with_tags(ruby_fragments, whitespace)
+          opening = %Q("#{start_tag}")
+          closing = %Q("#{close_tag}")
+          if !ENV['ET_NO_INDENT_MARKUP'].eql?('true') || #TODO: change to setting
+              Thread.current[:formatted]
+            child_code = ruby_fragments.join
+            should_multi_line = ruby_fragments.size > 1 ||
+                                child_code.size > 40 ||
+                                child_code.match(/\n/)
+
+            nl = should_multi_line ? "\n" : nil
+            avoid_double_nl = !ruby_fragments.first.try(:match, /"\n/) ? nl : nil
+            opening = %Q("\n#{whitespace}#{start_tag}#{avoid_double_nl}")
+            closing = %Q("#{nl}#{nl && whitespace}#{close_tag}#{nl}")
+          end
+          ruby_fragments.unshift opening
+          ruby_fragments.push closing
           ruby_fragments.reject {|frag| frag.empty? }.join("+")
         end
 
         def _indent(code)
-          code.split("\n").map {|line| INDENT + line }.join("\n")
+          code.split("\n").map {|line| ExpressTemplates::Indenter::WHITESPACE + line }.join("\n")
         end
 
-        def _blockify(code, depth)
-          indent = INDENT*depth
+        def _blockify(code)
           code.empty? ? code : " {\n#{_indent(code)}\n}\n"
         end
 

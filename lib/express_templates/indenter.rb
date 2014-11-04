@@ -23,10 +23,13 @@ module ExpressTemplates
           indent = WHITESPACE * current_indenters[name]
           yield indent, "\n#{indent}"
         ensure
-          current_indenters[name] -= 1
-          # if we have long-lived threads for some reason
-          # we want to clean up after ourselves
-          current_indenters.delete(name) if current_indenters[name].eql?(0)
+          if current_indenters[name].eql?(-1)
+            # if we have long-lived threads for some reason
+            # we want to clean up after ourselves
+            current_indenters.delete(name)
+          else
+            current_indenters[name] -= 1
+          end
         end
       else
         return WHITESPACE * current_indenters[name]
@@ -36,7 +39,7 @@ module ExpressTemplates
     private
       # For thread safety, scope indentation to the current thread
       def self.current_indenters
-        Thread.current[:indenters] ||= Hash.new {|hsh, key| hsh[key] = 0 }
+        Thread.current[:indenters] ||= Hash.new {|hsh, key| hsh[key] = -1 }
       end
 
   end
