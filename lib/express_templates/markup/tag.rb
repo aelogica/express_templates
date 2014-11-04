@@ -85,7 +85,7 @@ module ExpressTemplates
           elsif transform_close_tag?
             %Q("#{start_tag.gsub(/>$/, ' />')}")
           else
-            %Q("#{start_tag.gsub(/>$/, ' />')}")
+            %Q("#{start_tag}")
           end
         end
       end
