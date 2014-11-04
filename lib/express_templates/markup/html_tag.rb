@@ -49,7 +49,7 @@ module ExpressTemplates
 
     Doctype.class_eval do
       def start_tag
-        "<!DOCTYPE html>\n"
+        "<!DOCTYPE html>"
       end
     end
 
