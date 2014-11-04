@@ -26,7 +26,7 @@ module ExpressTemplates
       VOID_TAGS =     [:area, :base, :br, :col, :command, :doctype, :embed, :hr, :img, :input,
                        :keygen, :link, :meta, :param, :source, :track, :wbr]
 
-      ALL_TAGS = NON_VOID_TAGS.zip(VOID_TAGS).flatten.compact
+      ALL_TAGS = NON_VOID_TAGS + VOID_TAGS
     end
 
     HtmlTag::ALL_TAGS.each do |tag|
