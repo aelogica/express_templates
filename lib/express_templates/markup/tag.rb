@@ -112,8 +112,7 @@ module ExpressTemplates
       private
 
         def _wrap_with_tags(ruby_fragments, whitespace)
-          opening = %Q("#{start_tag}")
-          closing = %Q("#{close_tag}")
+          opening, closing = nil, nil
           if !ENV['ET_NO_INDENT_MARKUP'].eql?('true') || #TODO: change to setting
               Thread.current[:formatted]
             child_code = ruby_fragments.join
@@ -125,6 +124,9 @@ module ExpressTemplates
             avoid_double_nl = !ruby_fragments.first.try(:match, /"\n/) ? nl : nil
             opening = %Q("\n#{whitespace}#{start_tag}#{avoid_double_nl}")
             closing = %Q("#{nl}#{nl && whitespace}#{close_tag}#{nl}")
+          else
+            opening = %Q("#{start_tag}")
+            closing = %Q("#{close_tag}")
           end
           ruby_fragments.unshift opening
           ruby_fragments.push closing
