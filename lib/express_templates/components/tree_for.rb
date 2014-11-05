@@ -1,7 +1,7 @@
 module ExpressTemplates
   module Components
     #
-    # Create an html <tt>table</tt> or <tt>ol</tt> (ordered list) for 
+    # Create an html <tt>table</tt> or <tt>ol</tt> (ordered list) for
     # a model object representing a tree of similar objects.
     #
     # The objects must respond to <tt>:children</tt>.
