@@ -40,7 +40,7 @@ module ExpressTemplates
     class Base < Expander
       include ExpressTemplates::Macro
       include Capabilities::Templating
-      # include Capabilities::Rendering
+      include Capabilities::Rendering
       include Capabilities::Wrapping
       include Capabilities::Iterating
 

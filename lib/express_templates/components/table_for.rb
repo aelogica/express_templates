@@ -92,10 +92,6 @@ module ExpressTemplates
         wrap_for_stack_trace(lookup(:markup))
       end
 
-      def self.render_in(context, &view_code)
-        context.instance_eval(&view_code)
-      end
-
       class Column
         attr :name, :options
         def initialize(name, options = {})
