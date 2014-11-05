@@ -16,38 +16,14 @@ class BaseTest < ActiveSupport::TestCase
     assert ExpressTemplates::Expander.instance_methods.include?(:no_logic)
   end
 
-  # test ".render accepts a fragment name" do
-  #   assert_equal '<h1><span>Some stuff</span></h1>', NoLogic.render(self, :markup)
-  # end
-
-
-  # class SomeLogic < ECB
-  #   emits markup: -> {
-  #     span { foo }
-  #   }
-
-  #   using_logic { |component|
-  #     @foo.map do |foo|
-  #       eval(component[:markup])
-  #     end.join
-  #   }
-  # end
-
   class Context
     def initialize ; @foo = ['bar', 'baz'] ; end
   end
 
-  # test ".using_logic controls the markup generation" do
-  #   compiled = SomeLogic.new.compile
-  #   assert_equal 'BaseTest::SomeLogic.render(self)', compiled
-  #   binding.pry
-  #   assert_equal '<span>bar</span><span>baz</span>', Context.new.instance_eval(compiled)
-  # end
-
-  # test "fragments and has_markup are synonyms for emits" do
-  #   assert_equal SomeLogic.method(:emits), SomeLogic.method(:fragments)
-  #   assert_equal SomeLogic.method(:emits), SomeLogic.method(:has_markup)
-  # end
+  test "fragments and has_markup are synonyms for emits" do
+    assert_equal NoLogic.method(:emits), NoLogic.method(:fragments)
+    assert_equal NoLogic.method(:emits), NoLogic.method(:has_markup)
+  end
 
   class Helpers < ECB
     helper :title_helper, &-> { @foo.first }
@@ -65,14 +41,4 @@ class BaseTest < ActiveSupport::TestCase
     assert_equal "<h1>bar</h1>", Context.new.instance_eval(compiled)
   end
 
-  # class NullComponent < ECB
-  #   using_logic {
-  #     nil
-  #   }
-  # end
-
-  # test "render should not return a nil" do
-  #   compiled = NullComponent.new.compile
-  #   assert_equal "", Context.new.instance_eval(compiled)
-  # end
 end
