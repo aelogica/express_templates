@@ -6,11 +6,16 @@ module ExpressTemplates
 
     attr_accessor :stack, :handlers, :locals
 
-    def initialize(template, handlers = {}, locals = {})
+    def initialize(*args)
+      initialize_expander(*args)
+    end
+
+    def initialize_expander(template, handlers = {}, locals = {})
       @template = template
       @stack = Stack.new
       @handlers = handlers
       @locals = locals
+      self
     end
 
     def expand(source=nil, &block)
@@ -47,8 +52,14 @@ module ExpressTemplates
     def self.register_macros_for(*components)
       components.each do |component|
         define_method(component.macro_name.to_sym) do |*args, &block|
-            new_component = component.new(*(args.push(self)))
-            process_children!(new_component, &block) unless block.nil?
+            new_component = nil
+            # this is a code smell here.
+            if component.ancestors.include?(Components::Capabilities::Building)
+              new_component = component.new(*(args.push(self)), &block)
+            else
+              new_component = component.new(*(args.push(self)))
+              process_children!(new_component, &block) unless block.nil?
+            end
             stack << new_component
         end
       end
@@ -68,7 +79,7 @@ module ExpressTemplates
       return locals[name] if locals.keys.include?(name)
 
       if handlers.keys.include?(name)
-        stack << handlers[name].send(name, *args)
+        stack << handlers[name].send(name, *args, &block)
       else
         stack << ExpressTemplates::Markup::Wrapper.new(name.to_s, *args, &block)
       end

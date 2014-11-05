@@ -6,7 +6,7 @@ class ConfigurableTest < ActiveSupport::TestCase
 
   class ConfigurableComponent < ETC::Base
     include ETC::Capabilities::Configurable
-    emits {
+    emits -> {
       div.bar(my[:id])
     }
   end
@@ -27,7 +27,7 @@ class ConfigurableTest < ActiveSupport::TestCase
     # make sure a helper can take arguments
     helper(:name) {|name| name.to_s }
 
-    emits {
+    emits -> {
       div(my[:id]) {
         h1 { name(my[:id]) }
         _yield

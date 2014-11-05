@@ -37,12 +37,14 @@ module ExpressTemplates
           end
 
           def only_if condition_proc
-            @condition_proc = condition_proc
-
-            using_logic do |component, options|
-              condition = instance_exec(&component.condition_proc)
-              eval(component[:markup]) if condition
-            end
+            @condition_proc = Proc.from_source "-> {!(#{condition_proc.source_body})}"
+            inner_src = self[:markup]
+            fragment_src = %Q(-> {
+  unless_block(Proc.from_source(#{@condition_proc.source.inspect})) {
+    #{inner_src.source_body}
+  }
+})
+            _store :markup, Proc.from_source(fragment_src)
           end
 
         end

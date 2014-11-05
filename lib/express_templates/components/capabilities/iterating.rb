@@ -47,31 +47,26 @@ module ExpressTemplates
           # An <tt>:empty</tt> option specifies a fragment to use for the
           # empty state when the iterator returns an empty collection.
           def for_each(iterator, as: :item, emit: :markup, empty: nil)
-            if iterator.kind_of?(Symbol)
-              var_name = iterator.to_s.gsub(/^@/,'').singularize.to_sym
+            as = as.to_sym
+            emit = emit.to_sym
+            iterator = iterator.kind_of?(Proc) ? iterator.source : iterator
+            fragment_src = if empty
+%Q(-> {
+  unless_block(Proc.from_source("-> {#{iterator}.call.empty?}"), alt: #{self[empty].source}) {
+    for_each(Proc.from_source("#{iterator}"), as: #{as.inspect}) {
+      #{self[emit].source_body}
+    }
+  }
+})
             else
-              var_name = as
+%Q(-> {
+  for_each(Proc.from_source("#{iterator}"), as: #{as.inspect}) {
+    #{self[emit].source_body}
+  }
+})
             end
-            using_logic do |component, options|
-              collection = if iterator.kind_of?(Proc)
-                if iterator.arity.eql?(1)
-                  instance_exec(options, &iterator)
-                else
-                  instance_exec &iterator
-                end
-              else
-                eval(iterator.to_s)
-              end
-              if collection.empty?
-                empty ? component[empty] : ''
-              else
-                collection.map do |item|
-                  b = binding
-                  b.local_variable_set(var_name, item)
-                  b.eval(component[emit], __FILE__)
-                end.join
-              end
-            end
+            fragment = Proc.from_source(fragment_src)
+            _store :markup, fragment
           end
         end
       end

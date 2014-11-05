@@ -14,6 +14,10 @@ class TagTest < ActiveSupport::TestCase
   end
 
 
+  # NOTE: Due to formatting html leading newlines may be
+  # required for test values.  These are stripped for the
+  # first tag during ExpressTemplates.compile
+
   test "#macro_name returns the name of the class" do
     assert_equal 'bare', bare_tag.macro_name
   end
@@ -121,6 +125,17 @@ class TagTest < ActiveSupport::TestCase
     assert_equal '"<bare id=\"foo\" />"', bare_tag(:foo).compile
   end
 
+  test "proc option values are evaluated in context" do
+    assert_equal '"<bare id=\"#{(-> { awesome }).call}\" />"', bare_tag(id: -> { awesome }).compile
+  end
+
+  test "markup is indented" do
+    ExpressTemplates::Markup::Tag.formatted do
+      code = ExpressTemplates.compile &-> {ul { li { "*"*36 }}}
+      assert_equal "<ul>\n  <li>#{"*"*36}</li>\n</ul>\n", eval(code)
+    end
+  end
+
   test "print doctype for HTML5 document version" do
     assert_equal '"<!DOCTYPE html>"', ExpressTemplates::Markup::Doctype.new.compile
   end
@@ -128,7 +143,5 @@ class TagTest < ActiveSupport::TestCase
   test "void tags do not have trailing slash" do
     assert_equal '"<img>"', ExpressTemplates::Markup::Img.new.compile
   end
-
-  # test "proc option values are evaluated in context"
 
 end

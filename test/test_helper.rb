@@ -21,3 +21,5 @@ ETC = ExpressTemplates::Components
 ET = ExpressTemplates
 
 Tag = ExpressTemplates::Markup::Tag
+
+ENV["ET_NO_INDENT_MARKUP"] = 'true'

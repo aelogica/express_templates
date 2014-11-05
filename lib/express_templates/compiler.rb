@@ -5,7 +5,15 @@ module ExpressTemplates
 
       expander = Expander.new(template)
 
-      compiled = expander.expand(src, &block).map(&:compile)
+      Thread.current[:first_whitepace_removed] ||= 0
+      Thread.current[:first_whitepace_removed] += 1
+      begin
+        compiled = expander.expand(src, &block).map(&:compile)
+        compiled.first.sub!(/^"\n+/, '"') if Thread.current[:first_whitepace_removed].eql?(1)
+        Thread.current[:first_whitepace_removed] -= 1
+      ensure
+        Thread.current[:first_whitepace_removed] = nil if Thread.current[:first_whitepace_removed].eql?(0)
+      end
 
       return compiled.join("+").gsub('"+"', '').tap do |s|
         puts("\n"+template.inspect+"\n"+s) if ENV['DEBUG'].eql?('true')

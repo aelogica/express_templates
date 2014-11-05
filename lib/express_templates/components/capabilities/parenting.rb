@@ -30,18 +30,8 @@ module ExpressTemplates
         #
         def self.included(base)
           base.class_eval do
-            extend ClassMethods
             include InstanceMethods
           end
-        end
-
-        module ClassMethods
-          def render_with_children(context, locals = {}, child_markup_src = nil)
-            _wrap_it(context, locals) do |component|
-              child_markup_src
-            end
-          end
-
         end
 
         module InstanceMethods
@@ -54,13 +44,9 @@ module ExpressTemplates
           end
 
           def compile
-            locals = (expand_locals rescue nil).inspect
-            args = %w(self)
-            args << locals
-            compiled_children = compile_children
-            args << compiled_children unless compiled_children.empty?
-            closing_paren = compiled_children.empty? ? ')' : "\n#{Indenter.for(:compile)})"
-            "#{self.class.to_s}.render_with_children(#{args.join(', ')}#{closing_paren}"
+            null_wrapped_children = "null_wrap { #{compile_children} }"
+            wrap_children_src = self.class[:markup].source.gsub(/\W_yield\W/, null_wrapped_children)
+            _compile_fragment(Proc.from_source(wrap_children_src))
           end
 
           def compile_children
@@ -69,7 +55,7 @@ module ExpressTemplates
               compiled_children = children.map do |child|
                 indent_with_newline +
                 (child.compile rescue %Q("#{child}")) # Bare strings may be children
-              end.join("+")
+              end.join("+\n")
               compiled_children.gsub!('"+"', '') # avoid unnecessary string concatenation
             end
             return compiled_children

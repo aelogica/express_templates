@@ -3,26 +3,47 @@ require 'test_helper'
 class IteratingTest < ActiveSupport::TestCase
 
   class Context
-    def initialize ; @foo = ['bar', 'baz'] ; @empty = [] ; end
+    def initialize ; @things = ['bar', 'baz'] ; @empty = [] ; end
   end
 
   class ForEachLogic < ECB
     emits -> {
-      span { foo }
+      for_each(:@things) {
+        span { thing }
+      }
     }
-
-    for_each(:@foo)
   end
 
-  test ".for_each iterates markup for each value" do
+  test "#for_each expands to view logic" do
+    compiled = ForEachLogic.new.compile
+    assert_equal %q((@things.each_with_index.map do |thing, thing_index|
+"<span>#{thing}</span>"
+end).join), compiled
+  end
+
+  test "#for_each iterates markup for each value" do
     compiled = ForEachLogic.new.compile
     assert_equal '<span>bar</span><span>baz</span>', Context.new.instance_eval(compiled)
   end
 
+  class ForEachDeclarativeForm < ECB
+    emits -> {
+      span { thing }
+    }
+
+    for_each(:@things)
+  end
+
+  test ".for_each offers declarative form" do
+    compiled = ForEachLogic.new.compile
+    assert_equal '<span>bar</span><span>baz</span>', Context.new.instance_eval(compiled)
+  end
+
+
   class MultiFragments < ECB
 
     fragments item:  -> {
-                          li { foo }
+                          li { thing }
                         },
 
               wrapper: -> {
@@ -31,7 +52,7 @@ class IteratingTest < ActiveSupport::TestCase
                             }
                           }
 
-    for_each -> { @foo }, as: 'foo', emit: :item
+    for_each -> { @things }, as: 'thing', emit: :item
 
     wrap_with :wrapper
 
@@ -45,7 +66,7 @@ class IteratingTest < ActiveSupport::TestCase
   class EmptyState < ECB
 
     fragments item:       -> {
-                                li { foo }
+                                li { thing }
                               },
 
               wrapper:    -> {
@@ -57,7 +78,7 @@ class IteratingTest < ActiveSupport::TestCase
                                 p "Nothing here"
                               }
 
-    for_each -> { @empty }, as: 'foo', emit: :item, empty: :empty_state
+    for_each -> { @empty }, as: 'thing', emit: :item, empty: :empty_state
 
     wrap_with :wrapper, dont_wrap_if: -> { @empty.empty? }
 
@@ -69,7 +90,7 @@ class IteratingTest < ActiveSupport::TestCase
   end
 
   class EmptyEmptyState < ECB
-    emits {
+    emits -> {
       whatever
     }
 
