@@ -136,5 +136,12 @@ class TagTest < ActiveSupport::TestCase
     end
   end
 
+  test "print doctype for HTML5 document version" do
+    assert_equal '"<!DOCTYPE html>"', ExpressTemplates::Markup::Doctype.new.compile
+  end
+
+  test "void tags do not have trailing slash" do
+    assert_equal '"<img>"', ExpressTemplates::Markup::Img.new.compile
+  end
 
 end
