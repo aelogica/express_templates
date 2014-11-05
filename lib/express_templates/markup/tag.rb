@@ -22,6 +22,8 @@ module ExpressTemplates
           case
           when name.to_sym.eql?(:data) && value.kind_of?(Hash)
             value.each_pair.map {|k,v| %Q(data-#{k}=\\"#{v}\\") }.join(" ")
+          when value.kind_of?(Proc)
+            %Q(#{name}=\\"\#{(#{value.source}).call}\\")
           when code = value.to_s.match(/^\{\{(.*)\}\}$/).try(:[], 1)
             %Q(#{name}=\\"\#{#{code}}\\")
           else
@@ -116,14 +118,16 @@ module ExpressTemplates
           if !ENV['ET_NO_INDENT_MARKUP'].eql?('true') || #TODO: change to setting
               Thread.current[:formatted]
             child_code = ruby_fragments.join
-            should_multi_line = ruby_fragments.size > 1 ||
-                                child_code.size > 40 ||
-                                child_code.match(/\n/)
+            should_format = ruby_fragments.size > 1 ||
+                            (child_code.size > 40 && !child_code.match(/^"\#\{.*\}"$/)) ||
+                            child_code.match(/\n/)
 
-            nl = should_multi_line ? "\n" : nil
-            avoid_double_nl = !ruby_fragments.first.try(:match, /"\n/) ? nl : nil
-            opening = %Q("\n#{whitespace}#{start_tag}#{avoid_double_nl}")
-            closing = %Q("#{nl}#{nl && whitespace}#{close_tag}#{nl}")
+            nl = should_format ? "\n" : nil
+            nl_after_start = !ruby_fragments.first.try(:match, /^"\n/) ? nl : nil
+            # binding.pry
+            nl_before_end = !ruby_fragments.last.try(:match, /\n"$/) ? nl : nil
+            opening = %Q("\n#{whitespace}#{start_tag}#{nl_after_start}")
+            closing = %Q("#{nl_before_end}#{should_format && whitespace}#{close_tag}#{nl}")
           else
             opening = %Q("#{start_tag}")
             closing = %Q("#{close_tag}")

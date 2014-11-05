@@ -31,16 +31,15 @@ ExpressTemplates::Components::TableFor.render_in(self) {
       <th class=\"price\">Price</th>
     </tr>
   </thead>
-  <tbody>
-"+
-  @items.map do |item, index|
-"    <tr id=\"item-#{item.try(:id)||index}\" class=\"item\">
+
+  <tbody>"+(items.each_with_index.map do |item, item_index|
+"
+    <tr id=\"#{(-> {"item-#{item.id}"}).call}\" class=\"item\">
       <td class=\"name\">#{item.name}</td>
-      <td class=\"price\">#{format_price(item.price)}</td>
+      <td class=\"price\">#{(-> (price) { '$%0.2f' % price }).call(item.price)}</td>
     </tr>
 "
-  end.join+
-"  </tbody>
+end).join+"  </tbody>
 </table>
 "
 }
@@ -54,15 +53,18 @@ ExpressTemplates::Components::TableFor.render_in(self) {
       <th class="price">Price</th>
     </tr>
   </thead>
+
   <tbody>
     <tr id="item-1" class="item">
       <td class="name">Foo</td>
       <td class="price">$1.23</td>
     </tr>
+
     <tr id="item-2" class="item">
       <td class="name">Bar</td>
       <td class="price">$5.49</td>
     </tr>
+
     <tr id="item-3" class="item">
       <td class="name">Baz</td>
       <td class="price">$99.97</td>
@@ -77,7 +79,7 @@ HTML
     fragment = -> {
                     table_for(:items) do |t|
                       t.column :name
-                      t.column :price
+                      t.column :price, formatter: -> (price) { '$%0.2f' % price }
                     end
                   }
     return ctx, fragment
@@ -100,8 +102,15 @@ HTML
     end
   end
 
-  test "compiled source renders the markup in the context" do
+  test "example compiled source renders the markup in the context" do
     ctx, fragment = simple_table(items)
     assert_equal EXAMPLE_MARKUP, ctx.instance_eval(example_compiled_src)
+  end
+
+  test "rendered component matches desired markup" do
+    ExpressTemplates::Markup::Tag.formatted do
+      ctx, fragment = simple_table(items)
+      assert_equal EXAMPLE_MARKUP, ExpressTemplates.render(ctx, &fragment)
+    end
   end
 end

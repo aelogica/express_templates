@@ -125,7 +125,9 @@ class TagTest < ActiveSupport::TestCase
     assert_equal '"<bare id=\"foo\" />"', bare_tag(:foo).compile
   end
 
-  # test "proc option values are evaluated in context"
+  test "proc option values are evaluated in context" do
+    assert_equal '"<bare id=\"#{(-> { awesome }).call}\" />"', bare_tag(id: -> { awesome }).compile
+  end
 
   test "markup is indented" do
     ExpressTemplates::Markup::Tag.formatted do

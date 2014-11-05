@@ -68,7 +68,7 @@ module ExpressTemplates
               compiled_children = children.map do |child|
                 indent_with_newline +
                 (child.compile rescue %Q("#{child}")) # Bare strings may be children
-              end.join("+")
+              end.join("+\n")
               compiled_children.gsub!('"+"', '') # avoid unnecessary string concatenation
             end
             return compiled_children

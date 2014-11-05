@@ -67,17 +67,20 @@ module ExpressTemplates
               end
             }
           }
-          # tbody {
-          #   for_each_view_collection(my[:collection]) { |item|
-          #     tr {
-          #       for_each(:column) { |column|
-          #         td(item.dom_id, class: item.type) {
-          #           column.format(item)
-          #         }
-          #       }
-          #     }
-          #   }
-          # }
+          tbody {
+            for_each(my[:id]) {
+
+              tr(id: -> {"item-#{item.id}"},
+                 class: my[:id].to_s.singularize) {
+
+                columns.each do |column|
+                  td(class: column.name) {
+                    column.format(:item)
+                  }
+                end
+              }
+            }
+          }
         }
       }
 
@@ -98,10 +101,15 @@ module ExpressTemplates
         def initialize(name, options = {})
           @name = name
           @options = options
+          @formatter = options[:formatter]
         end
 
         def format(item_name)
-          return "#{item_name}.#{name}"
+          if @formatter.nil?
+            "\#\{#{item_name}.#{name}\}"
+          elsif @formatter.kind_of?(Proc)
+            "\#\{(#{@formatter.source}).call(#{item_name}.#{name})\}"
+          end
         end
 
         def title
