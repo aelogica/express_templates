@@ -10,6 +10,10 @@ module ExpressTemplates
     #   h1 "Title"
     # }
     # ```
+    # Or:
+    # ```ruby
+    # content_for(:page_title), "People"
+    # ```
     class ContentFor < Container
       include Capabilities::Configurable
       def compile
