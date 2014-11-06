@@ -30,7 +30,7 @@ class ConditionalityTest < ActiveSupport::TestCase
   end
 
   test "when supplied condition is true, renders the component" do
-    compiled_src = ConditionalRenderer.new.compile
+    compiled_src = Interpolator.transform(ConditionalRenderer.new.compile)
     assert_equal '<h1>Something</h1>', present_title_context.instance_eval(compiled_src)
   end
 

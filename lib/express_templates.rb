@@ -8,6 +8,7 @@ module ExpressTemplates
   require 'express_templates/renderer'
   require 'express_templates/expander'
   require 'express_templates/compiler'
+  require 'express_templates/interpolator'
   extend Renderer
   extend Compiler
   if defined?(Rails)

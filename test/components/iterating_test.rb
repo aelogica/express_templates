@@ -17,13 +17,14 @@ class IteratingTest < ActiveSupport::TestCase
   test "#for_each expands to view logic" do
     compiled = ForEachLogic.new.compile
     assert_equal %q((@things.each_with_index.map do |thing, thing_index|
-"<span>#{thing}</span>"
-end).join), compiled
+"<span>"+%Q(#{thing})+"</span>"
+end).join), Interpolator.transform(compiled)
   end
 
   test "#for_each iterates markup for each value" do
     compiled = ForEachLogic.new.compile
-    assert_equal '<span>bar</span><span>baz</span>', Context.new.instance_eval(compiled)
+    assert_equal '<span>bar</span><span>baz</span>',
+                 Context.new.instance_eval(Interpolator.transform(compiled))
   end
 
   class ForEachDeclarativeForm < ECB
@@ -36,7 +37,8 @@ end).join), compiled
 
   test ".for_each offers declarative form" do
     compiled = ForEachLogic.new.compile
-    assert_equal '<span>bar</span><span>baz</span>', Context.new.instance_eval(compiled)
+    assert_equal '<span>bar</span><span>baz</span>',
+                  Context.new.instance_eval(Interpolator.transform(compiled))
   end
 
 
@@ -60,7 +62,8 @@ end).join), compiled
 
   test ".wrap_with wraps via _yield special handler" do
     compiled = MultiFragments.new.compile
-    assert_equal "<ul><li>bar</li><li>baz</li></ul>", Context.new.instance_eval(compiled)
+    assert_equal "<ul><li>bar</li><li>baz</li></ul>",
+                  Context.new.instance_eval(Interpolator.transform(compiled))
   end
 
   class EmptyState < ECB

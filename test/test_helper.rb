@@ -19,6 +19,7 @@ end
 ECB = ExpressTemplates::Components::Base
 ETC = ExpressTemplates::Components
 ET = ExpressTemplates
+Interpolator = ExpressTemplates::Interpolator
 
 Tag = ExpressTemplates::Markup::Tag
 

@@ -24,8 +24,6 @@ module ExpressTemplates
             value.each_pair.map {|k,v| %Q(data-#{k}=\\"#{v}\\") }.join(" ")
           when value.kind_of?(Proc)
             %Q(#{name}=\\"\#{(#{value.source}).call}\\")
-          when code = value.to_s.match(/^\{\{(.*)\}\}$/).try(:[], 1)
-            %Q(#{name}=\\"\#{#{code}}\\")
           else
             %Q(#{name}=\\"#{value}\\")
           end
@@ -73,11 +71,7 @@ module ExpressTemplates
             if child.respond_to?(:compile)
               child.compile
             else
-              if code = child.to_s.match(/\{\{(.*)\}\}/).try(:[], 1)
-                %Q("\#\{#{code}\}")
-              else
-                %Q("#{child}")
-              end
+              %Q("#{child}")
             end
           end
           unless ruby_fragments.empty?

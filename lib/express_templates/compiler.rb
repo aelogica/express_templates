@@ -15,8 +15,8 @@ module ExpressTemplates
         Thread.current[:first_whitepace_removed] = nil if Thread.current[:first_whitepace_removed].eql?(0)
       end
 
-      return compiled.join("+").gsub('"+"', '').tap do |s|
-        puts("\n"+template.inspect+"\n"+s) if ENV['DEBUG'].eql?('true')
+      return Interpolator.transform(compiled.join("+").gsub('"+"', '')).tap do |s|
+        puts("\n"+template.inspect+"\nSource:\n#{template.try(:source)}\nInterpolated:\n#{s}\n") if ENV['DEBUG'].eql?('true')
       end
     end
 

@@ -38,7 +38,7 @@ class BaseTest < ActiveSupport::TestCase
 
   test "helpers defined in component are evaluated in context" do
     compiled = Helpers.new.compile
-    assert_equal "<h1>bar</h1>", Context.new.instance_eval(compiled)
+    assert_equal "<h1>bar</h1>", Context.new.instance_eval(Interpolator.transform(compiled))
   end
 
 end

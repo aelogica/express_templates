@@ -84,11 +84,12 @@ class ExpanderTest < ActiveSupport::TestCase
         foo
       end
     end
-    assert_equal %q("#{helper do
+    assert_equal %q(%Q(#{helper do
         foo
-      end}"), result.first.compile
+      end})), Interpolator.transform(result.first.compile)
   end
 
+  # NOTE: This probably should be deleted as {{helper}} is preferred
   test "non-interpolated string children containing string interpolations will interpolate in context" do
     source = 'p %q(some text #{helper})'
     result = ExpressTemplates::Expander.new(nil).expand(source)

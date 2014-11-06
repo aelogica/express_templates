@@ -13,7 +13,7 @@ module ExpressTemplates
 
       def compile
         # insure nils do not blow up view
-        %Q("\#\{#{_compile}\}")
+        %Q(%Q({{#{_compile}}}))
       end
 
       def to_template
@@ -29,12 +29,24 @@ module ExpressTemplates
           string = "#{name}"
 
           if !@args.empty?
-            args_string = args.slice(0..-2).map(&:inspect).map(&:_remove_double_braces).join(', ')
+
+            args_string = args.slice(0..-2).map do |arg|
+              if arg.respond_to?(:gsub) && arg.match(/^\{\{(.*)\}\}$/)
+                # strip double braces because otherwise these will be converted
+                # to "#{arg}" during final interpolation which is generally not
+                # the intention for arguments to helpers as these are ruby expressions
+                # not necessarily returning strings
+                $1
+              else
+                arg.inspect # 'value' or :value or ['a', 'b', 'c'] or {:key => 'value'}
+              end
+            end.join(', ')
+
             last_arg = ''
             if args.last.is_a?(Hash) # expand a hash
               last_arg = _convert_hash_to_argument_string(args.last)
             else
-              last_arg = args.last.inspect._remove_double_braces
+              last_arg = args.last.inspect
             end
             args_string << (args_string.empty? ? last_arg : ", #{last_arg}")
             string << "(#{args_string})"
@@ -78,11 +90,5 @@ module ExpressTemplates
           end
         end
     end
-  end
-end
-
-class String
-  def _remove_double_braces
-    match(/\{\{(.*)\}\}/).try(:[], 1) || self
   end
 end

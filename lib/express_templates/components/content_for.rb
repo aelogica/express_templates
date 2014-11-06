@@ -15,21 +15,23 @@ module ExpressTemplates
       def compile
         children_markup = compile_children
         content_label = @args[0]
-        result = %Q|content_for(:#{content_label}|
+        result = %Q|\ncontent_for(:#{content_label}|
         if children_markup.empty?
           if @args[1].kind_of?(String)
             children_markup = @args[1]
             # append children as argument
-            result << %Q|, "#{children_markup}".html_safe)|
+            result << %Q|, "#{children_markup}".html_safe).to_s|
           else
             # no markup specified - must be referencing the content
-            result << ")"
+            result << ").to_s"
           end
         else
           # append children in block form
-          result << %Q|) { (#{children_markup.gsub(/^\s+/, '')}).html_safe }|
+          result << %Q|) {
+  (#{children_markup.gsub(/^\s+/, '')}).html_safe
+}.to_s|
         end
-        %Q("\#\{#{result}\}")
+        result
       end
     end
   end

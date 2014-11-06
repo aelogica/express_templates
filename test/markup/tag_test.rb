@@ -78,11 +78,13 @@ class TagTest < ActiveSupport::TestCase
   end
 
   test "double bracketed option values are substituted for evaluation in context" do
-    assert_equal '"<bare should_eval_in_context=\"#{foo}\" />"', bare_tag(should_eval_in_context: "{{foo}}").compile
+    assert_equal '"<bare should_eval_in_context=\"#{foo}\" />"',
+                  Interpolator.transform(bare_tag(should_eval_in_context: "{{foo}}").compile)
   end
 
   test "double bracketed child values are substituted for evaluation in context" do
-    assert_equal '"<bare>"+"#{foo}"+"</bare>"', bare_tag("{{foo}}").compile
+    assert_equal '"<bare>"+"#{foo}"+"</bare>"',
+                  Interpolator.transform(bare_tag("{{foo}}").compile)
   end
 
   test "data option value hashes are converted to data attributes similar to haml" do
