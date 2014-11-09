@@ -78,7 +78,7 @@ module ExpressTemplates
             }
           }
           tbody {
-            for_each(my[:id]) {
+            for_each("@#{my[:id]}".to_sym) {
 
               tr(id: -> {"item-#{item.id}"},
                  class: my[:id].to_s.singularize) {

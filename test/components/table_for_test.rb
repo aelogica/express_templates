@@ -4,7 +4,6 @@ require 'ostruct'
 class TableForTest < ActiveSupport::TestCase
 
   class Context
-    attr :items
     def initialize(items)
       @items = items
     end
@@ -26,7 +25,7 @@ ExpressTemplates::Components::TableFor.render_in(self) {
     </tr>
   </thead>
 
-  <tbody>"+(items.each_with_index.map do |item, item_index|
+  <tbody>"+(@items.each_with_index.map do |item, item_index|
 "
     <tr id=\"#{(-> {"item-#{item.id}"}).call}\" class=\"item\">
       <td class=\"name\">#{item.name}</td>
