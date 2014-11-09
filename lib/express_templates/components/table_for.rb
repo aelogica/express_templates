@@ -13,12 +13,14 @@ module ExpressTemplates
     #   t.column :name
     #   t.column :email
     #   t.column :phone
+    #   t.column :hourly_rate, header: "Rate",
+    #                          formatter: -> (amount) {'$%0.2f' % amount rescue 'N/A'}
     # end
     # ```
     #
     # This assumes that a @people variable will exist in the
     # view and that it will be a collection whose members respond to
-    # :name, :email, and :phone
+    # :name, :email, :phone, :hourly_rate
     #
     # This will result in markup like the following:
     #
@@ -28,6 +30,7 @@ module ExpressTemplates
     #           <th class="name">Name</th>
     #           <th class="email">Email</th>
     #           <th class="phone">Phone</th>
+    #           <th class="hourly_rate">Rate</th>
     #         </tr>
     #       </thead>
     #       <tbody>
@@ -35,9 +38,16 @@ module ExpressTemplates
     #           <td class="name">Steven Talcott Smith</td>
     #           <td class="email">steve@aelogica.com</td>
     #           <td class="phone">415-555-1212</td>
+    #           <td class="hourly_rate">$250.00</td>
     #         </tr>
     #       </tbody>
     #     </table>
+    #
+    # Note that column options include :formatter and :header.
+    #
+    # :formatter may be a stabby lambda which is passed the value to be formatted.
+    #
+    # :header may be either a string
     #
     class TableFor < Base
       include Capabilities::Configurable
@@ -98,6 +108,7 @@ module ExpressTemplates
           @name = name
           @options = options
           @formatter = options[:formatter]
+          @header = options[:header]
         end
 
         def format(item_name)
@@ -109,7 +120,14 @@ module ExpressTemplates
         end
 
         def title
-          @name.to_s.try(:titleize)
+          case
+          when @header.nil?
+            @name.to_s.try(:titleize)
+          when @header.kind_of?(String)
+            @header
+          when @header.kind_of?(Proc)
+            "{{(#{@header.source}).call(#{@name})}}"
+          end
         end
       end
 

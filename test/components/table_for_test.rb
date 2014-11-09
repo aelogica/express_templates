@@ -8,12 +8,6 @@ class TableForTest < ActiveSupport::TestCase
     def initialize(items)
       @items = items
     end
-    def titleize(s)
-      s.to_s.try(:titleize)
-    end
-    def format_price(p)
-      "$%0.2f" % p
-    end
   end
 
   def items
@@ -78,7 +72,7 @@ HTML
     ctx = Context.new(items)
     fragment = -> {
                     table_for(:items) do |t|
-                      t.column :name
+                      t.column :name, header: "Name"
                       t.column :price, formatter: -> (price) { '$%0.2f' % price }
                     end
                   }
@@ -113,4 +107,5 @@ HTML
       assert_equal EXAMPLE_MARKUP, ExpressTemplates.render(ctx, &fragment)
     end
   end
+
 end

@@ -38,12 +38,27 @@ class ContainerTest < ActiveSupport::TestCase
     child2.verify
   end
 
-  test ".render_with_children renders children in place of _yield" do
+  test "renders children in place of _yield" do
     container = TestContainer.new
     child1, child2 = mock_children
     container.children = [child1, child2]
 
     assert_equal "<p>onetwo</p>", eval(container.compile)
+  end
+
+  class Context
+    def a_helper
+      "foo"
+    end
+  end
+
+  test "children with interpolations" do
+    markup = ExpressTemplates.render(Context.new) do
+      row {
+        p %q(Should say: {{a_helper}}.)
+      }
+    end
+    assert_equal "<div class=\"row\"><p>Should say: foo.</p></div>", markup
   end
 
 end
