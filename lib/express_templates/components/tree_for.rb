@@ -22,20 +22,61 @@ module ExpressTemplates
     #     <ul id="roles" class="roles tree">
     #       <li>SuperAdmin
     #         <ul>
-    #           <li>Admin</li>
+    #           <li>Admin
     #             <ul>
-    #               <li>Publisher</li>
+    #               <li>Publisher
     #                 <ul>
     #                    <li>Author</li>
     #                 </ul>
+    #               </li>
     #               <li>Auditor</li>
-    #             </ol>
+    #             </ul>
     #           </li>
-    #         </ol>
+    #         </ul>
     #       </li>
-    #     </ol>
+    #     </ul>
     #
     class TreeFor < Container
+      def node_renderer
+        return (-> (node, renderer) {
+    ExpressTemplates::Indenter.for(:tree) do |ws, wsnl|
+      "#{wsnl}<li>"+
+      _yield +
+      if node.children.any?
+        ExpressTemplates::Indenter.for(:tree) do |ws, wsnl|
+          "#{wsnl}<ul>" +
+            node.children.map do |child|
+              renderer.call(child, renderer)
+            end.join +
+          "#{wsnl}</ul>"
+        end +
+        "#{wsnl}</li>"
+      else
+        "</li>"
+      end
+    end
+  }).source.sub(/\W_yield\W/, compile_children.lstrip)
+      end
+
+      def compile
+        collection = _variablize(@options[:id])
+        member = @options[:id].to_s.singularize
+        return 'ExpressTemplates::Components::TreeFor.render_in(self) {
+  node_renderer = '+node_renderer.gsub(/node/, member)+'
+  ExpressTemplates::Indenter.for(:tree) do |ws, wsnl|
+    "#{ws}<ul id=\"roles\" class=\"roles tree\">" +
+      '+collection+'.map do |'+member+'|
+        node_renderer.call('+member+', node_renderer)
+      end.join +
+    "#{wsnl}</ul>\n"
+  end
+}'
+      end
+
+      private
+        def _variablize(sym)
+          "@#{sym}"
+        end
     end
   end
 end
