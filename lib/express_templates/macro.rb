@@ -33,6 +33,7 @@ module ExpressTemplates
                 @options.merge!(child_or_option)
               when child_or_option.kind_of?(Symbol)
                 @options.merge!(id: child_or_option.to_s)
+              when child_or_option.nil?
               else
                 @children << child_or_option
               end
