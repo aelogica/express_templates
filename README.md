@@ -58,11 +58,11 @@ ExpressTemplates introduces an earlier step in this process, "expansion", which 
 
 ## Constraints - Important!
 
-ExpressTemplates imposes some constraints.  The most important constraint is that your view templates must be declaritive in syntax and style.  Declaritve code is easier to read and reason about.  It also requires fewer tests since declarative code is build on presumably well-tested primitives.
+ExpressTemplates imposes some constraints.  The most important constraint is that your view templates must be declarative in style.  They should not contain conditional logic.  Declarative code is easier to read and reason about.  It also requires fewer tests since declarative code is build on presumably well-tested primitives.
 
-With ExpressTemplates, one *must not* simply introduce conditional logic or iterators anywhere one feels like it in template code.  All logic *must* be encapsulated in components.  Strange things will happen if you try to put logic in the template or a template fragment.
+With ExpressTemplates, one *must not* place conditional logic or iterators anywhere in template code.  All logic *must* be encapsulated in components.  Strange things will happen if you try to put logic in the template or a template fragment.  In the future I may issue warnings or disallow it by examinging the output of Ruby's tokenizer.
 
-If you have been around long enough to see a few Rails codebases grow out of control, and you have had to manage or watch the efforts of less-experienced developers closely, you know that one of the major causes of trouble and wasted effort is copy-and-paste code and logic errors in the view.  Another common problem is the "blank slate" issue wherein every view must be constructed new with little chance for proper reuse of code.  Diligent use of partials and helpers can do much to DRY up view code but deciding where to put them or how to share them between projects can be difficult.  Rarely is view logic tested except in integration.
+If you have been around long enough to see a few Rails codebases grow out of control, and you have had to manage or watch the efforts of less-experienced developers closely, you know that one of the major causes of trouble and wasted effort is copy-and-paste code and logic errors in the view.  Another common problem is the "blank slate" issue wherein every view must be constructed new with little chance for higher-level reuse of code.  Diligent use of partials and helpers can do much to DRY up view code but deciding where to put them or how to share them between projects can be difficult.  Rarely is view logic tested except in integration.
 
 ExpressTemplates only enforces what is already considered a best practice by many, while introducing new possilibities for well-ordered UX libraries similar to what developers working with commercial frameworks for desktop operating systems or mobile devices enjoy.
 
