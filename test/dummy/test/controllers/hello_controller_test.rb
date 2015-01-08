@@ -7,7 +7,7 @@ class HelloControllerTest < ActionController::TestCase
     assert_response :success
     # puts @response.body
     assert_match /<h1>Hi there<\/h1>/, @response.body
-    assert_match %Q(<link data-turbolinks-track="true" href="/assets/application.css" media="all" rel="stylesheet" />), @response.body
+    assert_match /link rel="stylesheet" media="all" href="\/assets\/application.css" data-turbolinks-track="true" \/>/, @response.body
     assert_no_match %Q(Dummy ShowDummy Show), @response.body
   end
 
