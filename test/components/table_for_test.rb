@@ -17,7 +17,7 @@ class TableForTest < ActiveSupport::TestCase
 
   EXAMPLE_COMPILED = -> {
     ExpressTemplates::Components::TableFor.render_in(self) {
-      "<table id=\"test_items\">
+"<table id=\"test_items\">
   <thead>
     <tr>
       <th class=\"name\">Name</th>
@@ -26,17 +26,17 @@ class TableForTest < ActiveSupport::TestCase
   </thead>
 
   <tbody>"+(@test_items.each_with_index.map do |test_item, test_item_index|
-        "
-    <tr id=\"#{(-> {"test_item-#{test_item.id}"}).call}\" class=\"test_item\">
+"
+    <tr id=\"test_item-#{test_item.id}\" class=\"test_item\">
       <td class=\"name\">#{test_item.name}</td>
       <td class=\"price\">#{(-> (price) { '$%0.2f' % price }).call(test_item.price)}</td>
     </tr>
-        "
-      end).join+"  </tbody>
+"
+end).join+"  </tbody>
 </table>
-      "
-    }
-  }
+"
+}
+}
 
   EXAMPLE_MARKUP = <<-HTML
 <table id="test_items">

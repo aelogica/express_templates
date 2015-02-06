@@ -80,7 +80,7 @@ module ExpressTemplates
           tbody {
             for_each("@#{my[:id]}".to_sym) {
 
-              tr(id: "#{my[:id].to_s.singularize}-#{-> {"#{my[:id].to_s.singularize}"}}",
+              tr(id: "#{my[:id].to_s.singularize}-{{#{my[:id].to_s.singularize}.id}}",
                  class: my[:id].to_s.singularize) {
 
                 columns.each do |column|
