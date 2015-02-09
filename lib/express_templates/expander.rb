@@ -21,7 +21,7 @@ module ExpressTemplates
     def expand(source=nil, &block)
       case
       when block.nil? && source
-        modified = _wrap_instance_vars( _replace_yield_with_yielder(source) )
+        modified = _replace_yield_with_yielder(source)
         instance_eval(modified, @template.inspect)
       when block
         instance_exec &block
@@ -90,10 +90,6 @@ module ExpressTemplates
 
       def _replace_yield_with_yielder(source)
         source.gsub(/(\W)(yield)(\([^\)]*\))?/, '\1 (stack << ExpressTemplates::Markup::Yielder.new\3)')
-      end
-
-      def _wrap_instance_vars(source)
-        source.gsub(/(\W)(@\w+)(\W)?/, '\1 (stack << ExpressTemplates::Markup::Wrapper.new("\2") )\3')
       end
 
     class Stack
