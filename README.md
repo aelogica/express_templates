@@ -82,7 +82,13 @@ ul {
 
 Let us suppose that an @three variable exists in the view context with the value "three".  This would yield the following markup:
 
-    <ul><li>one</li><li>two</li><li>three</li>
+```html
+<ul>
+  <li>one</li>
+  <li>two</li>
+  <li>three</li>
+</ul>
+```
 
 yield and local variables which we may expect to be available in a ViewContext are also wrapped for evaluation later.
 
@@ -129,7 +135,15 @@ div.active {
 
 Now when the template renders, it will yield:
 
-    <div class="active"><ul><li>one</li><li>two</li><li>three</li></ul></div>
+```html
+<div class="active">
+  <ul>
+    <li>one</li>
+    <li>two</li>
+    <li>three</li>
+  </ul>
+</div>
+```
 
 ## Background
 
