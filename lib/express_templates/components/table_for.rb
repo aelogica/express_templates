@@ -84,9 +84,15 @@ module ExpressTemplates
                  class: my[:id].to_s.singularize) {
 
                 columns.each do |column|
-                  td(class: column.name) {
-                    column.format(my[:id].to_s.singularize)
-                  }
+                  if(column.has_actions?)
+                    td(class: column.name) {
+                      column.show_actions(my[:id].to_s)
+                    }
+                  else
+                    td(class: column.name) {
+                      column.format(my[:id].to_s.singularize)
+                    }
+                  end
                 end
               }
             }
@@ -109,6 +115,11 @@ module ExpressTemplates
           @options = options
           @formatter = options[:formatter]
           @header = options[:header]
+          @actions = options[:actions] || []
+        end
+
+        def has_actions?
+          @actions.any?
         end
 
         def format(item_name)
@@ -117,6 +128,19 @@ module ExpressTemplates
           elsif @formatter.kind_of?(Proc)
             "\#\{(#{@formatter.source}).call(#{item_name}.#{name})\}"
           end
+        end
+
+        def show_actions(item_name)
+          action_links = StringIO.new
+          @actions.each do |action|
+            action_name = action.to_s
+            if action_name.eql?('edit')
+              action_links.puts "<a href='/#{item_name}/{{#{item_name.singularize}.id}}/edit'>Edit</a>"
+            elsif action_name.eql?('delete')
+              action_links.puts "<a href='/#{item_name}/{{#{item_name.singularize}.id}}' data-method='delete' data-confirm='Are you sure?'>Delete</a>"
+            end
+          end
+          action_links.string
         end
 
         def title
