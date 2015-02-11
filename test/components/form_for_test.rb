@@ -31,21 +31,14 @@ class FormForTest < ActiveSupport::TestCase
 
   EXAMPLE_COMPILED = -> {
     ExpressTemplates::Components::FormFor.render_in(self) {
-      "<form id='edit_post_1' action='/posts/1' accept-charset='UTF-8' method='post'>
-
-<div class='input string'>
-  <label for='post_name'>Name</label>
-  <input type='text'>Name</input>
-</div>
-
-<div class='input string'>
-  <label for='post_body'>Body</label>
-  <input type='text'>Body</input>
-</div>
-
-</form>"
-}
-}
+      form_for(@post) do |f|
+        f.label :name
+        f.text_field :name
+        f.label :body
+        f.text_field :body
+      end
+    }
+  }
 
   def example_compiled_src
     # necessary because the #source method is not perfect yet
@@ -56,9 +49,9 @@ class FormForTest < ActiveSupport::TestCase
   def simple_form(post)
     ctx = Context.new(post)
     fragment = -> {
-      # form_for(:post) do |f|
-      #   f.text_field :name
-      #   f.text_field :body
+      # form_for(@post) do |f|
+        # f.text_field :name
+        # f.text_field :body
       # end
       form_for(:post) do |f|
       end

@@ -32,11 +32,8 @@ module ExpressTemplates
 
       emits -> {
         form(action: "/#{my[:id].to_s}") {
-
         }
       }
-
-      # <form action='/posts'></form>
 
       def wrap_for_stack_trace(body)
         "ExpressTemplates::Components::FormFor.render_in(self) {\n#{body}\n}"
