@@ -23,19 +23,39 @@ module ExpressTemplates
         yield(self) if block_given?
       end
 
-      attr :text_fields
+      attr :fields
 
       def text_field(name, options = {})
-        @text_fields ||= []
-        @text_fields << Field.new(name, options)
+        @fields ||= []
+        @fields << Field.new(name, options)
+      end
+
+      def email_field(name, options = {})
+        @fields ||= []
+        @fields << Field.new(name, options, :email)
+      end
+
+      def phone_field(name, options = {})
+        @fields ||= []
+        @fields << Field.new(name, options, :phone)
       end
 
       emits -> {
         form(action: %Q(/#{my[:id].to_s.pluralize})) {
-          text_fields.each do |text_field|
+          fields.each do |field|
             div.input.string {
-              label_tag(text_field.name, text_field.label, class: 'string')
-              text_field_tag(text_field.name, "{{@#{my[:id].to_s.singularize}.#{text_field.name}}}", class: 'string')
+              label_tag(field.name, field.label, class: 'string')
+
+              args = [field.name, "{{@#{my[:id].to_s.singularize}.#{field.name}}}", class: 'string']
+
+              case field.type
+              when :email
+                email_field_tag(*args)
+              when :phone
+                phone_field_tag(*args)
+              else
+                text_field_tag(*args)
+              end
             }
           end
         }
@@ -50,11 +70,12 @@ module ExpressTemplates
       end
 
       class Field
-        attr :name, :options, :label
-        def initialize(name, options = {})
+        attr :name, :options, :label, :type
+        def initialize(name, options = {}, type=:text)
           @name = name
           @options = options
           @label = options[:label]
+          @type = type
         end
       end
     end

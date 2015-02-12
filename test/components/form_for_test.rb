@@ -9,7 +9,7 @@ class FormForTest < ActiveSupport::TestCase
   end
 
   def post
-    OpenStruct.new(id: 1, name: 'Foo', body: 'Hello world')
+    OpenStruct.new(id: 1, name: 'Foo', body: 'Hello world', email: 'some@email.com', phone: '123123123')
   end
 
   EXAMPLE_MARKUP = <<-HTML
@@ -38,6 +38,12 @@ class FormForTest < ActiveSupport::TestCase
   <div class='input string'>
     #{label_tag(:body, nil, class: 'string')}#{text_field_tag(:body, @post.body, class: 'string')}
   </div>
+  <div class='input string'>
+    #{label_tag(:email, nil, class: 'string')}#{email_field_tag(:body, @post.email, class: 'string')}
+  </div>
+  <div class='input string'>
+    #{label_tag(:phone, nil, class: 'string')}#{phone_field_tag(:body, @post.phone, class: 'string')}
+  </div>
 </form>"
 }
 }
@@ -54,6 +60,8 @@ class FormForTest < ActiveSupport::TestCase
       form_for(:post) do |f|
         f.text_field :name, label: 'Post Title'
         f.text_field :body
+        f.email_field :email
+        f.phone_field :phone
       end
     }
     return ctx, fragment
@@ -66,6 +74,11 @@ class FormForTest < ActiveSupport::TestCase
   test "compiled source is legible and transparent" do
     ExpressTemplates::Markup::Tag.formatted do
       ctx, fragment = simple_form(post)
+      puts "=" * 100
+      puts example_compiled_src
+      puts "=" * 100
+      puts ExpressTemplates.compile(&fragment)
+      puts "=" * 100
       assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
     end
   end
