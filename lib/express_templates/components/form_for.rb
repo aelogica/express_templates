@@ -25,8 +25,8 @@ module ExpressTemplates
 
       attr :fields
 
-      %w(email phone text password color date datetime 
-        datetime_local file hidden month number range
+      %w(email phone text password color date datetime
+        datetime_local hidden number range
         search telephone time url week).each do |type|
         define_method("#{type}_field") do |name, options={}|
           @fields ||= []
@@ -42,7 +42,7 @@ module ExpressTemplates
             field_type = field.type.to_s
 
             div.input.string {
-              label_tag(field_name, field.label, class: 'string')
+              label_tag(field_name, field.label, class: 'string') unless field_type == 'hidden'
               args = [field_name, "{{@#{resource_name.singularize}.#{field_name}}}", class: 'string']
               self.send("#{field_type}_field_tag".to_sym, *args)
             }

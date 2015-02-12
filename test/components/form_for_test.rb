@@ -15,7 +15,8 @@ class FormForTest < ActiveSupport::TestCase
       body: 'Hello world',
       email: 'some@email.com',
       phone: '123123123',
-      url: 'http://someurl.com'
+      url: 'http://someurl.com',
+      number: 123
     )
   end
 
@@ -54,6 +55,9 @@ class FormForTest < ActiveSupport::TestCase
   <div class='input string'>
     #{label_tag(:url, nil, class: 'string')}#{url_field_tag(:url, @resource.url, class: 'string')}
   </div>
+  <div class='input string'>
+    #{label_tag(:number, nil, class: 'string')}#{number_field_tag(:number, @resource.number, class: 'string')}
+  </div>
 </form>"
 }
 }
@@ -73,6 +77,7 @@ class FormForTest < ActiveSupport::TestCase
         f.email_field :email
         f.phone_field :phone
         f.url_field :url
+        f.number_field :number
       end
     }
     return ctx, fragment
