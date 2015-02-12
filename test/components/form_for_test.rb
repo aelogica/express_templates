@@ -16,14 +16,14 @@ class FormForTest < ActiveSupport::TestCase
 <form id="edit_post_1" action="/posts/1" accept-charset="UTF-8" method="post">
 
   <div class="input string">
-    <label class="string" for="post_name">Name</label>
+    <label class="string" for="post_name">Post Title</label>
 
     <input class="string" type="text" value="Foo" name="post[name]" id="post_name">
   </div>
 
-  <div class="input string optional post_body">
-    <label class="string optional" for="post_body"> Body</label>
-    <input class="string optional" type="text" value="hot" name="post[body]" id="post_body">
+  <div class="input string">
+    <label class="string" for="post_body"> Body</label>
+    <input class="string" type="text" value="hot" name="post[body]" id="post_body">
   </div>
   <input type="submit" name="commit" value="Update Post" class="btn">
 </form>
@@ -31,12 +31,16 @@ class FormForTest < ActiveSupport::TestCase
 
   EXAMPLE_COMPILED = -> {
     ExpressTemplates::Components::FormFor.render_in(self) {
-      form_for(@post) do |f|
-        f.label :name
-        f.text_field :name
-        f.label :body
-        f.text_field :body
-      end
+      "<form action='/posts'>
+      <div class='input string'>
+          #{label_tag(:name, 'Post Title', class: 'string')}
+          #{text_field_tag(:name, class: 'string')}
+      </div>
+      <div class='input string'>
+          #{label_tag(:body, class: 'string')}
+          #{text_field_tag(:body, class: 'string')}
+      </div>
+      </form>"
     }
   }
 
@@ -49,11 +53,9 @@ class FormForTest < ActiveSupport::TestCase
   def simple_form(post)
     ctx = Context.new(post)
     fragment = -> {
-      # form_for(@post) do |f|
-        # f.text_field :name
-        # f.text_field :body
-      # end
       form_for(:post) do |f|
+        f.text_field :name, label: 'Post Title'
+        f.text_field :body
       end
     }
     return ctx, fragment

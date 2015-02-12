@@ -23,15 +23,21 @@ module ExpressTemplates
         yield(self) if block_given?
       end
 
-      attr :fields
+      attr :text_fields
 
-      def field(name, options = {})
-        @fields ||= []
-        @fields << Field.new(name, options)
+      def text_field(name, options = {})
+        @text_fields ||= []
+        @text_fields << Field.new(name, options)
       end
 
       emits -> {
         form(action: "/#{my[:id].to_s}") {
+          text_fields.each do |text_field|
+            div.input.active {
+              label_tag(text_field.name, text_field.label, class: 'string')
+              text_field_tag(text_field.name, class: 'string')
+            }
+          end
         }
       }
 
@@ -44,11 +50,11 @@ module ExpressTemplates
       end
 
       class Field
-        attr :name, :options
-
+        attr :name, :options, :label
         def initialize(name, options = {})
           @name = name
           @options = options
+          @label = options[:label]
         end
       end
     end

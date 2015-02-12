@@ -177,8 +177,11 @@ end).join+"  </tbody>
   test "compiled source is legible and transparent" do
     ExpressTemplates::Markup::Tag.formatted do
       ctx, fragment = simple_table(test_items)
+      puts "FRAGMENT #{fragment}"
+      puts ctx
       assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
-
+      puts example_compiled_src
+      puts ExpressTemplates.compile(&fragment)
       actx, afragment = table_with_actions(test_items)
       assert_equal example_with_actions_compiled_src, ExpressTemplates.compile(&afragment)
     end
