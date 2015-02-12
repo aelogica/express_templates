@@ -16,7 +16,8 @@ class FormForTest < ActiveSupport::TestCase
       email: 'some@email.com',
       phone: '123123123',
       url: 'http://someurl.com',
-      number: 123
+      number: 123,
+      dropdown: 'yes'
     )
   end
 

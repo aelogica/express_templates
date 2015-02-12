@@ -34,6 +34,11 @@ module ExpressTemplates
         end
       end
 
+      def select(name, select_options, options = {})
+        @fields ||= []
+        @fields << Field.new(name, options.merge!(select_options: select_options), :select)
+      end
+
       emits -> {
         resource_name = my[:id].to_s
         form(action: %Q(/#{resource_name.pluralize})) {
@@ -41,11 +46,15 @@ module ExpressTemplates
             field_name = field.name
             field_type = field.type.to_s
 
-            div.input.string {
+            div.input {
               label_tag(field_name, field.label, class: 'string') unless field_type == 'hidden'
-              args = [field_name, "{{@#{resource_name.singularize}.#{field_name}}}", class: 'string']
-              self.send("#{field_type}_field_tag".to_sym, *args)
-            }
+              if field_type == 'select'
+                select_tag(field_name, field.options[:select_options])
+              else
+               args = [field_name, "{{@#{resource_name.singularize}.#{field_name}}}"]
+               self.send("#{field_type}_field_tag".to_sym, *args)
+              end
+             }
           end
         }
       }
