@@ -41,23 +41,26 @@ class FormForTest < ActiveSupport::TestCase
   EXAMPLE_COMPILED = -> {
     ExpressTemplates::Components::FormFor.render_in(self) {
 "<form action=\"/resources\">
-  <div class='input string'>
-    #{label_tag(:name, 'Post Title', class: 'string')}#{text_field_tag(:name, @resource.name, class: 'string')}
+  <div class='input'>
+    #{label_tag(:name, 'Post Title', class: 'string')}#{text_field_tag(:name, @resource.name)}
   </div>
-  <div class='input string'>
-    #{label_tag(:body, nil, class: 'string')}#{text_field_tag(:body, @resource.body, class: 'string')}
+  <div class='input'>
+    #{label_tag(:body, nil, class: 'string')}#{text_field_tag(:body, @resource.body)}
   </div>
-  <div class='input string'>
-    #{label_tag(:email, nil, class: 'string')}#{email_field_tag(:email, @resource.email, class: 'string')}
+  <div class='input'>
+    #{label_tag(:email, nil, class: 'string')}#{email_field_tag(:email, @resource.email)}
   </div>
-  <div class='input string'>
-    #{label_tag(:phone, nil, class: 'string')}#{phone_field_tag(:phone, @resource.phone, class: 'string')}
+  <div class='input'>
+    #{label_tag(:phone, nil, class: 'string')}#{phone_field_tag(:phone, @resource.phone)}
   </div>
-  <div class='input string'>
-    #{label_tag(:url, nil, class: 'string')}#{url_field_tag(:url, @resource.url, class: 'string')}
+  <div class='input'>
+    #{label_tag(:url, nil, class: 'string')}#{url_field_tag(:url, @resource.url)}
   </div>
-  <div class='input string'>
-    #{label_tag(:number, nil, class: 'string')}#{number_field_tag(:number, @resource.number, class: 'string')}
+  <div class='input'>
+    #{label_tag(:number, nil, class: 'string')}#{number_field_tag(:number, @resource.number)}
+  </div>
+  <div class='select'>
+      #{select_tag(:dropdown)}
   </div>
 </form>"
 }
@@ -79,6 +82,7 @@ class FormForTest < ActiveSupport::TestCase
         f.phone_field :phone
         f.url_field :url
         f.number_field :number
+        f.select :dropdown, resource.dropdown
       end
     }
     return ctx, fragment
