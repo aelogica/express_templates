@@ -25,37 +25,26 @@ module ExpressTemplates
 
       attr :fields
 
-      def text_field(name, options = {})
-        @fields ||= []
-        @fields << Field.new(name, options)
-      end
-
-      def email_field(name, options = {})
-        @fields ||= []
-        @fields << Field.new(name, options, :email)
-      end
-
-      def phone_field(name, options = {})
-        @fields ||= []
-        @fields << Field.new(name, options, :phone)
+      %w(email phone text password color date datetime 
+        datetime_local file hidden month number range
+        search telephone time url week).each do |type|
+        define_method("#{type}_field") do |name, options={}|
+          @fields ||= []
+          @fields << Field.new(name, options, type.to_sym)
+        end
       end
 
       emits -> {
-        form(action: %Q(/#{my[:id].to_s.pluralize})) {
+        resource_name = my[:id].to_s
+        form(action: %Q(/#{resource_name.pluralize})) {
           fields.each do |field|
+            field_name = field.name
+            field_type = field.type.to_s
+
             div.input.string {
-              label_tag(field.name, field.label, class: 'string')
-
-              args = [field.name, "{{@#{my[:id].to_s.singularize}.#{field.name}}}", class: 'string']
-
-              case field.type
-              when :email
-                email_field_tag(*args)
-              when :phone
-                phone_field_tag(*args)
-              else
-                text_field_tag(*args)
-              end
+              label_tag(field_name, field.label, class: 'string')
+              args = [field_name, "{{@#{resource_name.singularize}.#{field_name}}}", class: 'string']
+              self.send("#{field_type}_field_tag".to_sym, *args)
             }
           end
         }

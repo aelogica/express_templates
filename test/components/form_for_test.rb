@@ -3,46 +3,56 @@ require 'ostruct'
 
 class FormForTest < ActiveSupport::TestCase
   class Context
-    def initialize(post)
-      @post = post
+    def initialize(resource)
+      @resource = resource
     end
   end
 
-  def post
-    OpenStruct.new(id: 1, name: 'Foo', body: 'Hello world', email: 'some@email.com', phone: '123123123')
+  def resource
+    OpenStruct.new(
+      id: 1,
+      name: 'Foo',
+      body: 'Hello world',
+      email: 'some@email.com',
+      phone: '123123123',
+      url: 'http://someurl.com'
+    )
   end
 
   EXAMPLE_MARKUP = <<-HTML
-<form id="edit_post_1" action="/posts/1" accept-charset="UTF-8" method="post">
+<form id="edit_resource_1" action="/resources/1" accept-charset="UTF-8" method="post">
 
   <div class="input string">
-    <label class="string" for="post_name">Post Title</label>
+    <label class="string" for="resource_name">Post Title</label>
 
-    <input class="string" type="text" value="Foo" name="post[name]" id="post_name">
+    <input class="string" type="text" value="Foo" name="resource[name]" id="resource_name">
   </div>
 
   <div class="input string">
-    <label class="string" for="post_body"> Body</label>
-    <input class="string" type="text" value="hot" name="post[body]" id="post_body">
+    <label class="string" for="resource_body"> Body</label>
+    <input class="string" type="text" value="hot" name="resource[body]" id="resource_body">
   </div>
-  <input type="submit" name="commit" value="Update Post" class="btn">
+  <input type="submit" name="commit" value="Update Resource" class="btn">
 </form>
   HTML
 
   EXAMPLE_COMPILED = -> {
     ExpressTemplates::Components::FormFor.render_in(self) {
-"<form action=\"/posts\">
+"<form action=\"/resources\">
   <div class='input string'>
-    #{label_tag(:name, 'Post Title', class: 'string')}#{text_field_tag(:name, @post.name, class: 'string')}
+    #{label_tag(:name, 'Post Title', class: 'string')}#{text_field_tag(:name, @resource.name, class: 'string')}
   </div>
   <div class='input string'>
-    #{label_tag(:body, nil, class: 'string')}#{text_field_tag(:body, @post.body, class: 'string')}
+    #{label_tag(:body, nil, class: 'string')}#{text_field_tag(:body, @resource.body, class: 'string')}
   </div>
   <div class='input string'>
-    #{label_tag(:email, nil, class: 'string')}#{email_field_tag(:body, @post.email, class: 'string')}
+    #{label_tag(:email, nil, class: 'string')}#{email_field_tag(:email, @resource.email, class: 'string')}
   </div>
   <div class='input string'>
-    #{label_tag(:phone, nil, class: 'string')}#{phone_field_tag(:body, @post.phone, class: 'string')}
+    #{label_tag(:phone, nil, class: 'string')}#{phone_field_tag(:phone, @resource.phone, class: 'string')}
+  </div>
+  <div class='input string'>
+    #{label_tag(:url, nil, class: 'string')}#{url_field_tag(:url, @resource.url, class: 'string')}
   </div>
 </form>"
 }
@@ -54,26 +64,27 @@ class FormForTest < ActiveSupport::TestCase
     EXAMPLE_COMPILED.source_body
   end
 
-  def simple_form(post)
-    ctx = Context.new(post)
+  def simple_form(resource)
+    ctx = Context.new(resource)
     fragment = -> {
-      form_for(:post) do |f|
+      form_for(:resource) do |f|
         f.text_field :name, label: 'Post Title'
         f.text_field :body
         f.email_field :email
         f.phone_field :phone
+        f.url_field :url
       end
     }
     return ctx, fragment
   end
 
   # test "example view code evaluates to example markup" do
-  #   assert_equal EXAMPLE_MARKUP, Context.new(post).instance_eval(EXAMPLE_COMPILED.source_body)
+  #   assert_equal EXAMPLE_MARKUP, Context.new(resource).instance_eval(EXAMPLE_COMPILED.source_body)
   # end
 
   test "compiled source is legible and transparent" do
     ExpressTemplates::Markup::Tag.formatted do
-      ctx, fragment = simple_form(post)
+      ctx, fragment = simple_form(resource)
       puts "=" * 100
       puts example_compiled_src
       puts "=" * 100
@@ -82,5 +93,4 @@ class FormForTest < ActiveSupport::TestCase
       assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
     end
   end
-
 end
