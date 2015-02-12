@@ -31,18 +31,16 @@ class FormForTest < ActiveSupport::TestCase
 
   EXAMPLE_COMPILED = -> {
     ExpressTemplates::Components::FormFor.render_in(self) {
-      "<form action='/posts'>
-      <div class='input string'>
-          #{label_tag(:name, 'Post Title', class: 'string')}
-          #{text_field_tag(:name, class: 'string')}
-      </div>
-      <div class='input string'>
-          #{label_tag(:body, class: 'string')}
-          #{text_field_tag(:body, class: 'string')}
-      </div>
-      </form>"
-    }
-  }
+"<form action=\"/posts\">
+  <div class='input string'>
+    #{label_tag(:name, 'Post Title', class: 'string')}#{text_field_tag(:name, @post.name, class: 'string')}
+  </div>
+  <div class='input string'>
+    #{label_tag(:body, nil, class: 'string')}#{text_field_tag(:body, @post.body, class: 'string')}
+  </div>
+</form>"
+}
+}
 
   def example_compiled_src
     # necessary because the #source method is not perfect yet
