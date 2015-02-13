@@ -21,24 +21,8 @@ class FormForTest < ActiveSupport::TestCase
     )
   end
 
-  EXAMPLE_MARKUP = <<-HTML
-<form id="edit_resource_1" action="/resources/1" accept-charset="UTF-8" method="post">
-
-  <div class="input string">
-    <label class="string" for="resource_name">Post Title</label>
-
-    <input class="string" type="text" value="Foo" name="resource[name]" id="resource_name">
-  </div>
-
-  <div class="input string">
-    <label class="string" for="resource_body"> Body</label>
-    <input class="string" type="text" value="hot" name="resource[body]" id="resource_body">
-  </div>
-  <input type="submit" name="commit" value="Update Resource" class="btn">
-</form>
-  HTML
-
-  EXAMPLE_COMPILED = -> {
+  def setup
+    @example_compiled = -> {
     ExpressTemplates::Components::FormFor.render_in(self) {
 "<form action=\"/resources\">
   <div class=\"input\">
@@ -60,41 +44,84 @@ class FormForTest < ActiveSupport::TestCase
     #{label_tag(:number, nil)}#{number_field_tag(:number, @resource.number)}
   </div>
   <div class=\"select\">
-    #{label_tag(:dropdown, nil)}#{select_tag(:dropdown, "<option>yes</option><option>no</option>")}
+    #{label_tag(:dropdown, nil)}#{select_tag(:dropdown, "<option selected=selected>yes</option><option>no</option>".html_safe)}
   </div>
 </form>"
 }
 }
+  end
+
+  EXAMPLE_MARKUP = <<-HTML
+<form id="edit_resource_1" action="/resources/1" accept-charset="UTF-8" method="post">
+
+  <div class="input string">
+    <label class="string" for="resource_name">Post Title</label>
+
+    <input class="string" type="text" value="Foo" name="resource[name]" id="resource_name">
+  </div>
+
+  <div class="input string">
+    <label class="string" for="resource_body"> Body</label>
+    <input class="string" type="text" value="hot" name="resource[body]" id="resource_body">
+  </div>
+  <input type="submit" name="commit" value="Update Resource" class="btn">
+</form>
+  HTML
 
   def example_compiled_src
     # necessary because the #source method is not perfect yet
     # ideally we would have #source_body
-    EXAMPLE_COMPILED.source_body
+    @example_compiled.source_body
   end
 
   def simple_form(resource)
     ctx = Context.new(resource)
     fragment = -> {
       form_for(:resource) do |f|
-        f.text_field :name, label: 'Post Title'
+        f.text_field :name, label: 'post title'
         f.text_field :body, class: 'string'
         f.email_field :email
         f.phone_field :phone
         f.url_field :url
         f.number_field :number
-        f.select :dropdown, ['yes', 'no']
       end
     }
     return ctx, fragment
   end
 
-  # test "example view code evaluates to example markup" do
-  #   assert_equal EXAMPLE_MARKUP, Context.new(resource).instance_eval(EXAMPLE_COMPILED.source_body)
-  # end
+  def select_form(resource)
+    ctx = Context.new(resource)
+    fragment = -> {
+      form_for(:resource) do |f|
+        f.select :dropdown, ['yes', 'no'], selected: 'yes'
+        f.select :dropdown, '{{ options_from_collection_for_select(@choices, "id", "name") }}'
+      end
+    }
+    return ctx, fragment
+  end
 
-  test "compiled source is legible and transparent" do
+  test "fields compiled source is legible and transparent" do
     ExpressTemplates::Markup::Tag.formatted do
       ctx, fragment = simple_form(resource)
+      assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
+    end
+  end
+
+  test "select compiled source is legible and transparent" do
+    @example_compiled = -> {
+    ExpressTemplates::Components::FormFor.render_in(self) {
+"<form action=\"/resources\">
+  <div class=\"select\">
+    #{label_tag(:dropdown, nil)}#{select_tag(:dropdown, "<option selected=selected>yes</option><option>no</option>".html_safe)}
+  </div>
+  <div class=\"select\">
+    #{label_tag(:dropdown, nil)}#{select_tag(:dropdown, options_from_collection_for_select(@choices, "id", "name"))}
+  </div>
+</form>"
+}
+}
+    ExpressTemplates::Markup::Tag.formatted do
+      ctx, fragment = select_form(resource)
       puts "=" * 100
       puts example_compiled_src
       puts "=" * 100

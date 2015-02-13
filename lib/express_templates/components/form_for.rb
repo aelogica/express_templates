@@ -30,7 +30,7 @@ module ExpressTemplates
         search telephone time url week).each do |type|
         define_method("#{type}_field") do |name, options={}|
           @fields ||= []
-        @fields << Field.new(name, options, type.to_sym)
+          @fields << Field.new(name, options, type.to_sym)
         end
       end
 
@@ -84,15 +84,21 @@ module ExpressTemplates
         attr :choices
         def initialize(name, options = {})
           @choices = options.delete :select_options
+          @selected = options.delete :selected
           super(name, options, :select)
         end
 
         def options_html
           choice_string = ""
-          @choices.map do |choice|
-            choice_string << "<option>#{choice}</option>"
+          if @choices.is_a?(String)
+            choice_string = @choices
+          else
+            @choices.map do |choice|
+              selected_string = (@selected != nil && choice == @selected) ? 'selected=selected' : nil
+              choice_string << "<option #{selected_string}>#{choice}</option>"
+            end
+            "{{'#{choice_string}'.html_safe}}"
           end
-          choice_string
         end
       end
     end
