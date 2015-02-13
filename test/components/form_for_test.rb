@@ -41,26 +41,26 @@ class FormForTest < ActiveSupport::TestCase
   EXAMPLE_COMPILED = -> {
     ExpressTemplates::Components::FormFor.render_in(self) {
 "<form action=\"/resources\">
-  <div class='input'>
-    #{label_tag(:name, 'Post Title', class: 'string')}#{text_field_tag(:name, @resource.name)}
+  <div class=\"input\">
+    #{label_tag(:name, 'Post Title')}#{text_field_tag(:name, @resource.name)}
   </div>
-  <div class='input'>
-    #{label_tag(:body, nil, class: 'string')}#{text_field_tag(:body, @resource.body)}
+  <div class=\"input\">
+    #{label_tag(:body, nil, class: 'string')}#{text_field_tag(:body, @resource.body, class: 'string')}
   </div>
-  <div class='input'>
-    #{label_tag(:email, nil, class: 'string')}#{email_field_tag(:email, @resource.email)}
+  <div class=\"input\">
+    #{label_tag(:email, nil)}#{email_field_tag(:email, @resource.email)}
   </div>
-  <div class='input'>
-    #{label_tag(:phone, nil, class: 'string')}#{phone_field_tag(:phone, @resource.phone)}
+  <div class=\"input\">
+    #{label_tag(:phone, nil)}#{phone_field_tag(:phone, @resource.phone)}
   </div>
-  <div class='input'>
-    #{label_tag(:url, nil, class: 'string')}#{url_field_tag(:url, @resource.url)}
+  <div class=\"input\">
+    #{label_tag(:url, nil)}#{url_field_tag(:url, @resource.url)}
   </div>
-  <div class='input'>
-    #{label_tag(:number, nil, class: 'string')}#{number_field_tag(:number, @resource.number)}
+  <div class=\"input\">
+    #{label_tag(:number, nil)}#{number_field_tag(:number, @resource.number)}
   </div>
-  <div class='select'>
-      #{select_tag(:dropdown)}
+  <div class=\"select\">
+    #{label_tag(:dropdown, nil)}#{select_tag(:dropdown, "<option>yes</option><option>no</option>")}
   </div>
 </form>"
 }
@@ -77,12 +77,12 @@ class FormForTest < ActiveSupport::TestCase
     fragment = -> {
       form_for(:resource) do |f|
         f.text_field :name, label: 'Post Title'
-        f.text_field :body
+        f.text_field :body, class: 'string'
         f.email_field :email
         f.phone_field :phone
         f.url_field :url
         f.number_field :number
-        f.select :dropdown, resource.dropdown
+        f.select :dropdown, ['yes', 'no']
       end
     }
     return ctx, fragment

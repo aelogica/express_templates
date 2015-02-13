@@ -30,13 +30,13 @@ module ExpressTemplates
         search telephone time url week).each do |type|
         define_method("#{type}_field") do |name, options={}|
           @fields ||= []
-          @fields << Field.new(name, options, type.to_sym)
+        @fields << Field.new(name, options, type.to_sym)
         end
       end
 
       def select(name, select_options, options = {})
         @fields ||= []
-        @fields << Field.new(name, options.merge!(select_options: select_options), :select)
+        @fields << Select.new(name, options.merge!(select_options: select_options))
       end
 
       emits -> {
@@ -46,15 +46,18 @@ module ExpressTemplates
             field_name = field.name
             field_type = field.type.to_s
 
-            div.input {
-              label_tag(field_name, field.label, class: 'string') unless field_type == 'hidden'
-              if field_type == 'select'
-                select_tag(field_name, field.options[:select_options])
-              else
-               args = [field_name, "{{@#{resource_name.singularize}.#{field_name}}}"]
-               self.send("#{field_type}_field_tag".to_sym, *args)
-              end
-             }
+            if field_type == 'select'
+              div.select {
+                label_tag(field_name, field.label)
+                select_tag(field_name, field.options_html, field.options)
+              }
+            else
+              div.input {
+                label_tag(field_name, field.label) unless field_type == 'hidden'
+                args = [field_name, "{{@#{resource_name.singularize}.#{field_name}}}", field.options]
+                self.send("#{field_type}_field_tag".to_sym, *args)
+              }
+            end
           end
         }
       }
@@ -74,6 +77,22 @@ module ExpressTemplates
           @options = options
           @label = options[:label]
           @type = type
+        end
+      end
+
+      class Select < Field
+        attr :choices
+        def initialize(name, options = {})
+          @choices = options.delete :select_options
+          super(name, options, :select)
+        end
+
+        def options_html
+          choice_string = ""
+          @choices.map do |choice|
+            choice_string << "<option>#{choice}</option>"
+          end
+          choice_string
         end
       end
     end
