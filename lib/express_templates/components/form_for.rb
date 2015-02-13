@@ -39,17 +39,26 @@ module ExpressTemplates
         @fields << Select.new(name, options.merge!(select_options: select_options))
       end
 
+      def radio_button(name, value, checked = false, options = {})
+        @fields ||= []
+        @fields << RadioButton.new(name, options.merge!(value: value, checked: checked))
+      end
+
       emits -> {
         resource_name = my[:id].to_s
         form(action: %Q(/#{resource_name.pluralize})) {
           fields.each do |field|
             field_name = field.name
             field_type = field.type.to_s
-
             if field_type == 'select'
               div.select {
                 label_tag(field_name, field.label)
                 select_tag(field_name, field.options_html, field.options)
+              }
+            elsif field_type == 'radio_button'
+              div.select {
+                label_tag(field_name, field.label)
+                radio_button_tag(field_name, field.value, field.checked, field.options)
               }
             else
               div.input {
@@ -77,6 +86,15 @@ module ExpressTemplates
           @options = options
           @label = options[:label]
           @type = type
+        end
+      end
+
+      class RadioButton < Field
+        attr :value, :checked
+        def initialize(name, options = {})
+          @value = options.delete :value
+          @checked = options.delete :checked
+          super(name, options, :radio_button)
         end
       end
 

@@ -17,7 +17,8 @@ class FormForTest < ActiveSupport::TestCase
       phone: '123123123',
       url: 'http://someurl.com',
       number: 123,
-      dropdown: 'yes'
+      dropdown: 'yes',
+      gender: 'Male'
     )
   end
 
@@ -100,6 +101,16 @@ class FormForTest < ActiveSupport::TestCase
     return ctx, fragment
   end
 
+  def radio_form(resource)
+    ctx = Context.new(resource)
+    fragment = -> {
+      form_for(:resource) do |f|
+        f.radio_button :gender, 'male'
+      end
+    }
+    return ctx, fragment
+  end
+
   test "fields compiled source is legible and transparent" do
     ExpressTemplates::Markup::Tag.formatted do
       ctx, fragment = simple_form(resource)
@@ -122,6 +133,23 @@ class FormForTest < ActiveSupport::TestCase
 }
     ExpressTemplates::Markup::Tag.formatted do
       ctx, fragment = select_form(resource)
+      assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
+    end
+  end
+
+  test "radiobutton compiled source is legible and transparent" do
+    @example_compiled = -> {
+      ExpressTemplates::Components::FormFor.render_in(self) {
+"<form action=\"/resources\">
+  <div class=\"/radio_button\">
+    #{label_tag(:gender, nil)}#{radio_button_tag(:gender, 'male')}
+  </div>
+</form>"
+}
+}
+
+    ExpressTemplates::Markup::Tag.formatted do
+      ctx, fragment = radio_form(resource)
       puts "=" * 100
       puts example_compiled_src
       puts "=" * 100
