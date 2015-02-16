@@ -39,9 +39,9 @@ module ExpressTemplates
         @fields << Select.new(name, options.merge!(select_options: select_options))
       end
 
-      def radio_button(name, value, checked = false, options = {})
+      def radio(name, collection, value_method, text_method, options = {})
         @fields ||= []
-        @fields << RadioButton.new(name, options.merge!(value: value, checked: checked))
+        @fields << Radio.new(name, options.merge!(collection: collection, value_method: value_method, text_method: text_method))
       end
 
       emits -> {
@@ -55,10 +55,12 @@ module ExpressTemplates
                 label_tag(field_name, field.label)
                 select_tag(field_name, field.options_html, field.options)
               }
-            elsif field_type == 'radio_button'
-              div.select {
-                label_tag(field_name, field.label)
-                radio_button_tag(field_name, field.value, field.checked, field.options)
+            elsif field_type == 'radio'
+              div.radio {
+                collection_radio_buttons(my[:id], field_name, field.collection, 
+                                         field.value_method, field.text_method, field.options) do |b|
+                  b.label(class: 'radio') { b.radio_button + b.text }
+                end
               }
             else
               div.input {
@@ -89,12 +91,13 @@ module ExpressTemplates
         end
       end
 
-      class RadioButton < Field
-        attr :value, :checked
+      class Radio < Field
+        attr :collection, :value_method, :text_method
         def initialize(name, options = {})
-          @value = options.delete :value
-          @checked = options.delete :checked
-          super(name, options, :radio_button)
+          @collection = options.delete :collection
+          @value_method = options.delete :value_method
+          @text_method = options.delete :text_method
+          super(name, options, :radio)
         end
       end
 

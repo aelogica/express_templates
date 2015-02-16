@@ -105,7 +105,7 @@ class FormForTest < ActiveSupport::TestCase
     ctx = Context.new(resource)
     fragment = -> {
       form_for(:resource) do |f|
-        f.radio_button :gender, 'male'
+        f.radio :age, [[1, 'One'],[2, 'Two']], :first, :last
       end
     }
     return ctx, fragment
@@ -141,8 +141,10 @@ class FormForTest < ActiveSupport::TestCase
     @example_compiled = -> {
       ExpressTemplates::Components::FormFor.render_in(self) {
 "<form action=\"/resources\">
-  <div class=\"/radio_button\">
-    #{label_tag(:gender, nil)}#{radio_button_tag(:gender, 'male')}
+  <div class=\"/radio\">
+   #{collection_radio_buttons(:resource, :age, [[1, 'One'],[2, 'Two']], :first, :last, {}) do |b|
+      b.label(class: 'radio') { b.radio_button + b.text }
+     end}
   </div>
 </form>"
 }
