@@ -111,6 +111,16 @@ class FormForTest < ActiveSupport::TestCase
     return ctx, fragment
   end
 
+  def checkbox_form(resource)
+    ctx = Context.new(resource)
+    fragment = -> {
+      form_for(:resource) do |f|
+        f.checkbox :age, [[1, 'One'], [2, 'Two']], :first, :last
+      end
+    }
+    return ctx, fragment
+  end
+
   test "fields compiled source is legible and transparent" do
     ExpressTemplates::Markup::Tag.formatted do
       ctx, fragment = simple_form(resource)
@@ -137,7 +147,7 @@ class FormForTest < ActiveSupport::TestCase
     end
   end
 
-  test "radiobutton compiled source is legible and transparent" do
+  test "radio compiled source is legible and transparent" do
     @example_compiled = -> {
       ExpressTemplates::Components::FormFor.render_in(self) {
 "<form action=\"/resources\">
@@ -152,6 +162,25 @@ class FormForTest < ActiveSupport::TestCase
 
     ExpressTemplates::Markup::Tag.formatted do
       ctx, fragment = radio_form(resource)
+      assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
+    end
+  end
+
+  test "checkbox compiled source is legible and transparent" do
+    @example_compiled = -> {
+      ExpressTemplates::Components::FormFor.render_in(self) {
+"<form action=\"/resources\">
+  <div class=\"/checkbox\">
+   #{collection_check_boxes(:resource, :age, [[1, 'One'],[2, 'Two']], :first, :last, {}) do |b|
+      b.label(class: 'checkbox') { b.check_box + b.text }
+     end}
+  </div>
+</form>"
+}
+}
+
+    ExpressTemplates::Markup::Tag.formatted do
+      ctx, fragment = checkbox_form(resource)
       puts "=" * 100
       puts example_compiled_src
       puts "=" * 100
@@ -159,5 +188,6 @@ class FormForTest < ActiveSupport::TestCase
       puts "=" * 100
       assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
     end
+
   end
 end

@@ -44,6 +44,11 @@ module ExpressTemplates
         @fields << Radio.new(name, options.merge!(collection: collection, value_method: value_method, text_method: text_method))
       end
 
+      def checkbox(name, collection, value_method, text_method, options = {})
+        @fields ||= []
+        @fields << Checkbox.new(name, options.merge!(collection: collection, value_method: value_method, text_method: text_method))
+      end
+
       emits -> {
         resource_name = my[:id].to_s
         form(action: %Q(/#{resource_name.pluralize})) {
@@ -60,6 +65,13 @@ module ExpressTemplates
                 collection_radio_buttons(my[:id], field_name, field.collection, 
                                          field.value_method, field.text_method, field.options) do |b|
                   b.label(class: 'radio') { b.radio_button + b.text }
+                end
+              }
+            elsif field_type == 'checkbox'
+              div.checkbox {
+                collection_check_boxes(my[:id], field_name, field.collection,
+                                       field.value_method, field.text_method, field.options) do |b|
+                  b.label(class: 'checkbox') { b.check_box + b.text }
                 end
               }
             else
@@ -98,6 +110,13 @@ module ExpressTemplates
           @value_method = options.delete :value_method
           @text_method = options.delete :text_method
           super(name, options, :radio)
+        end
+      end
+
+      class Checkbox < Radio
+        def initialize(name, options = {})
+          super(name, options)
+          @type = :checkbox
         end
       end
 
