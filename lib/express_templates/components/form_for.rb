@@ -62,32 +62,24 @@ module ExpressTemplates
             field_name = field.name
             field_type = field.type.to_s
             if field_type == 'select'
-              div.select {
-                label_tag(field_name, field.label)
-                select_tag(field_name, field.options_html, field.options)
-              }
+              label_tag(field_name, field.label)
+              select_tag(field_name, field.options_html, field.options)
             elsif field_type == 'radio'
-              div.radio {
-                collection_radio_buttons(my[:id], field_name, field.collection, 
-                                         field.value_method, field.text_method, field.options) do |b|
-                  b.label(class: 'radio') { b.radio_button + b.text }
-                end
-              }
-            elsif field_type == 'checkbox'
-              div.checkbox {
-                collection_check_boxes(my[:id], field_name, field.collection,
+              collection_radio_buttons(my[:id], field_name, field.collection,
                                        field.value_method, field.text_method, field.options) do |b|
-                  b.label(class: 'checkbox') { b.check_box + b.text }
-                end
-              }
+                b.label(class: 'radio') { b.radio_button + b.text }
+              end
+            elsif field_type == 'checkbox'
+              collection_check_boxes(my[:id], field_name, field.collection,
+                                     field.value_method, field.text_method, field.options) do |b|
+                b.label(class: 'checkbox') { b.check_box + b.text }
+              end
             elsif field_type == 'submit'
               submit_tag(field_name, field.options)
             else
-              div.input {
-                label_tag(field_name, field.label) unless field_type == 'hidden'
-                args = [field_name, "{{@#{resource_name.singularize}.#{field_name}}}", field.options]
-                self.send("#{field_type}_field_tag".to_sym, *args)
-              }
+              label_tag(field_name, field.label) unless field_type == 'hidden'
+              args = [field_name, "{{@#{resource_name.singularize}.#{field_name}}}", field.options]
+              self.send("#{field_type}_field_tag".to_sym, *args)
             end
           end
         }
