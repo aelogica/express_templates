@@ -64,7 +64,7 @@ class FormForTest < ActiveSupport::TestCase
   def simple_form(resource)
     ctx = Context.new(resource)
     fragment = -> {
-      form_for(:resource) do |f|
+      form_for(:resource, method: :put, url: '/yolo') do |f|
         f.text_field :name, label: 'post title'
         f.text_field :body, class: 'string'
         f.email_field :email
@@ -80,7 +80,7 @@ class FormForTest < ActiveSupport::TestCase
   def select_form(resource)
     ctx = Context.new(resource)
     fragment = -> {
-      form_for(:resource) do |f|
+      form_for(:resource, method: :put) do |f|
         f.select :dropdown, ['yes', 'no'], selected: 'yes'
         f.select :dropdown, '{{ options_from_collection_for_select(@choices, "id", "name") }}'
       end

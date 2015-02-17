@@ -18,7 +18,10 @@ module ExpressTemplates
       include Capabilities::Configurable
       include Capabilities::Building
 
+
       def initialize(*args)
+        # TODO: need a better way to select the form options
+        @form_options = args.select { |x| x.is_a?(Hash) }
         super(*args)
         _process_args!(args) # from Configurable
         yield(self) if block_given?
@@ -57,7 +60,12 @@ module ExpressTemplates
 
       emits -> {
         resource_name = my[:id].to_s
-        form(action: %Q(/#{resource_name.pluralize})) {
+        form_options = @form_options.first
+        form_args = {action: %Q(/#{resource_name.pluralize})}
+        form_args.merge!(form_options) unless form_options.nil?
+
+        form(form_args) {
+          form_rails_support
           fields.each do |field|
             field_name = field.name
             field_type = field.type.to_s
