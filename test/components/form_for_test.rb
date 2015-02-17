@@ -25,15 +25,13 @@ class FormForTest < ActiveSupport::TestCase
   def setup
     @example_compiled = -> {
     ExpressTemplates::Components::FormFor.render_in(self) {
-"<form action=\"/resources\">
-    #{label_tag(:name, 'Post Title')}#{text_field_tag(:name, @resource.name)}
-    #{label_tag(:body, nil, class: 'string')}#{text_field_tag(:body, @resource.body, class: 'string')}
-    #{label_tag(:email, nil)}#{email_field_tag(:email, @resource.email)}
-    #{label_tag(:phone, nil)}#{phone_field_tag(:phone, @resource.phone)}
-    #{label_tag(:url, nil)}#{url_field_tag(:url, @resource.url)}
-    #{label_tag(:number, nil)}#{number_field_tag(:number, @resource.number)}
-    #{label_tag(:dropdown, nil)}#{select_tag(:dropdown, "<option selected=selected>yes</option><option>no</option>".html_safe)}
-</form>"
+"<form action=\"/resources\" method=\"put\" url=\"/yolo\">
+  <div style=\"display:none\">
+"+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:post)})+%Q(#{token_tag})+"
+  </div>
+"+%Q(#{label_tag(:name, "post title")})+%Q(#{text_field_tag(:name, @resource.name, label: "post title")})+%Q(#{label_tag(:body, nil)})+%Q(#{text_field_tag(:body, @resource.body, class: "string")})+%Q(#{label_tag(:email, nil)})+%Q(#{email_field_tag(:email, @resource.email, {})})+%Q(#{label_tag(:phone, nil)})+%Q(#{phone_field_tag(:phone, @resource.phone, {})})+%Q(#{label_tag(:url, nil)})+%Q(#{url_field_tag(:url, @resource.url, {})})+%Q(#{label_tag(:number, nil)})+%Q(#{number_field_tag(:number, @resource.number, {})})+%Q(#{submit_tag("Save it!", {})})+"
+</form>
+"
 }
 }
   end
@@ -118,10 +116,13 @@ class FormForTest < ActiveSupport::TestCase
   test "select compiled source is legible and transparent" do
     @example_compiled = -> {
     ExpressTemplates::Components::FormFor.render_in(self) {
-"<form action=\"/resources\">
-    #{label_tag(:dropdown, nil)}#{select_tag(:dropdown, "<option selected=selected>yes</option><option>no</option>".html_safe)}
-    #{label_tag(:dropdown, nil)}#{select_tag(:dropdown, options_from_collection_for_select(@choices, "id", "name"))}
-</form>"
+"<form action=\"/resources\" method=\"put\">
+  <div style=\"display:none\">
+"+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:post)})+%Q(#{token_tag})+"
+  </div>
+"+%Q(#{label_tag(:dropdown, nil)})+%Q(#{select_tag(:dropdown, '<option selected=selected>yes</option><option >no</option>'.html_safe, {})})+%Q(#{label_tag(:dropdown, nil)})+%Q(#{select_tag(:dropdown,  options_from_collection_for_select(@choices, "id", "name") , {})})+"
+</form>
+"
 }
 }
     ExpressTemplates::Markup::Tag.formatted do
@@ -134,10 +135,14 @@ class FormForTest < ActiveSupport::TestCase
     @example_compiled = -> {
       ExpressTemplates::Components::FormFor.render_in(self) {
 "<form action=\"/resources\">
-   #{collection_radio_buttons(:resource, :age, [[1, 'One'],[2, 'Two']], :first, :last, {}) do |b|
-      b.label(class: 'radio') { b.radio_button + b.text }
-     end}
-</form>"
+  <div style=\"display:none\">
+"+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:post)})+%Q(#{token_tag})+"
+  </div>
+"+%Q(#{collection_radio_buttons(:resource, :age, [[1, "One"], [2, "Two"]], :first, :last, {}) do |b|
+                b.label(class: 'radio') { b.radio_button + b.text }
+              end})+"
+</form>
+"
 }
 }
 
@@ -151,20 +156,19 @@ class FormForTest < ActiveSupport::TestCase
     @example_compiled = -> {
       ExpressTemplates::Components::FormFor.render_in(self) {
 "<form action=\"/resources\">
-   #{collection_check_boxes(:resource, :age, [[1, 'One'],[2, 'Two']], :first, :last, {}) do |b|
-      b.label(class: 'checkbox') { b.check_box + b.text }
-     end}
-</form>"
+  <div style=\"display:none\">
+"+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:post)})+%Q(#{token_tag})+"
+  </div>
+"+%Q(#{collection_check_boxes(:resource, :age, [[1, "One"], [2, "Two"]], :first, :last, {}) do |b|
+                b.label(class: 'checkbox') { b.check_box + b.text }
+              end})+"
+</form>
+"
 }
 }
 
     ExpressTemplates::Markup::Tag.formatted do
       ctx, fragment = checkbox_form(resource)
-      puts "=" * 100
-      puts example_compiled_src
-      puts "=" * 100
-      puts ExpressTemplates.compile(&fragment)
-      puts "=" * 100
       assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
     end
 
