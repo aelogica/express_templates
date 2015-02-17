@@ -85,6 +85,7 @@ class FormForTest < ActiveSupport::TestCase
         f.phone_field :phone
         f.url_field :url
         f.number_field :number
+        f.submit 'Save it!'
       end
     }
     return ctx, fragment

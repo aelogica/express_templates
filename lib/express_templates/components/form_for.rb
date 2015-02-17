@@ -5,13 +5,14 @@ module ExpressTemplates
     #
     # Example:
     #
-    # ```ruby
-    # form_for(:people) do |t|
-    #   t.text_field  :name
-    #   t.email_field :email
-    #   t.phone_field :phone
+    # ````ruby
+    # form_for(:people) do |f|
+    #   f.text_field  :name
+    #   f.email_field :email
+    #   f.phone_field :phone
+    #   f.submit 'Save'
     # end
-    # ```
+    # ````
     #
     class FormFor < Base
       include Capabilities::Configurable
@@ -49,6 +50,11 @@ module ExpressTemplates
         @fields << Checkbox.new(name, options.merge!(collection: collection, value_method: value_method, text_method: text_method))
       end
 
+      def submit(name = 'Submit Changes', options = {})
+        @fields ||=[]
+        @fields << Field.new(name, options, :submit)
+      end
+
       emits -> {
         resource_name = my[:id].to_s
         form(action: %Q(/#{resource_name.pluralize})) {
@@ -74,6 +80,8 @@ module ExpressTemplates
                   b.label(class: 'checkbox') { b.check_box + b.text }
                 end
               }
+            elsif field_type == 'submit'
+              submit_tag(field_name, field.options)
             else
               div.input {
                 label_tag(field_name, field.label) unless field_type == 'hidden'
