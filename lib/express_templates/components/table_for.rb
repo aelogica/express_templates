@@ -138,6 +138,8 @@ module ExpressTemplates
               action_links.puts "<a href='/#{item_name}/{{#{item_name.singularize}.id}}/edit'>Edit</a>"
             elsif action_name.eql?('delete')
               action_links.puts "<a href='/#{item_name}/{{#{item_name.singularize}.id}}' data-method='delete' data-confirm='Are you sure?'>Delete</a>"
+            elsif action_name.eql?('show')
+              action_links.puts "<a href='/#{item_name}/{{#{item_name.singularize}.id}}'>Show</a>"
             end
           end
           action_links.string
