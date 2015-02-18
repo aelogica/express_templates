@@ -9,7 +9,7 @@ module ExpressTemplates
     # form_for(:people) do |f|
     #   f.text_field  :name
     #   f.email_field :email
-    #   f.phone_field :phone
+    #   f.phone_field :phone, wrapper_class: 'field phone'
     #   f.submit 'Save'
     # end
     # ````
@@ -69,26 +69,28 @@ module ExpressTemplates
           fields.each do |field|
             field_name = field.name
             field_type = field.type.to_s
-            if field_type == 'select'
-              label_tag(field_name, field.label)
-              select_tag(field_name, field.options_html, field.options)
-            elsif field_type == 'radio'
-              collection_radio_buttons(my[:id], field_name, field.collection,
+            div(class: field.wrapper_class) {
+              if field_type == 'select'
+                  label_tag(field_name, field.label)
+                  select_tag(field_name, field.options_html, field.options)
+              elsif field_type == 'radio'
+                collection_radio_buttons(my[:id], field_name, field.collection,
+                                         field.value_method, field.text_method, field.options) do |b|
+                  b.label(class: 'radio') { b.radio_button + b.text }
+                end
+              elsif field_type == 'checkbox'
+                collection_check_boxes(my[:id], field_name, field.collection,
                                        field.value_method, field.text_method, field.options) do |b|
-                b.label(class: 'radio') { b.radio_button + b.text }
+                  b.label(class: 'checkbox') { b.check_box + b.text }
+                end
+              elsif field_type == 'submit'
+                submit_tag(field_name, field.options)
+              else
+                label_tag(field_name, field.label) unless field_type == 'hidden'
+                args = [field_name, "{{@#{resource_name.singularize}.#{field_name}}}", field.options]
+                self.send("#{field_type}_field_tag".to_sym, *args)
               end
-            elsif field_type == 'checkbox'
-              collection_check_boxes(my[:id], field_name, field.collection,
-                                     field.value_method, field.text_method, field.options) do |b|
-                b.label(class: 'checkbox') { b.check_box + b.text }
-              end
-            elsif field_type == 'submit'
-              submit_tag(field_name, field.options)
-            else
-              label_tag(field_name, field.label) unless field_type == 'hidden'
-              args = [field_name, "{{@#{resource_name.singularize}.#{field_name}}}", field.options]
-              self.send("#{field_type}_field_tag".to_sym, *args)
-            end
+            }
           end
         }
       }
@@ -102,11 +104,12 @@ module ExpressTemplates
       end
 
       class Field
-        attr :name, :options, :label, :type
+        attr :name, :options, :label, :type, :wrapper_class
         def initialize(name, options = {}, type=:text)
           @name = name
           @options = options
           @label = options[:label]
+          @wrapper_class = options[:wrapper_class]
           @type = type
         end
       end
