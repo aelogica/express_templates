@@ -61,18 +61,21 @@ module ExpressTemplates
       emits -> {
         resource_name = my[:id].to_s
         form_options = @form_options.first
+        form_method = form_options.present? ? form_options[:method] : nil
         form_args = {action: %Q(/#{resource_name.pluralize})}
         form_args.merge!(form_options) unless form_options.nil?
 
         form(form_args) {
-          form_rails_support
+          form_rails_support form_method
           fields.each do |field|
             field_name = field.name
             field_type = field.type.to_s
+            resource_field_name = "#{resource_name.singularize}[#{field_name}]"
+
             div(class: field.wrapper_class) {
               if field_type == 'select'
                   label_tag(field_name, field.label)
-                  select_tag(field_name, field.options_html, field.options)
+                  select_tag(resource_field_name, field.options_html, field.options)
               elsif field_type == 'radio'
                 collection_radio_buttons(my[:id], field_name, field.collection,
                                          field.value_method, field.text_method, field.options) do |b|
@@ -87,7 +90,7 @@ module ExpressTemplates
                 submit_tag(field_name, field.options)
               else
                 label_tag(field_name, field.label) unless field_type == 'hidden'
-                args = [field_name, "{{@#{resource_name.singularize}.#{field_name}}}", field.options]
+                args = [resource_field_name, "{{@#{resource_name.singularize}.#{field_name}}}", field.options]
                 self.send("#{field_type}_field_tag".to_sym, *args)
               end
             }
@@ -109,7 +112,7 @@ module ExpressTemplates
           @name = name
           @options = options
           @label = options[:label]
-          @wrapper_class = options[:wrapper_class]
+          @wrapper_class = @options.delete(:wrapper_class)
           @type = type
         end
       end
