@@ -173,7 +173,7 @@ class FormForTest < ActiveSupport::TestCase
   test "checkbox compiled source is legible and transparent" do
     @example_compiled = -> {
       ExpressTemplates::Components::FormFor.render_in(self) {
-"<form action=\"/resources\" method=\"put\">
+"<form action=\"/resources/1\" method=\"put\">
   <div style=\"display:none\">
 "+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:put)})+%Q(#{token_tag})+"
   </div>

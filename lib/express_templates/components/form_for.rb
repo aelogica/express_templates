@@ -61,8 +61,21 @@ module ExpressTemplates
       emits -> {
         resource_name = my[:id].to_s
         form_options = @form_options.first
-        form_method = form_options.present? ? form_options[:method] : nil
-        form_args = {action: %Q(/#{resource_name.pluralize})}
+        form_method = form_options.delete :method
+
+        form_method = if form_method == :put
+                        :patch
+                      else
+                        form_options[:method]
+                      end
+
+        form_action  = if form_method == :patch
+                       %Q(/#{resource_name.pluralize}/{{@#{resource_name}.id}})
+                       else
+                       %Q(/#{resource_name.pluralize})
+                     end
+
+        form_args = {action: form_action, method: :post}
         form_args.merge!(form_options) unless form_options.nil?
 
         form(form_args) {
