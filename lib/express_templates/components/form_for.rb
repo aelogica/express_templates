@@ -193,11 +193,13 @@ module ExpressTemplates
             field_name = field.name
             field_type = field.type.to_s
             resource_field_name = "#{resource_name.singularize}[#{field_name}]"
+            label_name = "#{resource_name.singularize}_#{field_name}"
+            field_label = field.label || field_name.to_s.capitalize
 
             div(class: field.wrapper_class) {
               if field_type == 'select'
-                  label_tag(field_name, field.label)
-                  select_tag(resource_field_name, field.options_html, field.options)
+                label_tag(label_name, field_label)
+                select_tag(resource_field_name, field.options_html, field.options)
               elsif field_type == 'radio'
                 collection_radio_buttons(my[:id], field_name, field.collection,
                                          field.value_method, field.text_method, field.options) do |b|
@@ -211,7 +213,7 @@ module ExpressTemplates
               elsif field_type == 'submit'
                 submit_tag(field_name, field.options)
               else
-                label_tag(field_name, field.label) unless field_type == 'hidden'
+                label_tag(label_name, field_label) unless field_type == 'hidden'
                 args = [resource_field_name, "{{@#{resource_name.singularize}.#{field_name}}}", field.options]
                 tag_string = if field_type == 'text_area'
                                  'text_area_tag'

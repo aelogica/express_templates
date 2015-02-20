@@ -130,11 +130,11 @@ class FormForTest < ActiveSupport::TestCase
   </div>
 
   <div class=\"\">
-"+%Q(#{label_tag(:dropdown, nil)})+%Q(#{select_tag("resource[dropdown]", '<option selected=selected>yes</option><option >no</option>'.html_safe, {})})+"
+"+%Q(#{label_tag("resource_dropdown", "Dropdown")})+%Q(#{select_tag("resource[dropdown]", '<option selected=selected>yes</option><option >no</option>'.html_safe, {})})+"
   </div>
 
   <div class=\"\">
-"+%Q(#{label_tag(:dropdown, nil)})+%Q(#{select_tag("resource[dropdown]",  options_from_collection_for_select(@choices, "id", "name") , {})})+"
+"+%Q(#{label_tag("resource_dropdown", "Dropdown")})+%Q(#{select_tag("resource[dropdown]",  options_from_collection_for_select(@choices, "id", "name") , {})})+"
   </div>
 </form>
 "
