@@ -53,6 +53,11 @@ module ExpressTemplates
         @fields << Checkbox.new(name, options.merge!(collection: collection, value_method: value_method, text_method: text_method))
       end
 
+      def text_area(name, options = {})
+        @fields ||= []
+        @fields << TextArea.new(name, options)
+      end
+
       def submit(name = 'Submit Changes', options = {})
         @fields ||=[]
         @fields << Field.new(name, options, :submit)
@@ -104,7 +109,13 @@ module ExpressTemplates
               else
                 label_tag(field_name, field.label) unless field_type == 'hidden'
                 args = [resource_field_name, "{{@#{resource_name.singularize}.#{field_name}}}", field.options]
-                self.send("#{field_type}_field_tag".to_sym, *args)
+                tag_string = if field_type == 'text_area'
+                                 'text_area_tag'
+                               else
+                                 "#{field_type}_field_tag"
+                               end
+
+                self.send(tag_string.to_sym, *args)
               end
             }
           end
@@ -127,6 +138,12 @@ module ExpressTemplates
           @label = options[:label]
           @wrapper_class = @options.delete(:wrapper_class)
           @type = type
+        end
+      end
+
+      class TextArea < Field
+        def initialize(name, options={})
+          super(name, options, :text_area)
         end
       end
 
