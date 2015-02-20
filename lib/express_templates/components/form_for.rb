@@ -66,12 +66,12 @@ module ExpressTemplates
       emits -> {
         resource_name = my[:id].to_s
         form_options = @form_options.first
-        form_method = form_options.delete :method
+        form_method = form_options.delete :method if form_options
 
         form_method = if form_method == :put
                         :patch
                       else
-                        form_options[:method]
+                        form_options.present? ?  form_options[:method] : :post
                       end
 
         form_action  = if form_method == :patch

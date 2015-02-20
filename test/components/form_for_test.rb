@@ -124,9 +124,9 @@ class FormForTest < ActiveSupport::TestCase
   test "select compiled source is legible and transparent" do
     @example_compiled = -> {
     ExpressTemplates::Components::FormFor.render_in(self) {
-"<form action=\"/resources\" method=\"put\">
+"<form action=\"/resources/#{@resource.id}\" method=\"post\">
   <div style=\"display:none\">
-"+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:put)})+%Q(#{token_tag})+"
+"+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:patch)})+%Q(#{token_tag})+"
   </div>
 
   <div class=\"\">
@@ -149,7 +149,7 @@ class FormForTest < ActiveSupport::TestCase
   test "radio compiled source is legible and transparent" do
     @example_compiled = -> {
       ExpressTemplates::Components::FormFor.render_in(self) {
-"<form action=\"/resources\">
+"<form action=\"/resources\" method=\"post\">
   <div style=\"display:none\">
 "+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:post)})+%Q(#{token_tag})+"
   </div>
@@ -173,9 +173,9 @@ class FormForTest < ActiveSupport::TestCase
   test "checkbox compiled source is legible and transparent" do
     @example_compiled = -> {
       ExpressTemplates::Components::FormFor.render_in(self) {
-"<form action=\"/resources/1\" method=\"put\">
+"<form action=\"/resources/#{@resource.id}\" method=\"post\">
   <div style=\"display:none\">
-"+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:put)})+%Q(#{token_tag})+"
+"+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:patch)})+%Q(#{token_tag})+"
   </div>
 
   <div class=\"\">
