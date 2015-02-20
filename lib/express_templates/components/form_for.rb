@@ -14,6 +14,72 @@ module ExpressTemplates
     # end
     # ````
     #
+    # This assumes that @people variable will exist in the
+    # view and that it will be a collection whose members respond to :name, :email etc.
+    #
+    # This will result in markup like the following:
+    #
+    # ````
+    # <form action="/people" method="post">
+    #   <div style="display:none">
+    #     <input name="utf8" type="hidden" value="✓">
+    #     <input type="hidden" name="_method" value="post">
+    #     <input type="hidden" name="authenticity_token" value="5ZDztTe1N4tc03QSjmMdSVqAw==">
+    #   </div>
+    #
+    #   <div>
+    #     <label for="person_name">Name</label>
+    #     <input type="text" name="person[name]" id="person_name" />
+    #   </div>
+    #
+    #   <div>
+    #     <label for="person_email">Email</label>
+    #     <input type="email" name="person[email]" id="person_email" />
+    #   </div>
+    #
+    #   <div class="field phone">
+    #     <label for="person_phone">Phone</label>
+    #     <input type="tel" name="person[phone]" id="person_phone" />
+    #   </div>
+    #
+    #   <div>
+    #     <input type="submit" name="commit" value="Save" />
+    #   </div>
+    # </form>
+    # ````
+    #
+    # As seen above, each field is accompanied by a label and is wrapped by a div.
+    # The div can be further styled by adding css classes to it via the `wrapper_class` option.
+    #
+    # Example:
+    #
+    # ````ruby
+    # form_for(:posts) do
+    #   f.text_field :title, wrapped_class: 'string optional'
+    # end
+    #
+    # Will result to generating HTML like so:
+    #
+    # ````
+    #   ...
+    #   <div class='string optional'>
+    #     <label for='post_title'>Title</label>
+    #     <input type="text" name="post[title]" id="post_title" />
+    #   </div>
+    #   ...
+    # ````
+    #
+    # In addition to this, label text can also be customized using the `label` option:
+    #
+    # ````ruby
+    #   f.email_field :email_address, label: 'Your Email'
+    # ````
+    #
+    # Compiles to;
+    # ````
+    #   <label for='user_email'>Your Email</label>
+    #   <input type='email' name='user[email]' id='user_email' />
+    # ````
     class FormFor < Base
       include Capabilities::Configurable
       include Capabilities::Building
@@ -29,6 +95,44 @@ module ExpressTemplates
 
       attr :fields
 
+      # Express Templates uses Rails' form helpers to generate the fields with labels
+      #
+      # Example:
+      #
+      # ````ruby
+      # form_for(:people) do |f|
+      #   f.phone_field :phone
+      # end
+      # ````
+      #
+      # This will precompile as
+      #
+      # ````ruby
+      #    ...
+      #    phone_field_tag :phone, @people.phone, {}
+      #    ...
+      # ````
+      #
+      # Fields can also have custom classes via the `class` option:
+      #
+      # Example:
+      #
+      # ````ruby
+      #    f.url_field :website_url, class: 'url-string'
+      # ````
+      #
+      # Compiles to:
+      #
+      # ````
+      #    <input type='url' name='post[website_url]' id='post_website_url' class='url-string' />
+      # ````
+      #
+      # You can also add in the basic options supported by the
+      # phone_field_tag [here](http://api.rubyonrails.org/classes/ActionView/Helpers/FormTagHelper.html#method-i-phone_field_tag)
+      #
+      # This applies to all the other '_field_tags' listed
+      # [here](http://api.rubyonrails.org/classes/ActionView/Helpers/FormTagHelper.html)
+      #
       %w(email phone text password color date datetime
         datetime_local hidden number range
         search telephone time url week).each do |type|
