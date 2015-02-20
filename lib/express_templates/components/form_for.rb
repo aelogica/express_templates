@@ -84,7 +84,6 @@ module ExpressTemplates
       include Capabilities::Configurable
       include Capabilities::Building
 
-
       def initialize(*args)
         # TODO: need a better way to select the form options
         @form_options = args.select { |x| x.is_a?(Hash) }
@@ -133,6 +132,45 @@ module ExpressTemplates
       # This applies to all the other '_field_tags' listed
       # [here](http://api.rubyonrails.org/classes/ActionView/Helpers/FormTagHelper.html)
       #
+      #
+      # = Fields
+      # ````ruby
+      # f.text_field :name
+      # #   <div>
+      # #    <label for="person_name">Name</label>
+      # #    <input type="text" name="person[name]" id="person_name" />
+      # #   </div>
+      #
+      # f.text_field :name, label: 'Post Title'
+      # #   <div>
+      # #    <label for="person_name">Post Title</label>
+      # #    <input type="text" name="person[name]" id="person_name" />
+      # #   </div>
+      #
+      # f.text_field :name, class: 'string'
+      # #   <div>
+      # #    <label for="person_name">Name</label>
+      # #    <input type="text" name="person[name]" class='string' id="person_name" />
+      # #   </div>
+      #
+      # f.text_field :name, wrapper_class: 'field input'
+      # #   <div class="field input">
+      # #    <label for="person_name">Name</label>
+      # #    <input type="text" name="person[name]" id="person_name" />
+      # #   </div>
+      #
+      # f.select :gender, ['male', 'female'], selected: 'male'
+      # #   <div>
+      # #     <label for="person_gender">Gender</label>
+      # #     <select name="person[gender]" id="person_gender"><option>Male</option><option>Female</option></select>
+      # #   </div>
+      #
+      # f.select :dropdown, '{{ options_from_collection_for_select(@choices, "id", "name") }}'
+      # # <div>
+      # #   <label for="post_title">Title</label>
+      # # </div>
+      #  args = [resource_field_name, "{{@#{resource_name.singularize}.#{field_name}}}", field.options]
+      # ````
       %w(email phone text password color date datetime
         datetime_local hidden number range
         search telephone time url week).each do |type|
