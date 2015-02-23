@@ -7,8 +7,8 @@ require "express_templates/version"
 Gem::Specification.new do |s|
   s.name        = "express_templates"
   s.version     = ExpressTemplates::VERSION
-  s.authors     = ["Steven Talcott Smith"]
-  s.email       = ["steve@aelogica.com"]
+  s.authors     = ["Steven Talcott Smith", "Eumir Gaspar"]
+  s.email       = ["steve@aelogica.com", "eumir@aelogica.com"]
   s.homepage    = "https://github.com/aelogica/express_templates"
   s.summary     = "Write HTML templates in declarative Ruby.  Create reusable view components."
   s.description = "Replace Erb/HAML/Slim with ExpressTemplates and write templates in a declartive style of Ruby.  With ExpressTemplates you may easily create a library of components for use across projects."
