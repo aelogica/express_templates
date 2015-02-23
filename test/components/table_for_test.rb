@@ -84,6 +84,7 @@ end).join+"  </tbody>
       <td class=\"name\">#{test_item.name}</td>
       <td class=\"price\">#{(-> (price) { '$%0.2f' % price }).call(test_item.price)}</td>
       <td class=\"default_actions\">
+<a href='/test_items/#{test_item.id}'>Show</a>
 <a href='/test_items/#{test_item.id}/edit'>Edit</a>
 <a href='/test_items/#{test_item.id}' data-method='delete' data-confirm='Are you sure?'>Delete</a>
       </td>
@@ -110,6 +111,7 @@ end).join+"  </tbody>
       <td class="name">Foo</td>
       <td class="price">$1.23</td>
       <td class="default_actions">
+<a href='/test_items/1'>Show</a>
 <a href='/test_items/1/edit'>Edit</a>
 <a href='/test_items/1' data-method='delete' data-confirm='Are you sure?'>Delete</a>
       </td>
@@ -119,6 +121,7 @@ end).join+"  </tbody>
       <td class="name">Bar</td>
       <td class="price">$5.49</td>
       <td class="default_actions">
+<a href='/test_items/2'>Show</a>
 <a href='/test_items/2/edit'>Edit</a>
 <a href='/test_items/2' data-method='delete' data-confirm='Are you sure?'>Delete</a>
       </td>
@@ -128,6 +131,7 @@ end).join+"  </tbody>
       <td class="name">Baz</td>
       <td class="price">$99.97</td>
       <td class="default_actions">
+<a href='/test_items/3'>Show</a>
 <a href='/test_items/3/edit'>Edit</a>
 <a href='/test_items/3' data-method='delete' data-confirm='Are you sure?'>Delete</a>
       </td>
@@ -153,7 +157,7 @@ end).join+"  </tbody>
       table_for(:test_items) do |t|
         t.column :name
         t.column :price, formatter: -> (price) { '$%0.2f' % price }
-        t.column :default_actions, header: "Actions", actions: [:edit, :delete]
+        t.column :default_actions, header: "Actions", actions: [:show, :edit, :delete]
       end
     }
     return ctx, fragment
@@ -177,8 +181,11 @@ end).join+"  </tbody>
   test "compiled source is legible and transparent" do
     ExpressTemplates::Markup::Tag.formatted do
       ctx, fragment = simple_table(test_items)
+      puts "FRAGMENT #{fragment}"
+      puts ctx
       assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
-
+      puts example_compiled_src
+      puts ExpressTemplates.compile(&fragment)
       actx, afragment = table_with_actions(test_items)
       assert_equal example_with_actions_compiled_src, ExpressTemplates.compile(&afragment)
     end

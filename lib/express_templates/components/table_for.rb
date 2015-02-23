@@ -8,7 +8,7 @@ module ExpressTemplates
     #
     # Example:
     #
-    # ```ruby
+    # ````ruby
     # table_for(:people) do |t|
     #   t.column :name
     #   t.column :email
@@ -16,7 +16,7 @@ module ExpressTemplates
     #   t.column :hourly_rate, header: "Rate",
     #                          formatter: -> (amount) {'$%0.2f' % amount rescue 'N/A'}
     # end
-    # ```
+    # ````
     #
     # This assumes that a @people variable will exist in the
     # view and that it will be a collection whose members respond to
@@ -138,6 +138,8 @@ module ExpressTemplates
               action_links.puts "<a href='/#{item_name}/{{#{item_name.singularize}.id}}/edit'>Edit</a>"
             elsif action_name.eql?('delete')
               action_links.puts "<a href='/#{item_name}/{{#{item_name.singularize}.id}}' data-method='delete' data-confirm='Are you sure?'>Delete</a>"
+            elsif action_name.eql?('show')
+              action_links.puts "<a href='/#{item_name}/{{#{item_name.singularize}.id}}'>Show</a>"
             end
           end
           action_links.string
