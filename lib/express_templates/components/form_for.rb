@@ -141,7 +141,7 @@ module ExpressTemplates
       # #    <input type="text" name="person[name]" id="person_name" />
       # #   </div>
       #
-      # f.text_field :name, label: 'Post Title'
+      # f.text_field :name, label: 'post title'
       # #   <div>
       # #    <label for="person_name">Post Title</label>
       # #    <input type="text" name="person[name]" id="person_name" />
@@ -159,17 +159,6 @@ module ExpressTemplates
       # #    <input type="text" name="person[name]" id="person_name" />
       # #   </div>
       #
-      # f.select :gender, ['male', 'female'], selected: 'male'
-      # #   <div>
-      # #     <label for="person_gender">Gender</label>
-      # #     <select name="person[gender]" id="person_gender"><option>Male</option><option>Female</option></select>
-      # #   </div>
-      #
-      # f.select :dropdown, '{{ options_from_collection_for_select(@choices, "id", "name") }}'
-      # # <div>
-      # #   <label for="post_title">Title</label>
-      # # </div>
-      #  args = [resource_field_name, "{{@#{resource_name.singularize}.#{field_name}}}", field.options]
       # ````
       %w(email phone text password color date datetime
         datetime_local hidden number range
@@ -180,26 +169,89 @@ module ExpressTemplates
         end
       end
 
+      # ==== Examples
+      #   f.select :gender, ['Male', 'Female'], selected: 'Male'
+      #   # <div>
+      #   #   <label for="person_gender">Gender</label>
+      #   #   <select id="person_gender" name="person[gender]">
+      #   #     <option selected="selected" value="Male">Male</option>
+      #   #     <option selected="selected" value="Female">Female</option>
+      #   #   </select>
+      #   # </div>
+      #   f.select :name, options_from_collection_for_select(@people, "id", "name")
+      #   # <div>
+      #   #   <label for="person_name">Name</label>
+      #   #   <select id="people_name" name="people[name]"><option value="1">David</option></select>
+      #   # </div>
+      #
       def select(name, select_options, options = {})
         @fields ||= []
         @fields << Select.new(name, options.merge!(select_options: select_options))
       end
 
+      # ==== Examples
+      #   f.radio :card, [[1, 'One'], [2, 'Two']], :first, :last
+      #   # <div>
+      #   #   <label class="radio" for="user_age_1"><input type="radio" value="1" name="user[age]" id="user_age_1">One</label>
+      #   #   <label class="radio" for="user_age_2"><input type="radio" value="2" name="user[age]" id="user_age_2">Two</label>
+      #   # </div>
+      #
       def radio(name, collection, value_method, text_method, options = {})
         @fields ||= []
         @fields << Radio.new(name, options.merge!(collection: collection, value_method: value_method, text_method: text_method))
       end
 
+      # ==== Examples
+      #   f.checkbox :age, [[1, 'One'], [2, 'Two']], :first, :last
+      #   # <div>
+      #   #   <label class="checkbox" for="user_age_1">
+      #   #     <input type="checkbox" value="1" name="user[age][]" id="user_age_1">
+      #   #     "One"
+      #   #   </label>
+      #   #   <label>
+      #   #     <input type="checkbox" value="2" name="user[age][]" id="user_age_2">
+      #   #     "Two"
+      #   #   </label>
+      #   # </div>
+      #
       def checkbox(name, collection, value_method, text_method, options = {})
         @fields ||= []
         @fields << Checkbox.new(name, options.merge!(collection: collection, value_method: value_method, text_method: text_method))
       end
 
+      # ==== Examples
+      #   f.text_area :name
+      #   # <div>
+      #   #   <label for="user_name">Name</label>
+      #   #   <textarea name="user[name]" id="user_name" >
+      #   # </div>
+      #   f.text_area :name, label: 'post title'
+      #   # <div>
+      #   #   <label for="user_name">Post Title</label>
+      #   #   <textarea name="user[name]" id="user_name" >
+      #   # </div>
+      #   f.text_area :name, wrapper_class: 'field input'
+      #   # <div class="field input">
+      #   #   <label for="user_name">Name</label>
+      #   #   <textarea name="user[name]" id="user_name" >
+      #   # </div>
+      #   f.text_area :name, class: 'string'
+      #   # <div>
+      #   #   <label for="user_name>Name</label>
+      #   #   <textarea name="user[name] id="user_name" class="string" >
+      #   # </div>
+      #
       def text_area(name, options = {})
         @fields ||= []
         @fields << TextArea.new(name, options)
       end
 
+      # ==== Examples
+      #   f.submit "Save Changes"
+      #   # <div>
+      #   #   <input type="submit" name="commit" value="Save Changes" />
+      #   # </div>
+      #
       def submit(name = 'Submit Changes', options = {})
         @fields ||=[]
         @fields << Field.new(name, options, :submit)
