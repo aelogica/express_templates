@@ -16,7 +16,7 @@ module ExpressTemplates
       #
       #     for_each -> { menu_items }
       #
-      #     wrap_with :wrapper
+      #     wrap_with :menu_wrapper
       #
       #   end
       #
