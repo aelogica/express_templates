@@ -86,7 +86,10 @@ module ExpressTemplates
 
       def initialize(*args)
         # TODO: need a better way to select the form options
-        @form_options = args.select { |x| x.is_a?(Hash) }
+        if @form_options = args.find { |x| x.is_a?(Hash) }
+          @_method = @form_options.delete :method
+        end
+
         super(*args)
         _process_args!(args) # from Configurable
         yield(self) if block_given?
@@ -257,25 +260,29 @@ module ExpressTemplates
         @fields << Field.new(name, options, :submit)
       end
 
+      def form_method
+        if @_method == :put
+          :patch
+        else
+          @form_options.present? ?  @form_options[:method] : :post
+        end
+      end
+
+      def _action(resource_name)
+        base_url = %Q(/#{resource_name.pluralize})
+        if form_method == :patch
+          %Q(#{base_url}/{{@#{resource_name}.id}})
+        else
+          base_url
+        end
+      end
+
       emits -> {
         resource_name = my[:id].to_s
-        form_options = @form_options.first
-        form_method = form_options.delete :method if form_options
-
-        form_method = if form_method == :put
-                        :patch
-                      else
-                        form_options.present? ?  form_options[:method] : :post
-                      end
-
-        form_action  = if form_method == :patch
-                       %Q(/#{resource_name.pluralize}/{{@#{resource_name}.id}})
-                       else
-                       %Q(/#{resource_name.pluralize})
-                     end
+        form_action = _action(resource_name)
 
         form_args = {action: form_action, method: :post}
-        form_args.merge!(form_options) unless form_options.nil?
+        form_args.merge!(@form_options) unless @form_options.nil?
 
         form(form_args) {
           form_rails_support form_method
