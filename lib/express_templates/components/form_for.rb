@@ -284,7 +284,7 @@ module ExpressTemplates
             field_type = field.type.to_s
             resource_field_name = "#{resource_name.singularize}[#{field_name}]"
             label_name = "#{resource_name.singularize}_#{field_name}"
-            field_label = field.label || field_name.to_s.capitalize
+            field_label = field.label || field_name.to_s.titleize
 
             div(class: field.wrapper_class) {
               if field_type == 'select'
