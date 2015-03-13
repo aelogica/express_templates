@@ -43,7 +43,7 @@ class FormForTest < ActiveSupport::TestCase
   </div>
 
   <div class=\"\">
-"+%Q(#{label_tag("resource_phone", "Phone")})+%Q(#{phone_field_tag("resource[phone]", @resource.phone, {})})+"
+"+%Q(#{label_tag("resource_mobile_phone", "Mobile Phone")})+%Q(#{phone_field_tag("resource[mobile_phone]", @resource.mobile_phone, {})})+"
   </div>
 
   <div class=\"\">
@@ -74,7 +74,7 @@ class FormForTest < ActiveSupport::TestCase
         f.text_field :name, label: 'post title'
         f.text_field :body, class: 'string'
         f.email_field :email, wrapper_class: 'field input'
-        f.phone_field :phone
+        f.phone_field :mobile_phone
         f.url_field :url
         f.number_field :number
         f.submit 'Save it!'
