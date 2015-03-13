@@ -25,33 +25,33 @@ class FormForTest < ActiveSupport::TestCase
   def setup
     @example_compiled = -> {
     ExpressTemplates::Components::FormFor.render_in(self) {
-"<form action=\"/resources\" method=\"put\" url=\"/yolo\">
+"<form action=\"/resources/#{@resource.id}\" method=\"post\" url=\"/posts\">
   <div style=\"display:none\">
-"+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:post)})+%Q(#{token_tag})+"
+"+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:patch)})+%Q(#{token_tag})+"
   </div>
 
   <div class=\"\">
-"+%Q(#{label_tag(:name, "post title")})+%Q(#{text_field_tag(:name, @resource.name, label: "post title")})+"
+"+%Q(#{label_tag("resource_name", "post title")})+%Q(#{text_field_tag("resource[name]", @resource.name, label: "post title")})+"
   </div>
 
   <div class=\"\">
-"+%Q(#{label_tag(:body, nil)})+%Q(#{text_field_tag(:body, @resource.body, class: "string")})+"
+"+%Q(#{label_tag("resource_body", "Body")})+%Q(#{text_field_tag("resource[body]", @resource.body, class: "string")})+"
   </div>
 
   <div class=\"field input\">
-"+%Q(#{label_tag(:email, nil)})+%Q(#{email_field_tag(:email, @resource.email, wrapper_class: "field input")})+"
+"+%Q(#{label_tag("resource_email", "Email")})+%Q(#{email_field_tag("resource[email]", @resource.email, {})})+"
   </div>
 
   <div class=\"\">
-"+%Q(#{label_tag(:phone, nil)})+%Q(#{phone_field_tag(:phone, @resource.phone, {})})+"
+"+%Q(#{label_tag("resource_phone", "Phone")})+%Q(#{phone_field_tag("resource[phone]", @resource.phone, {})})+"
   </div>
 
   <div class=\"\">
-"+%Q(#{label_tag(:url, nil)})+%Q(#{url_field_tag(:url, @resource.url, {})})+"
+"+%Q(#{label_tag("resource_url", "Url")})+%Q(#{url_field_tag("resource[url]", @resource.url, {})})+"
   </div>
 
   <div class=\"\">
-"+%Q(#{label_tag(:number, nil)})+%Q(#{number_field_tag(:number, @resource.number, {})})+"
+"+%Q(#{label_tag("resource_number", "Number")})+%Q(#{number_field_tag("resource[number]", @resource.number, {})})+"
   </div>
 
   <div class=\"\">"+%Q(#{submit_tag("Save it!", {})})+"</div>
@@ -70,7 +70,7 @@ class FormForTest < ActiveSupport::TestCase
   def simple_form(resource)
     ctx = Context.new(resource)
     fragment = -> {
-      form_for(:resource, method: :put, url: '/yolo') do |f|
+      form_for(:resource, method: :put, url: '/posts') do |f|
         f.text_field :name, label: 'post title'
         f.text_field :body, class: 'string'
         f.email_field :email, wrapper_class: 'field input'
@@ -116,8 +116,8 @@ class FormForTest < ActiveSupport::TestCase
 
   test "fields compiled source is legible and transparent" do
     ExpressTemplates::Markup::Tag.formatted do
-      # ctx, fragment = simple_form(resource)
-      # assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
+      ctx, fragment = simple_form(resource)
+      assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
     end
   end
 
