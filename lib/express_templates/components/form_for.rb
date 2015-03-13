@@ -277,13 +277,21 @@ module ExpressTemplates
         end
       end
 
+      def form_args
+        default_args = {action: _action(resource_name), method: :post}
+
+        if @form_options.nil?
+          default_args
+        else
+          default_args.merge!(@form_options) 
+        end
+      end
+
+      def resource_name
+        my[:id].to_s
+      end
+
       emits -> {
-        resource_name = my[:id].to_s
-        form_action = _action(resource_name)
-
-        form_args = {action: form_action, method: :post}
-        form_args.merge!(@form_options) unless @form_options.nil?
-
         form(form_args) {
           form_rails_support form_method
           fields.each do |field|
