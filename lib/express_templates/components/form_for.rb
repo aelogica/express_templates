@@ -260,36 +260,6 @@ module ExpressTemplates
         @fields << Field.new(name, options, :submit)
       end
 
-      def form_method
-        if @_method == :put
-          :patch
-        else
-          @form_options.present? ?  @form_options[:method] : :post
-        end
-      end
-
-      def _action(resource_name)
-        base_url = %Q(/#{resource_name.pluralize})
-        if form_method == :patch
-          %Q(#{base_url}/{{@#{resource_name}.id}})
-        else
-          base_url
-        end
-      end
-
-      def form_args
-        default_args = {action: _action(resource_name), method: :post}
-
-        if @form_options.nil?
-          default_args
-        else
-          default_args.merge!(@form_options) 
-        end
-      end
-
-      def resource_name
-        my[:id].to_s
-      end
 
       emits -> {
         form(form_args) {
@@ -339,6 +309,42 @@ module ExpressTemplates
 
       def compile
         wrap_for_stack_trace(lookup(:markup))
+      end
+
+      private
+
+      def form_method
+        if @_method == :put
+          :patch
+        else
+          @form_options.present? ?  @form_options[:method] : :post
+        end
+      end
+
+      def _action(resource_name)
+        base_url = %Q(/#{resource_name.pluralize})
+        if form_method == :patch
+          %Q(#{base_url}/{{@#{resource_name}.id}})
+        else
+          base_url
+        end
+      end
+
+      def form_args
+        default_args = {action: _action(resource_name), method: :post}
+
+        if @form_options.nil?
+          default_args
+        else
+          if html_options = @form_options.delete(:html_options)
+            @form_options.merge!(html_options)
+          end
+          default_args.merge!(@form_options)
+        end
+      end
+
+      def resource_name
+        my[:id].to_s
       end
 
       class Field

@@ -25,7 +25,7 @@ class FormForTest < ActiveSupport::TestCase
   def setup
     @example_compiled = -> {
     ExpressTemplates::Components::FormFor.render_in(self) {
-"<form action=\"/resources/#{@resource.id}\" method=\"post\" url=\"/posts\">
+"<form action=\"/resources/#{@resource.id}\" method=\"post\" url=\"/posts\" id=\"post_form\">
   <div style=\"display:none\">
 "+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:patch)})+%Q(#{token_tag})+"
   </div>
@@ -70,7 +70,7 @@ class FormForTest < ActiveSupport::TestCase
   def simple_form(resource)
     ctx = Context.new(resource)
     fragment = -> {
-      form_for(:resource, method: :put, url: '/posts') do |f|
+      form_for(:resource, method: :put, url: '/posts', html_options: {id: 'post_form'}) do |f|
         f.text_field :name, label: 'post title'
         f.text_field :body, class: 'string'
         f.email_field :email, wrapper_class: 'field input'
