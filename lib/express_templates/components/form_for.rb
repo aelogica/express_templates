@@ -5,7 +5,7 @@ module ExpressTemplates
     #
     # Example:
     #
-    # ````ruby
+    # ````
     # form_for(:people) do |f|
     #   f.text_field  :name
     #   f.email_field :email
@@ -53,7 +53,7 @@ module ExpressTemplates
     #
     # Example:
     #
-    # ````ruby
+    # ````
     # form_for(:posts) do
     #   f.text_field :title, wrapped_class: 'string optional'
     # end
@@ -71,7 +71,7 @@ module ExpressTemplates
     #
     # In addition to this, label text can also be customized using the `label` option:
     #
-    # ````ruby
+    # ````
     #   f.email_field :email_address, label: 'Your Email'
     # ````
     #
@@ -86,7 +86,10 @@ module ExpressTemplates
 
       def initialize(*args)
         # TODO: need a better way to select the form options
-        @form_options = args.select { |x| x.is_a?(Hash) }
+        if @form_options = args.find { |x| x.is_a?(Hash) }
+          @_method = @form_options.delete :method
+        end
+
         super(*args)
         _process_args!(args) # from Configurable
         yield(self) if block_given?
@@ -98,7 +101,7 @@ module ExpressTemplates
       #
       # Example:
       #
-      # ````ruby
+      # ````
       # form_for(:people) do |f|
       #   f.phone_field :phone
       # end
@@ -106,17 +109,27 @@ module ExpressTemplates
       #
       # This will precompile as
       #
-      # ````ruby
+      # ````
       #    ...
       #    phone_field_tag :phone, @people.phone, {}
       #    ...
       # ````
       #
+      # You can also add html options to the form (add classes, id, etc)
+      #
+      # ````
+      # form_for(:people, html_options: {class: 'edit_form', id: 'people_form'}) do |f|
+      #    f.phone_field :phone
+      # end
+      # ````
+      #
+      #   # <form action='/people' method='post' id='people_form' class='edit_form'>
+      #
       # Fields can also have custom classes via the `class` option:
       #
       # Example:
       #
-      # ````ruby
+      # ````
       #    f.url_field :website_url, class: 'url-string'
       # ````
       #
@@ -134,7 +147,7 @@ module ExpressTemplates
       #
       #
       # = Fields
-      # ````ruby
+      # ````
       # f.text_field :name
       # #   <div>
       # #    <label for="person_name">Name</label>
@@ -257,26 +270,8 @@ module ExpressTemplates
         @fields << Field.new(name, options, :submit)
       end
 
+
       emits -> {
-        resource_name = my[:id].to_s
-        form_options = @form_options.first
-        form_method = form_options.delete :method if form_options
-
-        form_method = if form_method == :put
-                        :patch
-                      else
-                        form_options.present? ?  form_options[:method] : :post
-                      end
-
-        form_action  = if form_method == :patch
-                       %Q(/#{resource_name.pluralize}/{{@#{resource_name}.id}})
-                       else
-                       %Q(/#{resource_name.pluralize})
-                     end
-
-        form_args = {action: form_action, method: :post}
-        form_args.merge!(form_options) unless form_options.nil?
-
         form(form_args) {
           form_rails_support form_method
           fields.each do |field|
@@ -324,6 +319,42 @@ module ExpressTemplates
 
       def compile
         wrap_for_stack_trace(lookup(:markup))
+      end
+
+      private
+
+      def form_method
+        if @_method == :put
+          :patch
+        else
+          @form_options.present? ?  @form_options[:method] : :post
+        end
+      end
+
+      def _action(resource_name)
+        base_url = %Q(/#{resource_name.pluralize})
+        if form_method == :patch
+          %Q(#{base_url}/{{@#{resource_name}.id}})
+        else
+          base_url
+        end
+      end
+
+      def form_args
+        default_args = {action: _action(resource_name), method: :post}
+
+        if @form_options.nil?
+          default_args
+        else
+          if html_options = @form_options.delete(:html_options)
+            @form_options.merge!(html_options)
+          end
+          default_args.merge!(@form_options)
+        end
+      end
+
+      def resource_name
+        my[:id].to_s
       end
 
       class Field
