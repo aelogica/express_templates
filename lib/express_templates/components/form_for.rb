@@ -270,6 +270,13 @@ module ExpressTemplates
         @fields << Field.new(name, options, :submit)
       end
 
+      # You can add extra actions to a form instead of just submit
+      # ==== Examples
+      #   f.actions({submit: ['Save', {class: 'submit primary'}], cancel: ['Cancel it', class: 'cancel secondary']})
+      #   # <div>
+      #   #   <input type="submit" name="submit primary" value: "Save" />
+      #   #   <a href="#" onclick="return false;" class="cancel secondary">Cancel it</a>
+      #   # </div>
       def actions(extra_actions)
         @fields ||= []
         @fields << Actions.new(extra_actions)
