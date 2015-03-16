@@ -114,9 +114,51 @@ class FormForTest < ActiveSupport::TestCase
     return ctx, fragment
   end
 
+  def advanced_form(resource)
+    ctx = Context.new(resource)
+    fragment = -> {
+      form_for(:resource, method: :put, url: '/posts') do |f|
+        f.text_field :name, label: 'post title'
+        f.text_field :body, class: 'string'
+        f.actions({submit: ['Save', {class: 'submit primary'}], cancel: ['Cancel it', class: 'cancel secondary']})
+      end
+    }
+    return ctx, fragment
+  end
+
   test "fields compiled source is legible and transparent" do
     ExpressTemplates::Markup::Tag.formatted do
       ctx, fragment = simple_form(resource)
+      assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
+    end
+  end
+
+  test 'advanced form can have additional actions' do
+    @example_compiled = -> {
+    ExpressTemplates::Components::FormFor.render_in(self) {
+"<form action=\"/resources/#{@resource.id}\" method=\"post\" url=\"/posts\">
+  <div style=\"display:none\">
+"+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:patch)})+%Q(#{token_tag})+"
+  </div>
+
+  <div class=\"\">
+"+%Q(#{label_tag("resource_name", "post title")})+%Q(#{text_field_tag("resource[name]", @resource.name, label: "post title")})+"
+  </div>
+
+  <div class=\"\">
+"+%Q(#{label_tag("resource_body", "Body")})+%Q(#{text_field_tag("resource[body]", @resource.body, class: "string")})+"
+  </div>
+
+  <div class=\"\">
+"+%Q(#{submit_tag("Save", class: "submit primary")})+"
+    <a href=\"#\" onclick=\"return false;\" class=\"cancel secondary\">Cancel it</a>
+  </div>
+</form>
+"
+}
+}
+    ExpressTemplates::Markup::Tag.formatted do
+      ctx, fragment = advanced_form(resource)
       assert_equal example_compiled_src, ExpressTemplates.compile(&fragment)
     end
   end

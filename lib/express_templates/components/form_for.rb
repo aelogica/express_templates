@@ -270,6 +270,10 @@ module ExpressTemplates
         @fields << Field.new(name, options, :submit)
       end
 
+      def actions(extra_actions)
+        @fields ||= []
+        @fields << Actions.new(extra_actions)
+      end
 
       emits -> {
         form(form_args) {
@@ -297,6 +301,18 @@ module ExpressTemplates
                 end
               elsif field_type == 'submit'
                 submit_tag(field_name, field.options)
+              elsif field_type == 'actions'
+                field.extra_actions.each do |action|
+                  action_type = action.first
+                  action_options = action.last
+
+                  if action_type == :submit
+                    submit_tag(action_options.first, action_options.last)
+                  elsif action_type == :cancel
+                    default_opts = {href: '#', onclick: 'return false;'}.merge!(action_options.last)
+                    a(default_opts) { action_options.first }
+                  end
+                end
               else
                 label_tag(label_name, field_label) unless field_type == 'hidden'
                 args = [resource_field_name, "{{@#{resource_name.singularize}.#{field_name}}}", field.options]
@@ -410,6 +426,17 @@ module ExpressTemplates
             end
             "{{'#{choice_string}'.html_safe}}"
           end
+        end
+      end
+
+      # need to fix this some day (actions doesn't need to inherit from field)
+      class Actions < Field
+        attr :extra_actions
+        def initialize(extra_actions)
+          @type = :actions
+          @name = ''
+          @label = ''
+          @extra_actions = extra_actions
         end
       end
     end
