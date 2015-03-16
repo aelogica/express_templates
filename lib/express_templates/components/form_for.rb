@@ -5,7 +5,7 @@ module ExpressTemplates
     #
     # Example:
     #
-    # ````ruby
+    # ````
     # form_for(:people) do |f|
     #   f.text_field  :name
     #   f.email_field :email
@@ -53,7 +53,7 @@ module ExpressTemplates
     #
     # Example:
     #
-    # ````ruby
+    # ````
     # form_for(:posts) do
     #   f.text_field :title, wrapped_class: 'string optional'
     # end
@@ -71,7 +71,7 @@ module ExpressTemplates
     #
     # In addition to this, label text can also be customized using the `label` option:
     #
-    # ````ruby
+    # ````
     #   f.email_field :email_address, label: 'Your Email'
     # ````
     #
@@ -101,7 +101,7 @@ module ExpressTemplates
       #
       # Example:
       #
-      # ````ruby
+      # ````
       # form_for(:people) do |f|
       #   f.phone_field :phone
       # end
@@ -109,17 +109,27 @@ module ExpressTemplates
       #
       # This will precompile as
       #
-      # ````ruby
+      # ````
       #    ...
       #    phone_field_tag :phone, @people.phone, {}
       #    ...
       # ````
       #
+      # You can also add html options to the form (add classes, id, etc)
+      #
+      # ````
+      # form_for(:people, html_options: {class: 'edit_form', id: 'people_form'}) do |f|
+      #    f.phone_field :phone
+      # end
+      # ````
+      #
+      #   # <form action='/people' method='post' id='people_form' class='edit_form'>
+      #
       # Fields can also have custom classes via the `class` option:
       #
       # Example:
       #
-      # ````ruby
+      # ````
       #    f.url_field :website_url, class: 'url-string'
       # ````
       #
@@ -137,7 +147,7 @@ module ExpressTemplates
       #
       #
       # = Fields
-      # ````ruby
+      # ````
       # f.text_field :name
       # #   <div>
       # #    <label for="person_name">Name</label>
