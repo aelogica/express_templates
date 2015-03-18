@@ -31,7 +31,7 @@ class FormForTest < ActiveSupport::TestCase
   </div>
 
   <div class=\"\">
-"+%Q(#{label_tag("resource_name", "post title")})+%Q(#{text_field_tag("resource[name]", @resource.name, label: "post title")})+"
+"+%Q(#{label_tag("resource_name", "post title")})+%Q(#{text_field_tag("resource[name]", @resource.name, {})})+"
   </div>
 
   <div class=\"\">
@@ -142,7 +142,7 @@ class FormForTest < ActiveSupport::TestCase
   </div>
 
   <div class=\"\">
-"+%Q(#{label_tag("resource_name", "post title")})+%Q(#{text_field_tag("resource[name]", @resource.name, label: "post title")})+"
+"+%Q(#{label_tag("resource_name", "post title")})+%Q(#{text_field_tag("resource[name]", @resource.name, {})})+"
   </div>
 
   <div class=\"\">

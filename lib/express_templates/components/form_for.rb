@@ -385,7 +385,7 @@ module ExpressTemplates
         def initialize(name, options = {}, type=:text)
           @name = name
           @options = options
-          @label = options[:label]
+          @label = @options.delete(:label)
           @wrapper_class = @options.delete(:wrapper_class)
           @type = type
         end
