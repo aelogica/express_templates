@@ -277,9 +277,17 @@ module ExpressTemplates
       #   #   <input type="submit" name="submit primary" value: "Save" />
       #   #   <a href="#" onclick="return false;" class="cancel secondary">Cancel it</a>
       #   # </div>
-      def actions(extra_actions)
+      #
+      # You can also add extra wrapper div classes for more customization
+      # ==== Examples
+      #   f.actions({submit: ['Save', {class: 'submit primary'}], cancel: ['Cancel it', class: 'cancel secondary']}, wrapper_class: 'form-group')
+      #   # <div class='form-group'>
+      #   #   <input type="submit" name="submit primary" value: "Save" />
+      #   #   <a href="#" onclick="return false;" class="cancel secondary">Cancel it</a>
+      #   # </div>
+      def actions(extra_actions, options)
         @fields ||= []
-        @fields << Actions.new(extra_actions)
+        @fields << Actions.new(extra_actions, options)
       end
 
       emits -> {
@@ -385,7 +393,7 @@ module ExpressTemplates
         def initialize(name, options = {}, type=:text)
           @name = name
           @options = options
-          @label = options[:label]
+          @label = @options.delete(:label)
           @wrapper_class = @options.delete(:wrapper_class)
           @type = type
         end
@@ -439,11 +447,11 @@ module ExpressTemplates
       # need to fix this some day (actions doesn't need to inherit from field)
       class Actions < Field
         attr :extra_actions
-        def initialize(extra_actions)
-          @type = :actions
+        def initialize(extra_actions, options = {})
           @name = ''
           @label = ''
           @extra_actions = extra_actions
+          super(@name, options, :actions)
         end
       end
     end
