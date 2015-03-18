@@ -277,9 +277,9 @@ module ExpressTemplates
       #   #   <input type="submit" name="submit primary" value: "Save" />
       #   #   <a href="#" onclick="return false;" class="cancel secondary">Cancel it</a>
       #   # </div>
-      def actions(extra_actions)
+      def actions(extra_actions, options)
         @fields ||= []
-        @fields << Actions.new(extra_actions)
+        @fields << Actions.new(extra_actions, options)
       end
 
       emits -> {
@@ -439,11 +439,11 @@ module ExpressTemplates
       # need to fix this some day (actions doesn't need to inherit from field)
       class Actions < Field
         attr :extra_actions
-        def initialize(extra_actions)
-          @type = :actions
+        def initialize(extra_actions, options = {})
           @name = ''
           @label = ''
           @extra_actions = extra_actions
+          super(@name, options, :actions)
         end
       end
     end

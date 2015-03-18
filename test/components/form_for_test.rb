@@ -120,7 +120,7 @@ class FormForTest < ActiveSupport::TestCase
       form_for(:resource, method: :put, url: '/posts') do |f|
         f.text_field :name, label: 'post title'
         f.text_field :body, class: 'string'
-        f.actions({submit: ['Save', {class: 'submit primary'}], cancel: ['Cancel it', class: 'cancel secondary']})
+        f.actions({submit: ['Save', {class: 'submit primary'}], cancel: ['Cancel it', class: 'cancel secondary']}, wrapper_class: 'form-group widget-buttons')
       end
     }
     return ctx, fragment
@@ -149,7 +149,7 @@ class FormForTest < ActiveSupport::TestCase
 "+%Q(#{label_tag("resource_body", "Body")})+%Q(#{text_field_tag("resource[body]", @resource.body, class: "string")})+"
   </div>
 
-  <div class=\"\">
+  <div class=\"form-group widget-buttons\">
 "+%Q(#{submit_tag("Save", class: "submit primary")})+"
     <a href=\"#\" onclick=\"return false;\" class=\"cancel secondary\">Cancel it</a>
   </div>
