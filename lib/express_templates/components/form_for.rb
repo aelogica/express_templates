@@ -277,6 +277,14 @@ module ExpressTemplates
       #   #   <input type="submit" name="submit primary" value: "Save" />
       #   #   <a href="#" onclick="return false;" class="cancel secondary">Cancel it</a>
       #   # </div>
+      #
+      # You can also add extra wrapper div classes for more customization
+      # ==== Examples
+      #   f.actions({submit: ['Save', {class: 'submit primary'}], cancel: ['Cancel it', class: 'cancel secondary']}, wrapper_class: 'form-group')
+      #   # <div class='form-group'>
+      #   #   <input type="submit" name="submit primary" value: "Save" />
+      #   #   <a href="#" onclick="return false;" class="cancel secondary">Cancel it</a>
+      #   # </div>
       def actions(extra_actions, options)
         @fields ||= []
         @fields << Actions.new(extra_actions, options)
