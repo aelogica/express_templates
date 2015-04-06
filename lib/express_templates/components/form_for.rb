@@ -209,6 +209,11 @@ module ExpressTemplates
       #   #   <label class="radio" for="user_age_2"><input type="radio" value="2" name="user[age]" id="user_age_2">Two</label>
       #   # </div>
       #
+      #   f.radio :enable_something, :boolean
+      #   # <div>
+      #   #   <label class="radio"><input type="radio" value="1" name="user[age]" id="user_age_1">One</label>
+      #   #   <label class="radio"><input type="radio" value="2" name="user[age]" id="user_age_2">Two</label>
+      #   # </div>
       def radio(name, collection, value_method, text_method, options = {})
         @fields ||= []
         @fields << Radio.new(name, options.merge!(collection: collection, value_method: value_method, text_method: text_method))
@@ -217,11 +222,11 @@ module ExpressTemplates
       # ==== Examples
       #   f.checkbox :age, [[1, 'One'], [2, 'Two']], :first, :last
       #   # <div>
-      #   #   <label class="checkbox" for="user_age_1">
+      #   #   <label class="checkbox">
       #   #     <input type="checkbox" value="1" name="user[age][]" id="user_age_1">
       #   #     "One"
       #   #   </label>
-      #   #   <label>
+      #   #   <label class="checkbox">
       #   #     <input type="checkbox" value="2" name="user[age][]" id="user_age_2">
       #   #     "Two"
       #   #   </label>
@@ -305,11 +310,13 @@ module ExpressTemplates
                 label_tag(label_name, field_label)
                 select_tag(resource_field_name, field.options_html, field.options)
               elsif field_type == 'radio'
+                label_tag(label_name, field_label)
                 collection_radio_buttons(my[:id], field_name, field.collection,
-                                         field.value_method, field.text_method, field.options) do |b|
+                                         field.value_method, field.text_method, {}, field.options.merge!(checked: %Q('{{@#{my[:id]}.#{field_name}'))) do |b|
                   b.label(class: 'radio') { b.radio_button + b.text }
                 end
               elsif field_type == 'checkbox'
+                label_tag(label_name, field_label)
                 collection_check_boxes(my[:id], field_name, field.collection,
                                        field.value_method, field.text_method, field.options) do |b|
                   b.label(class: 'checkbox') { b.check_box + b.text }

@@ -197,7 +197,7 @@ class FormForTest < ActiveSupport::TestCase
   </div>
 
   <div class=\"\">
-"+%Q(#{collection_radio_buttons(:resource, :age, [[1, "One"], [2, "Two"]], :first, :last, {}) do |b|
+"+%Q(#{label_tag("resource_age", "Age")})+%Q(#{collection_radio_buttons(:resource, :age, [[1, "One"], [2, "Two"]], :first, :last, {}, {checked: "{{@resource.age}}"}) do |b|
                   b.label(class: 'radio') { b.radio_button + b.text }
                 end})+"
   </div>
@@ -221,7 +221,7 @@ class FormForTest < ActiveSupport::TestCase
   </div>
 
   <div class=\"\">
-"+%Q(#{collection_check_boxes(:resource, :age, [[1, "One"], [2, "Two"]], :first, :last, {}) do |b|
+"+%Q(#{label_tag("resource_age", "Age")})+%Q(#{collection_check_boxes(:resource, :age, [[1, "One"], [2, "Two"]], :first, :last, {}, {checked: "{{@resource.age}}"}) do |b|
                   b.label(class: 'checkbox') { b.check_box + b.text }
                 end})+"
   </div>
