@@ -312,7 +312,7 @@ module ExpressTemplates
               elsif field_type == 'radio'
                 label_tag(label_name, field_label)
                 collection_radio_buttons(my[:id], field_name, field.collection,
-                                         field.value_method, field.text_method, {}, field.options.merge!(checked: %Q('{{@#{my[:id]}.#{field_name}'))) do |b|
+                                         field.value_method, field.text_method, field.options) do |b|
                   b.label(class: 'radio') { b.radio_button + b.text }
                 end
               elsif field_type == 'checkbox'
