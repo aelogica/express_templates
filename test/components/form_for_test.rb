@@ -99,6 +99,7 @@ class FormForTest < ActiveSupport::TestCase
     fragment = -> {
       form_for(:resource) do |f|
         f.radio :age, [[1, 'One'],[2, 'Two']], :first, :last
+        f.radio :enable_something, :boolean
       end
     }
     return ctx, fragment
@@ -197,7 +198,13 @@ class FormForTest < ActiveSupport::TestCase
   </div>
 
   <div class=\"\">
-"+%Q(#{collection_radio_buttons(:resource, :age, [[1, "One"], [2, "Two"]], :first, :last, {}) do |b|
+"+%Q(#{label_tag("resource_age", "Age")})+%Q(#{collection_radio_buttons(:resource, :age, [[1, "One"], [2, "Two"]], :first, :last, {}) do |b|
+                  b.label(class: 'radio') { b.radio_button + b.text }
+                end})+"
+  </div>
+
+  <div class=\"\">
+"+%Q(#{label_tag("resource_enable_something", "Enable Something")})+%Q(#{collection_radio_buttons(:resource, :enable_something, [[true, "True"], [false, "False"]], :first, :last, {}) do |b|
                   b.label(class: 'radio') { b.radio_button + b.text }
                 end})+"
   </div>
@@ -221,7 +228,7 @@ class FormForTest < ActiveSupport::TestCase
   </div>
 
   <div class=\"\">
-"+%Q(#{collection_check_boxes(:resource, :age, [[1, "One"], [2, "Two"]], :first, :last, {}) do |b|
+"+%Q(#{label_tag("resource_age", "Age")})+%Q(#{collection_check_boxes(:resource, :age, [[1, "One"], [2, "Two"]], :first, :last, {}) do |b|
                   b.label(class: 'checkbox') { b.check_box + b.text }
                 end})+"
   </div>
