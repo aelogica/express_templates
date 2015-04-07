@@ -214,8 +214,11 @@ module ExpressTemplates
       #   #   <label class="radio"><input type="radio" value="1" name="user[age]" id="user_age_1">One</label>
       #   #   <label class="radio"><input type="radio" value="2" name="user[age]" id="user_age_2">Two</label>
       #   # </div>
-      def radio(name, collection, value_method, text_method, options = {})
+      def radio(name, collection, value_method = :first, text_method = :last, options = {})
         @fields ||= []
+        if collection == :boolean
+          collection = [[true, 'True'], [false, 'False']]
+        end
         @fields << Radio.new(name, options.merge!(collection: collection, value_method: value_method, text_method: text_method))
       end
 
