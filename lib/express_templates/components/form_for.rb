@@ -211,8 +211,8 @@ module ExpressTemplates
       #
       #   f.radio :enable_something, :boolean
       #   # <div>
-      #   #   <label class="radio"><input type="radio" value="1" name="user[age]" id="user_age_1">One</label>
-      #   #   <label class="radio"><input type="radio" value="2" name="user[age]" id="user_age_2">Two</label>
+      #   #   <label class="radio"><input type="radio" value="true" name="setting[enable_something]" id="setting_enable_something_true">True</label>
+      #   #   <label class="radio"><input type="radio" value="false" name="setting[enable_something]" id="setting_enable_something_false">False</label>
       #   # </div>
       def radio(name, collection, value_method = :first, text_method = :last, options = {})
         @fields ||= []
