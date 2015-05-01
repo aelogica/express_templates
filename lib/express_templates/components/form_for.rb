@@ -267,6 +267,16 @@ module ExpressTemplates
         @fields << TextArea.new(name, options)
       end
 
+      # TODO: Implement
+      #
+      # ==== Examples
+      #   f.datetime_select :name
+      #
+      def datetime_select(name, options)
+        @fields ||= []
+        @fields << Field.new(name, options)
+      end
+
       # ==== Examples
       #   f.submit "Save Changes"
       #   # <div>
