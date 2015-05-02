@@ -3,6 +3,7 @@ module ExpressTemplates
     module Forms
       class Submit < Base
         include Capabilities::Configurable
+        include Capabilities::Adoptable
 
         emits -> {
           submit_tag(my[:id])

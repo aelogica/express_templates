@@ -42,7 +42,9 @@ module ExpressTemplates
           def children=(children)
             @children = children
             children.each do |child|
-              child.instance_variable_set(:@parent, self) # should base have a method for this?
+              if child.kind_of?(Adoptable)
+                child.parent = self
+              end
             end
           end
 

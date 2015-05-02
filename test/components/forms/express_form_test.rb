@@ -60,6 +60,13 @@ class ExpressFormTest < ActiveSupport::TestCase
     assert_match 'submit_tag', compile_simplest_form
   end
 
+  test "simplest_form adopts children (submit has reference to parent)" do
+    ctx, fragment = simplest_form(resource)
+    expanded_nodes = ExpressTemplates::Expander.new(nil).expand(fragment.source_body)
+    assert_instance_of ExpressTemplates::Components::Forms::ExpressForm,
+                       expanded_nodes.first.children.last.parent
+  end
+
   test "simplest form compiled source is legible " do
     @example_compiled = -> {
 "<form action=\"/resources/#{@resource.id}\" method=\"post\">

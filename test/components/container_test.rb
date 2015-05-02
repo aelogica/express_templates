@@ -18,12 +18,12 @@ class ContainerTest < ActiveSupport::TestCase
     assert_equal [], any_container.new.children
   end
 
-  def mock_children(parent)
+  def mock_children
     child1, child2 = Minitest::Mock.new, Minitest::Mock.new
     child1.expect(:compile, '"one"')
     child2.expect(:compile, '"two"')
-    child1.expect(:instance_variable_set, parent, [:@parent, parent])
-    child2.expect(:instance_variable_set, parent, [:@parent, parent])
+    child1.expect(:kind_of?, false, [ExpressTemplates::Components::Capabilities::Adoptable])
+    child2.expect(:kind_of?, false, [ExpressTemplates::Components::Capabilities::Adoptable])
     return child1, child2
   end
 
@@ -31,9 +31,9 @@ class ContainerTest < ActiveSupport::TestCase
     emits -> { p { _yield } }
   end
 
-  test "Container#compile calls #compile on its children; children have references to their parent" do
+  test "Container#compile calls #compile on its children" do
     container = TestContainer.new
-    child1, child2 = mock_children(container)
+    child1, child2 = mock_children
     container.children = [child1, child2]
     container.compile
     child1.verify
@@ -42,7 +42,7 @@ class ContainerTest < ActiveSupport::TestCase
 
   test "renders children in place of _yield" do
     container = TestContainer.new
-    child1, child2 = mock_children(container)
+    child1, child2 = mock_children
     container.children = [child1, child2]
 
     assert_equal "<p>onetwo</p>", eval(container.compile)
