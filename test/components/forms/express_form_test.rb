@@ -32,8 +32,12 @@ class ExpressFormTest < ActiveSupport::TestCase
     return ctx, fragment
   end
 
+  def express_form
+    "ExpressTemplates::Components::Forms::ExpressForm".constantize
+  end
+
   test "express_form component exists" do
-    assert ExpressTemplates::Components::Forms::ExpressForm
+    assert express_form
   end
 
   def compile_simplest_form
@@ -42,7 +46,7 @@ class ExpressFormTest < ActiveSupport::TestCase
   end
 
   test "simplest form renders" do
-    assert_not_nil compile_simplest_form
+    assert compile_simplest_form
   end
 
   test "simplest form contains form tag" do
@@ -67,17 +71,40 @@ class ExpressFormTest < ActiveSupport::TestCase
                        expanded_nodes.first.children.last.parent
   end
 
-  test "simplest form compiled source is legible " do
-    @example_compiled = -> {
-"<form action=\"/resources/#{@resource.id}\" method=\"post\">
-  <div style=\"display:none\">
-"+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:post)})+%Q(#{token_tag})+"
-  </div>
-  <div class=\"form-group widget-buttons\">
-"+%Q(#{submit_tag("Save it!", class: "submit primary")})+"</div>
-</form>
-"
-    }
+  test "#form_action uses url helpers" do
+    assert_equal "{{foos_path}}", express_form.new(:foo).form_action
   end
+
+  test "#form_action uses correct path helper for update/patch" do
+    assert_equal "{{foo_path(@foo)}}", express_form.new(:foo, method: :put).form_action
+  end
+
+  test "simplest_form uses form_action for the action" do
+    form_open_tag = compile_simplest_form.match(/<form[^>]*>/)[0]
+    assert_match 'action=\"#{resources_path}\"', form_open_tag
+  end
+
+  test "express_form default method is POST" do
+    form_open_tag = compile_simplest_form.match(/<form[^>]*>/)[0]
+    assert_match 'method=\"POST\"', form_open_tag
+  end
+
+
+#   test "simplest form compiled source is legible " do
+#     @example_compiled = -> {
+# "<form action=\"/resources/#{@resource.id}\" method=\"post\">
+#   <div style=\"display:none\">
+# "+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:post)})+%Q(#{token_tag})+"
+#   </div>
+#   <div class=\"form-group widget-buttons\">
+# "+%Q(#{submit_tag("Save it!", class: "submit primary")})+"</div>
+# </form>
+# "
+#     }.source_body
+#     ExpressTemplates::Markup::Tag.formatted do
+#       ctx, fragment = simplest_form(resource)
+#       assert_equal @example_compiled, ExpressTemplates.compile(&fragment)
+#     end
+#   end
 
 end

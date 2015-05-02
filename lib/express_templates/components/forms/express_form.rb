@@ -6,36 +6,49 @@ module ExpressTemplates
         include Capabilities::Parenting
 
         emits -> {
-          form {
+          form( form_args ) {
             form_rails_support form_method
             _yield
           }
         }
 
-        def form_args
-          default_args = {action: _action(resource_name), method: :post}
+        def form_id
+          "#{resource_name}_{{@#{resource_name}.id}}"
+        end
 
-          if @form_options.nil?
-            default_args
-          else
-            if html_options = @form_options.delete(:html_options)
-              @form_options.merge!(html_options)
-            end
-            default_args.merge!(@form_options)
+        def form_method
+          @config[:method] || :post
+        end
+
+        def form_action
+          if _modifying_resource?
+            "{{#{resource_name}_path(@#{resource_name})}}"
+          else # posting a new to a collection
+            "{{#{resource_name.pluralize}_path}}"
           end
+        end
+
+
+        def form_args
+          args = {id: form_id, action: form_action, method: form_method}
+
+          if html_options = @config.delete(:html_options)
+            args.merge!(html_options)
+          end
+          args[:method] = args[:method].to_s.upcase
+          args
         end
 
         def resource_name
           my[:id].to_s
         end
 
-        def form_method
-          if @_method == :put
-            :patch
-          else
-            @form_options.present? ?  @form_options[:method] : :post
+
+        private
+
+          def _modifying_resource?
+            [:put, :patch].include? form_method
           end
-        end
 
       end
     end
