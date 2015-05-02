@@ -16,3 +16,5 @@ require 'express_templates/components/form_for'
 require 'express_templates/components/content_for'
 require 'express_templates/components/table_for'
 require 'express_templates/components/tree_for'
+
+require 'express_templates/components/forms'
