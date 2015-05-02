@@ -40,7 +40,10 @@ module ExpressTemplates
           end
 
           def children=(children)
-            @children =children
+            @children = children
+            children.each do |child|
+              child.instance_variable_set(:@parent, self) # should base have a method for this?
+            end
           end
 
           def compile
