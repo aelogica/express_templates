@@ -16,7 +16,8 @@ module ExpressTemplates
         }
 
         def use_options_from_collection_radio_buttons_helper
-          collection_radio_buttons(resource_name, field_name, collection_from_association,
+          # Note {{ }} will get stripped.  This prevents the collection finder string being passed as string.
+          collection_radio_buttons(resource_var, field_name.to_sym, "{{#{collection_from_association}}}",
                                    option_value_method, option_name_method,
                                    field_options, html_options) do |b|
             b.label(class: "radio") {
@@ -38,12 +39,12 @@ module ExpressTemplates
           when option_collection.kind_of?(Array)
             option_collection.each_with_index do |option, index|
               label_tag("#{resource_name}_#{field_name}_#{index}", option.titleize)
-              radio_button(resource_name, field_name, option, class: 'radio')
+              radio_button(resource_var, field_name.to_sym, option, class: 'radio')
             end
           when option_collection.kind_of?(Hash)
             option_collection.each_pair do |key, value|
               label_tag("#{resource_name}_#{field_name}_#{key}", value.titleize)
-              radio_button(resource_name, field_name, key, class: 'radio')
+              radio_button(resource_var, field_name.to_sym, key, class: 'radio')
             end
           else
             raise "Radio collection should be Array or Hash: #{option_collection.inspect}"
