@@ -15,6 +15,10 @@ module ExpressTemplates
           parent_form.resource_name
         end
 
+        def resource_var
+          "{{@#{resource_name}}}"
+        end
+
         # Return the name attribute for the lable
         def label_name
           "#{resource_name.singularize}_#{field_name}"
