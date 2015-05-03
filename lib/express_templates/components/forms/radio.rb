@@ -2,7 +2,7 @@ module ExpressTemplates
   module Components
     module Forms
       class Radio < FormComponent
-        include Selectable
+        include OptionSupport
 
         emits -> {
           label_tag(label_name, label_text)

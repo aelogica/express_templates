@@ -16,7 +16,7 @@ module ExpressTemplates
       # unique values for the field on the collection to which the resource belongs
       # as the list of possible values for the select.
       class Select < FormComponent
-        include Selectable
+        include OptionSupport
 
         emits -> {
           label_tag(label_name, label_text)

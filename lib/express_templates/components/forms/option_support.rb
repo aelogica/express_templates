@@ -4,7 +4,7 @@ module ExpressTemplates
       # Provides a form component with knowledge of any association
       # on the field and an means of loading the collection for supplying
       # options to the user.
-      module Selectable
+      module OptionSupport
         # Reflect on any association and return it if the association type
         # is :belongs_to.  Returns false if the association is not :belongs_to.
         # Returns nil if there was a problem reflecting.
