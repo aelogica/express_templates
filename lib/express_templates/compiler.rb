@@ -1,6 +1,15 @@
 module ExpressTemplates
   module Compiler
     def compile(template_or_src=nil, &block)
+
+      if block
+        begin
+          block.source
+        rescue
+          raise "block must have source - did you do compile(&:label) ?"
+        end
+      end
+
       template, src = _normalize(template_or_src)
 
       expander = Expander.new(template)
