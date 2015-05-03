@@ -19,8 +19,10 @@ module ExpressTemplates
         include OptionSupport
 
         emits -> {
-          label_tag(label_name, label_text)
-          select_tag(field_name_attribute, select_options, field_options)
+          div(class: field_wrapper_class) {
+            label_tag(label_name, label_text)
+            select_tag(field_name_attribute, select_options, field_options)
+          }
         }
 
         # Returns the options which will be supplied to the select_tag helper.

@@ -5,12 +5,14 @@ module ExpressTemplates
         include OptionSupport
 
         emits -> {
-          label_tag(label_name, label_text)
-          if option_values_specified?
-            generate_options_from_specified_values
-          else
-            use_options_from_collection_radio_buttons_helper
-          end
+          div(class: field_wrapper_class) {
+            label_tag(label_name, label_text)
+            if option_values_specified?
+              generate_options_from_specified_values
+            else
+              use_options_from_collection_radio_buttons_helper
+            end
+          }
         }
 
         def use_options_from_collection_radio_buttons_helper

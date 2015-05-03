@@ -1,12 +1,12 @@
 module ExpressTemplates
   module Components
     module Forms
-      class Submit < Base
-        include Capabilities::Configurable
-        include Capabilities::Adoptable
+      class Submit < FormComponent
 
         emits -> {
-          submit_tag(value)
+          div(class: field_wrapper_class) {
+            submit_tag(value)
+          }
         }
 
         def value

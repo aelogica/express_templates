@@ -37,6 +37,10 @@ module ExpressTemplates
           "#{resource_name.singularize}[#{field_name}]"
         end
 
+        def field_wrapper_class
+          "field-wrapper"
+        end
+
         # Search the parent graph until we find an ExpressForm.  Returns nil if none found.
         def parent_form
           @my_form ||= parent
