@@ -1,40 +1,29 @@
 module ExpressTemplates
   module Components
     module Forms
-      class Select < Base
-        include Capabilities::Configurable
-        include Capabilities::Adoptable
+      # Provides a form Select component based on the Rails *select_tag* helper.
+      # Parameters:
+      # field_name, select_options, helper_options
+      #
+      # Select options may be specified as an Array or Hash which will be
+      # supplied to the *options_for_select* helper.
+      #
+      # If the select_options are omitted, the component attempts to check
+      # whether the field is an association.  If an association exists,
+      # the options will be generated using *options_from_collection_for_select*
+      # with the assumption that :id and :name are the value and name fields
+      # on the collection.  If no association exists, we use all the existing
+      # unique values for the field on the collection to which the resource belongs
+      # as the list of possible values for the select.
+      class Select < FormComponent
+        include Selectable
 
         emits -> {
-          label_tag(label_name, field_label)
-          select_tag(resource_field_name, select_options, field_options)
+          label_tag(label_name, label_text)
+          select_tag(field_name_attribute, select_options, field_options)
         }
 
-        def compile(*args)
-          raise "Select requires a parent" if parent.nil?
-          super(*args)
-        end
-
-        def resource_name
-          parent.resource_name
-        end
-
-        def label_name
-          "#{resource_name.singularize}_#{field_name}"
-        end
-
-        def field_label
-          @options[:label] || field_name.titleize
-        end
-
-        def field_name
-          @args.first.to_s
-        end
-
-        def resource_field_name
-          "#{resource_name.singularize}[#{field_name}]"
-        end
-
+        # Returns the options which will be supplied to the select_tag helper.
         def select_options
           options_specified = [Array, Hash].include?(@args.second.class)
           if options_specified
@@ -43,8 +32,8 @@ module ExpressTemplates
             options = "@#{resource_name}.pluck(:#{field_name}).distinct"
           end
 
-          if _belongs_to_association && !options_specified
-            "{{options_from_collection_for_select(#{_related_collection}, :id, :name, @#{resource_name}.#{field_name})}}"
+          if belongs_to_association && !options_specified
+            "{{options_from_collection_for_select(#{related_collection}, :id, :name, @#{resource_name}.#{field_name})}}"
           else
             if selection = field_options.delete(:selected)
               "{{options_for_select(#{options}, \"#{selection}\")}}"
@@ -64,24 +53,6 @@ module ExpressTemplates
           end
         end
 
-        private
-
-          def _belongs_to_association
-            begin
-              reflection = resource_name.classify.constantize.reflect_on_association(field_name.to_sym)
-              if reflection.macro.eql?(:belongs_to)
-                return reflection
-              end
-            rescue
-              nil
-            end
-          end
-
-          def _related_collection
-            if reflection = _belongs_to_association
-              "#{reflection.klass}.all.select(:id, :name).order(:name)"
-            end
-          end
       end
     end
   end
