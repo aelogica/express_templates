@@ -6,8 +6,12 @@ module ExpressTemplates
         include Capabilities::Adoptable
 
         emits -> {
-          submit_tag(my[:id])
+          submit_tag(value)
         }
+
+        def value
+          @args.first
+        end
       end
     end
   end
