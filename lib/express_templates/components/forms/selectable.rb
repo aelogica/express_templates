@@ -23,9 +23,20 @@ module ExpressTemplates
         # options for display.
         def related_collection
           if reflection = belongs_to_association
-            "#{reflection.klass}.all.select(:id, :name).order(:name)"
+            "#{reflection.klass}.all.select(:#{option_value_method}, :#{option_name_method}).order(:name)"
           end
         end
+
+        protected
+
+          def option_value_method
+            :id
+          end
+
+          def option_name_method
+            :name
+          end
+
       end
     end
   end
