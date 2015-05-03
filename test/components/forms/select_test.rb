@@ -1,6 +1,7 @@
 require 'test_helper'
 
 class SelectTest < ActiveSupport::TestCase
+
   test "select requires a parent component" do
     fragment = -> {
       select :gender, ['Male', 'Female'], selected: 'Male'
@@ -67,7 +68,8 @@ class SelectTest < ActiveSupport::TestCase
       }
     }
 
-    assert_match 'options_from_collection_for_select(Gender.all.select(:id, :name).order(:name), :id, :name, @person.gender)', ExpressTemplates.compile(&fragment)
+    assert_match 'options_from_collection_for_select(Gender.all.select(:id, :name).order(:name), :id, :name, @person.gender)',
+                  ExpressTemplates.compile(&fragment)
   end
 
 end
