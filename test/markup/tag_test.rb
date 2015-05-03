@@ -134,7 +134,7 @@ class TagTest < ActiveSupport::TestCase
   test "markup is indented" do
     ExpressTemplates::Markup::Tag.formatted do
       code = ExpressTemplates.compile &-> {ul { li { "*"*36 }}}
-      assert_equal "<ul>\n  <li>#{"*"*36}</li>\n</ul>\n", eval(code)
+      assert_equal "\n<ul>\n  <li>#{"*"*36}</li>\n</ul>\n", eval(code)
     end
   end
 
