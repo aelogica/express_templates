@@ -16,7 +16,8 @@ module ExpressTemplates
         end
 
         def resource_var
-          "{{@#{resource_name}}}"
+          # "{{@#{resource_name}}}"
+          "{{:#{resource_name}}}"
         end
 
         # Return the name attribute for the lable

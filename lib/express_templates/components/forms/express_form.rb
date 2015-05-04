@@ -24,13 +24,15 @@ module ExpressTemplates
           if _modifying_resource?
             "{{#{resource_name}_path(@#{resource_name})}}"
           else # posting a new to a collection
+            # We also have to take in to account singular resources 
+            # e.g. resource :config -> will throw an unknown method error of configs_path
             "{{#{resource_name.pluralize}_path}}"
           end
         end
 
 
         def form_args
-          args = {id: form_id, action: form_action, method: form_method}
+          args = {id: form_id, action: form_action, method: form_method}.merge!(@config)
 
           if html_options = @config.delete(:html_options)
             args.merge!(html_options)
