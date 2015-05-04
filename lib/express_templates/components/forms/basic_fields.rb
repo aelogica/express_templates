@@ -11,6 +11,7 @@ module ExpressTemplates
             class #{type.classify} < FormComponent
               emits -> {
                 div(class: field_wrapper_class) {
+                  label_tag(label_name, label_text)
                   #{type}_field resource_var, field_name.to_sym
                 }
               }
@@ -33,6 +34,7 @@ RUBY
       class Textarea < FormComponent
         emits -> {
           div(class: field_wrapper_class) {
+            label_tag(label_name, label_text)
             text_area resource_var, field_name.to_sym
           }
         }

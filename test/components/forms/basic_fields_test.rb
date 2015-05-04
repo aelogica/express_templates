@@ -22,6 +22,7 @@ class BasicFieldsTest < ActiveSupport::TestCase
           send(type, :bar)
         }
       }
+      assert_match '#{label_tag("foo_bar", "Bar")', ExpressTemplates.compile(&fragment)
       assert_match "#{type}_field(@foo, :bar)", ExpressTemplates.compile(&fragment)
     end
   end
@@ -32,6 +33,7 @@ class BasicFieldsTest < ActiveSupport::TestCase
         textarea :bar
       }
     }
+    assert_match '#{label_tag("foo_bar", "Bar")', ExpressTemplates.compile(&fragment)
     assert_match "text_area(@foo, :bar)", ExpressTemplates.compile(&fragment)
   end
 
