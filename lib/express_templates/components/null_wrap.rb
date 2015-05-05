@@ -1,8 +1,13 @@
 module ExpressTemplates
   module Components
-    class NullWrap < Components::Container
+    class NullWrap < Components::Base
+      def initialize(*args)
+        @already_compiled_stuff = args.shift
+        super(*args)
+      end
+
       def compile
-        compile_children
+        @already_compiled_stuff
       end
     end
   end

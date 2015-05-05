@@ -20,9 +20,11 @@ module ExpressTemplates
         end
       end
 
+
       def compile
         %Q((#{@collection}.each_with_index.map do |#{@member}, #{@member}_index|#{compile_children}\nend).join)
       end
+
     end
   end
 end

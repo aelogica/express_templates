@@ -49,7 +49,7 @@ module ExpressTemplates
           end
 
           def compile
-            null_wrapped_children = "null_wrap { #{compile_children} }"
+            null_wrapped_children = "null_wrap(%q(#{compile_children}))"
             wrap_children_src = self.class[:markup].source.gsub(/(\s)_yield(\s)/, '\1'+null_wrapped_children+'\2')
             _compile_fragment(Proc.from_source(wrap_children_src))
           end
