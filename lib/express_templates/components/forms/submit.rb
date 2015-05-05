@@ -5,12 +5,16 @@ module ExpressTemplates
 
         emits -> {
           div(class: field_wrapper_class) {
-            submit_tag(value)
+            submit_tag(value, html_options)
           }
         }
 
         def value
           @args.first
+        end
+
+        def html_options
+          @args.second
         end
       end
     end

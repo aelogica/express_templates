@@ -38,13 +38,17 @@ module ExpressTemplates
           case
           when option_collection.kind_of?(Array)
             option_collection.each_with_index do |option, index|
-              label_tag("#{resource_name}_#{field_name}_#{index}", option.titleize)
-              radio_button(resource_var, field_name.to_sym, option, class: 'radio')
+              label {
+                radio_button(resource_var, field_name.to_sym, option, class: 'radio')
+                null_wrap { option }
+              }
             end
           when option_collection.kind_of?(Hash)
             option_collection.each_pair do |key, value|
-              label_tag("#{resource_name}_#{field_name}_#{key}", value.titleize)
-              radio_button(resource_var, field_name.to_sym, key, class: 'radio')
+              label {
+                radio_button(resource_var, field_name.to_sym, key, class: 'radio')
+                null_wrap { value }
+              }
             end
           else
             raise "Radio collection should be Array or Hash: #{option_collection.inspect}"

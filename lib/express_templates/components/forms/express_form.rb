@@ -32,9 +32,12 @@ module ExpressTemplates
 
 
         def form_args
-          args = {id: form_id, action: form_action, method: form_method}.merge!(@config)
+          # there are no put/patch emthods in HTML5, so we have to enforce post
+          # need to find a better way to do this: id/action can be overridden but method
+          # should always be :post IN THE FORM TAG
+          args = {id: form_id, action: form_action}.merge!(@config).merge!(method: :post)
 
-          if html_options = @config.delete(:html_options)
+          if html_options = args.delete(:html_options)
             args.merge!(html_options)
           end
           args[:method] = args[:method].to_s.upcase

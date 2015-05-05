@@ -43,7 +43,7 @@ module ExpressTemplates
         end
 
         def field_wrapper_class
-          "field-wrapper"
+          @config[:wrapper_class] || 'field-wrapper'
         end
 
         # Search the parent graph until we find an ExpressForm.  Returns nil if none found.
