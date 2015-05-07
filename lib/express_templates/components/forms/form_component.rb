@@ -32,7 +32,7 @@ module ExpressTemplates
         # Return the field_name as a string.  This taken from the first argument
         # to the component macro in the template or fragment.
         def field_name
-          (@args.first || @config[:id]).to_s
+          (@config[:id] || (@args.first.is_a?(String) && @args.first)).to_s
         end
 
         # Return the field name attribute.  Currently handles only simple attributes
