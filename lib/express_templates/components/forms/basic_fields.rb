@@ -3,7 +3,7 @@ module ExpressTemplates
     module Forms
       module BasicFields
         ALL = %w(email phone text password color date datetime
-                datetime_local hidden number range
+                datetime_local number range
                 search telephone time url week)
 
         ALL.each do |type|
@@ -37,6 +37,12 @@ RUBY
             label_tag(label_name, label_text)
             text_area resource_var, field_name.to_sym
           }
+        }
+      end
+
+      class Hidden < FormComponent
+        emits -> {
+          hidden_field resource_var, field_name.to_sym
         }
       end
 
