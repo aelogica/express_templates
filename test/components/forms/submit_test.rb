@@ -7,6 +7,6 @@ class SubmitTest < ActiveSupport::TestCase
         submit "Save it!"
       }
     }
-    assert_match '#{submit_tag("Save it!")}', ExpressTemplates.compile(&fragment)
+    assert_match '#{submit_tag("Save it!", {})}', ExpressTemplates.compile(&fragment)
   end
 end

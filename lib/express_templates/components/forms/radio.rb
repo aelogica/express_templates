@@ -34,18 +34,22 @@ module ExpressTemplates
           @args.second
         end
 
+        def wrapper_class
+          @config[:wrapper_class] || 'wrapper-class'
+        end
+
         def generate_options_from_specified_values
           case
           when option_collection.kind_of?(Array)
             option_collection.each_with_index do |option, index|
-              label {
+              label(class: wrapper_class) {
                 radio_button(resource_var, field_name.to_sym, option, class: 'radio')
                 null_wrap { option }
               }
             end
           when option_collection.kind_of?(Hash)
             option_collection.each_pair do |key, value|
-              label {
+              label(class: wrapper_class) {
                 radio_button(resource_var, field_name.to_sym, key, class: 'radio')
                 null_wrap { value }
               }

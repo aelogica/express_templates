@@ -10,11 +10,15 @@ module ExpressTemplates
         }
 
         def value
-          @args.first
+          if @args.first.is_a?(String)
+            @args.first
+          else
+            'Save'
+          end
         end
 
         def html_options
-          @args.second
+          @config
         end
       end
     end

@@ -26,24 +26,23 @@ class RadioTest < ActiveSupport::TestCase
 
   test "radio options present with class 'radio'" do
     compiled = ExpressTemplates.compile(&radio_with_array_options)
-    assert_match 'radio_button(@person, :preferred_email_format, "Text", class: "radio"', compiled
+    assert_match 'radio_button(:person, :preferred_email_format, "Text", class: "radio"', compiled
     assert_match '_format, "HTML", class: "radio"', compiled
   end
 
   def radio_with_hash_options
     fragment = -> {
       express_form(:person) {
-        radio :subscribed, {1 => 'Yes', 0 => 'No'}
+        radio :subscribed, {1 => 'Yes', 0 => 'No'}, wrapper_class: 'my-wrapper'
       }
     }
   end
 
   test "radio options may be specified with a hash" do
     compiled = ExpressTemplates.compile(&radio_with_hash_options)
-    assert_match '#{label_tag("person_subscribed_0", "No")}', compiled
-    assert_match '#{label_tag("person_subscribed_1", "Yes")}', compiled
-    assert_match 'radio_button(@person, :subscribed, 0, class: "radio"', compiled
-    assert_match 'radio_button(@person, :subscribed, 1, class: "radio"', compiled
+    assert_match '<label class=\"my-wrapper\">', compiled
+    assert_match 'radio_button(:person, :subscribed, 0, class: "radio"', compiled
+    assert_match 'radio_button(:person, :subscribed, 1, class: "radio"', compiled
   end
 
   test "radio throws error if given improper options" do
@@ -80,7 +79,7 @@ class RadioTest < ActiveSupport::TestCase
   end
 
   test "radio options from collection when options omitted" do
-    assert_match 'collection_radio_buttons(@employee, :department_id, Department.all.select(:id, :name).order(:name), :id, :name, {}, {}',
+    assert_match 'collection_radio_buttons(:employee, :department_id, Department.all.select(:id, :name).order(:name), :id, :name, {}, {}',
                   ExpressTemplates.compile(&radio_with_options_omitted)
   end
 

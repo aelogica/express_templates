@@ -19,7 +19,7 @@ class CheckboxTest < ActiveSupport::TestCase
     }
     compiled = ExpressTemplates.compile(&fragment)
     label_helper = '#{label_tag("account_eula", "Eula")}'
-    field_helper = '#{check_box(@account, :eula, {}, "1", "0")}'
+    field_helper = '#{check_box(:account, :eula, {}, "1", "0")}'
     assert_match label_helper, compiled
     assert_match field_helper, compiled
     label_idx = compiled.index(label_helper)
@@ -35,7 +35,7 @@ class CheckboxTest < ActiveSupport::TestCase
     }
     compiled = ExpressTemplates.compile(&fragment)
     label_helper = '#{label_tag("account_eula", "Eula")}'
-    field_helper = '#{check_box(@account, :eula, {}, "1", "0")}'
+    field_helper = '#{check_box(:account, :eula, {}, "1", "0")}'
     label_idx = compiled.index(label_helper)
     field_idx = compiled.index(field_helper)
     assert (field_idx < label_idx), "label must come after when label_after: true"
