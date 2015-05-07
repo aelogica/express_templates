@@ -22,11 +22,11 @@ module ExpressTemplates
 
         def form_action
           if _modifying_resource?
-            "{{#{resource_name}_path(@#{resource_name})}}"
+            "{{#{resource_name_for_path}_path(@#{resource_name})}}"
           else # posting a new to a collection
             # We also have to take in to account singular resources 
             # e.g. resource :config -> will throw an unknown method error of configs_path
-            "{{#{resource_name.pluralize}_path}}"
+            "{{#{resource_name_for_path.pluralize}_path}}"
           end
         end
 
@@ -44,8 +44,12 @@ module ExpressTemplates
           args
         end
 
+        def resource_name_for_path
+          @config[:id].to_s
+        end
+
         def resource_name
-          my[:id].to_s
+          (@config[:resource_name] || @config[:id]).to_s
         end
 
 

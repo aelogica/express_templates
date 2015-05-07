@@ -89,6 +89,16 @@ class ExpressFormTest < ActiveSupport::TestCase
     assert_match 'method=\"POST\"', form_open_tag
   end
 
+  test "express_form accepts :resource_name for removing namespace" do
+    fragment = -> {
+      express_form(:admin_foo, resource_name: 'foo') {
+        submit "Save!"
+      }
+    }
+    expanded_nodes = ExpressTemplates::Expander.new(nil).expand(fragment.source_body)
+    assert_equal 'foo', expanded_nodes.first.resource_name
+  end
+
 
 #   test "simplest form compiled source is legible " do
 #     @example_compiled = -> {
