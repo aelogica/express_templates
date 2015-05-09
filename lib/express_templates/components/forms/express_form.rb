@@ -17,7 +17,7 @@ module ExpressTemplates
         end
 
         def form_method
-          @config[:method] || :post
+          @config[:method]
         end
 
         def form_action

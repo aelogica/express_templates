@@ -56,7 +56,7 @@ class ExpressFormTest < ActiveSupport::TestCase
   test "simplest form contains rails form helpers" do
     compiled_src = compile_simplest_form
     assert_match "utf8_enforcer_tag", compiled_src
-    assert_match "method_tag(:post)", compiled_src
+    assert_match "method_tag(", compiled_src
     assert_match "token_tag", compiled_src
   end
 
