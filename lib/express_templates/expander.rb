@@ -76,6 +76,7 @@ module ExpressTemplates
     end
 
     def method_missing(name, *args, &block)
+      raise "#{self.class} unexpected macro: \"#{name}\"." if locals.nil?
       return locals[name] if locals.keys.include?(name)
 
       if handlers.keys.include?(name)

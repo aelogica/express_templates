@@ -10,7 +10,10 @@ module ExpressTemplates
       emits -> {
         div(style: 'display:none') {
           utf8_enforcer_tag
-          method_tag(my[:id] || :post)
+          # NOTE: This should be moved into the forms module and made a FormComponent
+          #       to have access to the resource_name as this code assumes existence of
+          #       a resource method which may not exist
+          method_tag(@config[:id] || "{{((resource.persisted? ? :put : :post) rescue :post)}}")
           token_tag
         }
       }

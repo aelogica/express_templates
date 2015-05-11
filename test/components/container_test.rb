@@ -22,6 +22,8 @@ class ContainerTest < ActiveSupport::TestCase
     child1, child2 = Minitest::Mock.new, Minitest::Mock.new
     child1.expect(:compile, '"one"')
     child2.expect(:compile, '"two"')
+    child1.expect(:kind_of?, false, [ExpressTemplates::Components::Capabilities::Adoptable])
+    child2.expect(:kind_of?, false, [ExpressTemplates::Components::Capabilities::Adoptable])
     return child1, child2
   end
 

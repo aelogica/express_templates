@@ -27,6 +27,24 @@ end).join), Interpolator.transform(compiled)
                  Context.new.instance_eval(Interpolator.transform(compiled))
   end
 
+  class AnyContainer < ExpressTemplates::Components::Container
+    emits -> {
+      p {
+        _yield
+      }
+    }
+  end
+
+  test "a template utilizing a component with for_each inside another component" do
+    fragment = -> {
+      any_container {
+        for_each_logic  # <-- this is causing an exception when AnyContainer
+      }
+    }
+    compiled = ExpressTemplates.compile(&fragment)
+    assert_equal '<p><span>bar</span><span>baz</span></p>', Context.new.instance_eval(compiled)
+  end
+
   class ForEachDeclarativeForm < ECB
     emits -> {
       span { thing }

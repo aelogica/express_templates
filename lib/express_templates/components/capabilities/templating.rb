@@ -118,7 +118,7 @@ module ExpressTemplates
             # Returns a string containing ruby code which evaluates to markup.
             def _lookup(name, options = {})
               @fragments ||= Hash.new
-              @fragments[name] or binding.pry #raise "no template fragment supplied for: #{name}"
+              @fragments[name] or raise "no template fragment supplied for: #{name}"
             end
 
           private

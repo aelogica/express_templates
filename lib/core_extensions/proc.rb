@@ -82,11 +82,7 @@ class Proc
 
   def self.from_source(prc_src)
     raise ArgumentError unless prc_src.kind_of?(String)
-    prc = begin
-      eval(prc_src)
-    rescue ArgumentError => e
-      binding.pry
-    end
+    prc = eval(prc_src)
     prc.instance_variable_set(:@source, prc_src)
     prc
   end

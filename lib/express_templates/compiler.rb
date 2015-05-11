@@ -1,19 +1,20 @@
 module ExpressTemplates
   module Compiler
     def compile(template_or_src=nil, &block)
+
+      if block
+        begin
+          block.source
+        rescue
+          raise "block must have source - did you do compile(&:label) ?"
+        end
+      end
+
       template, src = _normalize(template_or_src)
 
       expander = Expander.new(template)
 
-      Thread.current[:first_whitepace_removed] ||= 0
-      Thread.current[:first_whitepace_removed] += 1
-      begin
-        compiled = expander.expand(src, &block).map(&:compile)
-        compiled.first.sub!(/^"\n+/, '"') if Thread.current[:first_whitepace_removed].eql?(1)
-        Thread.current[:first_whitepace_removed] -= 1
-      ensure
-        Thread.current[:first_whitepace_removed] = nil if Thread.current[:first_whitepace_removed].eql?(0)
-      end
+      compiled = expander.expand(src, &block).map(&:compile)
 
       return Interpolator.transform(compiled.join("+").gsub('"+"', '')).tap do |s|
         puts("\n"+template.inspect+"\nSource:\n#{template.try(:source)}\nInterpolated:\n#{s}\n") if ENV['DEBUG'].eql?('true')
