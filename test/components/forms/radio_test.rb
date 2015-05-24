@@ -66,8 +66,8 @@ class RadioTest < ActiveSupport::TestCase
 
   class ::Department ; end
   class ::Employee
-    def self.reflect_on_association(field)
-      if field.eql? :department_id
+    def self.reflect_on_association(name)
+      if name.eql? :department
         dummy_association = Object.new
         class << dummy_association
           def macro ; :belongs_to ; end

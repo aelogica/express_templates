@@ -49,8 +49,8 @@ class SelectTest < ActiveSupport::TestCase
 
   class ::Gender ; end
   class ::Person
-    def self.reflect_on_association(field)
-      if field.eql? :gender
+    def self.reflect_on_association(name)
+      if name.eql? :gender
         dummy_association = Object.new
         class << dummy_association
           def macro ; :belongs_to ; end
@@ -70,6 +70,25 @@ class SelectTest < ActiveSupport::TestCase
 
     assert_match 'options_from_collection_for_select(Gender.all.select(:id, :name).order(:name), :id, :name, @person.gender)',
                   ExpressTemplates.compile(&fragment)
+  end
+
+  test "select defaults to include_blank: true" do
+    fragment = -> {
+      express_form(:person) {
+        select :gender
+      }
+    }
+    assert_match 'include_blank: true', ExpressTemplates.compile(&fragment)
+  end
+
+
+  test "select defaults can be overridden" do
+    fragment = -> {
+      express_form(:person) {
+        select :gender, nil, include_blank: false
+      }
+    }
+    assert_no_match 'include_blank: true', ExpressTemplates.compile(&fragment)
   end
 
 end

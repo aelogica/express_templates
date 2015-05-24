@@ -27,7 +27,7 @@ module ExpressTemplates
 
         # Returns the options which will be supplied to the select_tag helper.
         def select_options
-          options_specified = [Array, Hash].include?(@args.second.class)
+          options_specified = [Array, Hash].include?(@args.second.class) && @args.size > 2
           if options_specified
             options = @args.second
           else
@@ -48,11 +48,13 @@ module ExpressTemplates
         def field_options
           # If field_otions is omitted the Expander will be
           # in last or 3rd position and we don't want that
-          if @args.size > 3 && @args[2].is_a?(Hash)
+          defaults = {include_blank: true}
+          field_options = if @args.size > 3 && @args[2].is_a?(Hash)
             @args[2]
           else
             {}
           end
+          defaults.merge(field_options)
         end
 
       end
