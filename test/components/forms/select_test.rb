@@ -44,7 +44,7 @@ class SelectTest < ActiveSupport::TestCase
         select :city
       }
     }
-    assert_match 'options_for_select(@person.pluck(:city).distinct, @person.city)', ExpressTemplates.compile(&fragment)
+    assert_match 'options_for_select(@person.class.distinct(:city).pluck(:city), @person.city)', ExpressTemplates.compile(&fragment)
   end
 
   class ::Gender ; end
