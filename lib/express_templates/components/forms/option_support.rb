@@ -10,7 +10,8 @@ module ExpressTemplates
         # Returns nil if there was a problem reflecting.
         def belongs_to_association
           begin
-            reflection = resource_name.classify.constantize.reflect_on_association(field_name.to_sym)
+            # assumes the belongs_to association uses <name>_id
+            reflection = resource_name.classify.constantize.reflect_on_association(field_name.gsub(/_id$/, '').to_sym)
             if reflection.macro.eql?(:belongs_to)
               return reflection
             end
