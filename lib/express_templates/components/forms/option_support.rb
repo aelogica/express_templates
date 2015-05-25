@@ -23,8 +23,9 @@ module ExpressTemplates
         # Provide ActiveRecord code to load the associated collection as
         # options for display.
         def related_collection
-          if reflection = belongs_to_association
-            "#{reflection.klass}.all.select(:#{option_value_method}, :#{option_name_method}).order(:name)"
+          reflection = belongs_to_association
+          if reflection && !reflection.polymorphic?
+            "#{reflection.klass}.all.select(:#{option_value_method}, :#{option_name_method}).order(:#{option_name_method})"
           end
         end
 
@@ -35,7 +36,17 @@ module ExpressTemplates
           end
 
           def option_name_method
-            :name
+            cols = belongs_to_association.klass.columns
+            @option_name_method ||=
+              if cols.detect {|column| column.name.eql?('name') }
+                :name
+              else
+                if string_col = cols.detect {|column| column.type.eql?(:string) }
+                  string_col.name.to_sym
+                else
+                  :id
+                end
+              end
           end
 
       end

@@ -35,7 +35,11 @@ module ExpressTemplates
           end
 
           if belongs_to_association && !options_specified
-            "{{options_from_collection_for_select(#{related_collection}, :id, :name, @#{resource_name}.#{field_name})}}"
+            if belongs_to_association.polymorphic?
+              "{{options_for_select([[]])}}"
+            else
+              "{{options_from_collection_for_select(#{related_collection}, :id, :#{option_name_method}, @#{resource_name}.#{field_name})}}"
+            end
           else
             if selection = field_options.delete(:selected)
               "{{options_for_select(#{options}, \"#{selection}\")}}"
