@@ -4,7 +4,7 @@ module ExpressTemplates
 
     cattr_accessor :module_search_space
 
-    attr_accessor :stack, :handlers, :locals
+    attr_accessor :stack, :handlers, :locals, :template
 
     def initialize(*args)
       initialize_expander(*args)
