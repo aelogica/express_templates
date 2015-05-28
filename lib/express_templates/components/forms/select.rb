@@ -31,7 +31,7 @@ module ExpressTemplates
           if options_specified
             options = @args.second
           else
-            options = "@#{resource_name}.class.distinct(:#{field_name}).pluck(:#{field_name})"
+            options = "@#{resource_var}.class.distinct(:#{field_name}).pluck(:#{field_name})"
           end
 
           if belongs_to_association && !options_specified
