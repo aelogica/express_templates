@@ -19,6 +19,14 @@ module ExpressTemplates
           resource_name.to_sym
         end
 
+        def resource_class
+          if namespace = parent_form.namespace
+            "#{namespace}/#{resource_name}".classify
+          else
+            resource_name.classify
+          end
+        end
+
         # Return the name attribute for the lable
         def label_name
           "#{resource_name.singularize}_#{field_name}"
