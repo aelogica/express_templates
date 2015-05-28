@@ -13,7 +13,7 @@ module ExpressTemplates
         }
 
         def form_id
-          "#{resource_name}_{{@#{resource_var}.id}}"
+          "#{resource_name}_{{@#{resource_name}.id}}"
         end
 
         def form_method
