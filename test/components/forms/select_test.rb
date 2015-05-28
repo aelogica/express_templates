@@ -1,5 +1,5 @@
 require 'test_helper'
-
+require 'ostruct'
 class SelectTest < ActiveSupport::TestCase
 
   test "select requires a parent component" do
@@ -47,7 +47,11 @@ class SelectTest < ActiveSupport::TestCase
     assert_match 'options_for_select(@person.class.distinct(:city).pluck(:city), @person.city)', ExpressTemplates.compile(&fragment)
   end
 
-  class ::Gender ; end
+  class ::Gender
+    def self.columns
+      [OpenStruct.new(name: 'id'), OpenStruct.new(name: 'name')]
+    end
+  end
   class ::Person
     def self.reflect_on_association(name)
       if name.eql? :gender
@@ -55,6 +59,7 @@ class SelectTest < ActiveSupport::TestCase
         class << dummy_association
           def macro ; :belongs_to ; end
           def klass ; ::Gender ; end
+          def polymorphic? ; false ; end
         end
         return dummy_association
       end

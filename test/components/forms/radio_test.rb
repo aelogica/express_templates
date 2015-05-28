@@ -64,7 +64,11 @@ class RadioTest < ActiveSupport::TestCase
     }
   end
 
-  class ::Department ; end
+  class ::Department
+    def self.columns
+      [OpenStruct.new(name: 'id'), OpenStruct.new(name: 'name')]
+    end
+  end
   class ::Employee
     def self.reflect_on_association(name)
       if name.eql? :department
@@ -72,6 +76,7 @@ class RadioTest < ActiveSupport::TestCase
         class << dummy_association
           def macro ; :belongs_to ; end
           def klass ; ::Department ; end
+          def polymorphic? ; false ; end
         end
         return dummy_association
       end
