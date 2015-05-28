@@ -99,22 +99,10 @@ class ExpressFormTest < ActiveSupport::TestCase
     assert_equal 'foo', expanded_nodes.first.resource_name
   end
 
-
-#   test "simplest form compiled source is legible " do
-#     @example_compiled = -> {
-# "<form action=\"/resources/#{@resource.id}\" method=\"post\">
-#   <div style=\"display:none\">
-# "+%Q(#{utf8_enforcer_tag})+%Q(#{method_tag(:post)})+%Q(#{token_tag})+"
-#   </div>
-#   <div class=\"form-group widget-buttons\">
-# "+%Q(#{submit_tag("Save it!", class: "submit primary")})+"</div>
-# </form>
-# "
-#     }.source_body
-#     ExpressTemplates::Markup::Tag.formatted do
-#       ctx, fragment = simplest_form(resource)
-#       assert_equal @example_compiled, ExpressTemplates.compile(&fragment)
-#     end
-#   end
+  test "express_form has a namespace option with nil default" do
+    form = ExpressTemplates::Components::Forms::ExpressForm
+    assert_nil form.new(:person).namespace
+    assert_equal 'express_engine', form.new(:person, namespace: 'express_engine').namespace
+  end
 
 end

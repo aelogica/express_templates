@@ -52,6 +52,10 @@ module ExpressTemplates
           (@config[:resource_name] || @config[:id]).to_s
         end
 
+        def namespace
+          @config[:namespace]
+        end
+
 
         private
 
