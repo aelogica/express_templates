@@ -96,4 +96,13 @@ class SelectTest < ActiveSupport::TestCase
     assert_no_match 'include_blank: true', ExpressTemplates.compile(&fragment)
   end
 
+  test "select multiple: true if passed multiple true" do
+    fragment = -> {
+      express_form(:person) {
+        select :gender, nil, include_blank: false, multiple: true
+      }
+    }
+    assert_match 'multiple: true', ExpressTemplates.compile(&fragment)
+  end
+
 end

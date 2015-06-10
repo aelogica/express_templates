@@ -21,9 +21,15 @@ module ExpressTemplates
         emits -> {
           div(class: field_wrapper_class) {
             label_tag(label_name, label_text)
-            select_tag(field_name_attribute, select_options, field_options)
+            select_tag(*select_tag_args)
           }
         }
+
+        def select_tag_args
+          args = [field_name_attribute, select_options, field_options]
+          args << html_options unless html_options.nil? or html_options.empty?
+          args
+        end
 
         # Returns the options which will be supplied to the select_tag helper.
         def select_options
@@ -53,13 +59,30 @@ module ExpressTemplates
           # If field_otions is omitted the Expander will be
           # in last or 3rd position and we don't want that
           defaults = {include_blank: true}
-          field_options = if @args.size > 3 && @args[2].is_a?(Hash)
-            @args[2]
-          else
-            {}
-          end
-          defaults.merge(field_options)
+          defaults.merge(supplied_field_options.reject {|k,v| k.eql?(:select2)})
         end
+
+        def html_options
+          supplied_html_options
+        end
+
+        protected
+
+          def supplied_field_options
+            if @args.size > 3 && @args[2].is_a?(Hash)
+              @args[2]
+            else
+              {}
+            end
+          end
+
+          def supplied_html_options
+            if @args.size > 4 && @args[3].is_a?(Hash)
+              @args[3]
+            else
+              {}
+            end
+          end
 
       end
     end
