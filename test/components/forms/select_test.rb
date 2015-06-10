@@ -52,16 +52,31 @@ class SelectTest < ActiveSupport::TestCase
       [OpenStruct.new(name: 'id'), OpenStruct.new(name: 'name')]
     end
   end
+  class ::Tagging
+    def self.columns
+      [OpenStruct.new(name: 'id'), OpenStruct.new(name: 'name')]
+    end
+  end
   class ::Person
     def self.reflect_on_association(name)
       if name.eql? :gender
-        dummy_association = Object.new
-        class << dummy_association
+        dummy_belongs_to_association = Object.new
+        class << dummy_belongs_to_association
           def macro ; :belongs_to ; end
           def klass ; ::Gender ; end
           def polymorphic? ; false ; end
         end
-        return dummy_association
+        return dummy_belongs_to_association
+      end
+      if name.eql? :taggings
+        dummy_has_many_through_association = Object.new
+        class << dummy_has_many_through_association
+          def macro ; :has_many ; end
+          def klass ; ::Tagging ; end
+          def options ; {:through => :peron_tags} ; end
+          def polymorphic? ; false ; end
+        end
+        return dummy_has_many_through_association
       end
     end
   end
@@ -99,10 +114,20 @@ class SelectTest < ActiveSupport::TestCase
   test "select multiple: true if passed multiple true" do
     fragment = -> {
       express_form(:person) {
-        select :gender, nil, include_blank: false, multiple: true
+        select :taggings, nil, include_blank: false, multiple: true
       }
     }
     assert_match 'multiple: true', ExpressTemplates.compile(&fragment)
+  end
+
+  test "select multiple gets options from associated has_many_through collection" do
+    fragment = -> {
+      express_form(:person) {
+        select :taggings, nil, include_blank: false, multiple: true
+      }
+    }
+    assert_match 'options_from_collection_for_select(Tagging.all.select(:id, :name).order(:name), :id, :name, @person.taggings)',
+                 ExpressTemplates.compile(&fragment)
   end
 
 end
