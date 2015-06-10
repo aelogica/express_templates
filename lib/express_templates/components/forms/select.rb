@@ -47,7 +47,7 @@ module ExpressTemplates
               "{{options_from_collection_for_select(#{related_collection}, :id, :#{option_name_method}, @#{resource_name}.#{field_name})}}"
             end
           elsif has_many_through_association
-            "{{options_from_collection_for_select(#{related_collection}, :id, :#{option_name_method}, @#{resource_name}.#{field_name})}}"
+            "{{options_from_collection_for_select(#{related_collection}, :id, :#{option_name_method}, @#{resource_name}.#{field_name}.map(&:id))}}"
           else
             if selection = field_options.delete(:selected)
               "{{options_for_select(#{options}, \"#{selection}\")}}"

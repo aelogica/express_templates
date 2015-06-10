@@ -127,7 +127,7 @@ class SelectTest < ActiveSupport::TestCase
       }
     }
     assert_match 'tagging_ids', ExpressTemplates.compile(&fragment)
-    assert_match 'options_from_collection_for_select(Tagging.all.select(:id, :name).order(:name), :id, :name, @person.taggings)',
+    assert_match 'options_from_collection_for_select(Tagging.all.select(:id, :name).order(:name), :id, :name, @person.taggings.map(&:id))',
                  ExpressTemplates.compile(&fragment)
   end
 
