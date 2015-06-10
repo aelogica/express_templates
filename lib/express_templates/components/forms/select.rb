@@ -57,6 +57,14 @@ module ExpressTemplates
           end
         end
 
+        def field_name_attribute
+          if has_many_through_association
+            "#{resource_name.singularize}[#{field_name.singularize}_ids]"
+          else
+            super
+          end
+        end
+
         def field_options
           # If field_otions is omitted the Expander will be
           # in last or 3rd position and we don't want that
