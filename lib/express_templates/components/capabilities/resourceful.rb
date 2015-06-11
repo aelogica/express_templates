@@ -126,12 +126,8 @@ module ExpressTemplates
           end
         end
 
-        def resource_klass
-          resource_class.constantize
-        end
-
         def columns
-          resource_class.constantize.columns
+          resource_class.columns
         end
       end
     end
