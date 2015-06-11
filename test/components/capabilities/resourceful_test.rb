@@ -20,8 +20,11 @@ module AdminModule
   end
 end
 
-module Admin
-end
+module Admin; end
+
+class FooBar; end
+
+class Something; end
 
 module ExpressTemplates
 
@@ -52,9 +55,9 @@ module ExpressTemplates
       assert_equal nil, smart_thing.path_prefix
     end
 
-    test "#resource_class returns class_name option if specified" do
-      assert_equal 'FooBar', AdminModule::SmartThing.new('somethings/index', class_name: 'FooBar').resource_class
-      assert_equal 'Something', AdminModule::SmartThing.new('somethings/index', id: :something).resource_class
+    test "#resource_class returns resource_class option if specified" do
+      assert_equal FooBar, AdminModule::SmartThing.new('somethings/index', resource_class: 'FooBar').resource_class
+      assert_equal Something, AdminModule::SmartThing.new('somethings/index', id: :something).resource_class
     end
   end
 end

@@ -4,6 +4,7 @@ module ExpressTemplates
       class ExpressForm < Base
         include Capabilities::Configurable
         include Capabilities::Parenting
+        include Capabilities::Resourceful
 
         emits -> {
           form( form_args ) {
@@ -52,25 +53,7 @@ module ExpressTemplates
           (@config[:resource_name] || @config[:id]).to_s
         end
 
-        def resource_class
-          resource_class = @config[:resource_class] || _namespaced_resource_class
-          resource_class.constantize
-        end
-
-        def namespace
-          @config[:namespace]
-        end
-
-
         private
-
-          def _namespaced_resource_class
-            if namespace
-              "#{namespace}/#{resource_name}".classify
-            else
-              resource_name.classify
-            end
-          end
 
           def _modifying_resource?
             [:put, :patch].include? form_method

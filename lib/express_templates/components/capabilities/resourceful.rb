@@ -12,20 +12,23 @@ module ExpressTemplates
         end
 
         def resource_class
-          if @config[:class_name]
-            return @config[:class_name]
-          else
-            class_name = ["#{resource_name.classify}"]
-            class_name.unshift("#{namespace.classify}") unless namespace.nil?
-            class_name.join("::")
-          end
+          resource_class = @config[:resource_class] || _namespaced_resource_class
+          resource_class.constantize
         end
 
         private
 
+        def _namespaced_resource_class
+          if namespace
+            "#{namespace}/#{resource_name}".classify
+          else
+            resource_name.classify
+          end
+        end
+
         def infer_namespace
           expander = @args.last
-          if expander.respond_to?(:template)
+          if expander.try(:template)
             path_parts = expander.template.virtual_path.split('/')
 
             case
