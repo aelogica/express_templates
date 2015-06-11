@@ -4,7 +4,7 @@ module AdminModule
   module Engine
   end
   class SmartThing
-    include ExpressTemplates::Components::Resourceful
+    include ExpressTemplates::Components::Capabilities::Resourceful
 
     attr_accessor :virtual_path
 
