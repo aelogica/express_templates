@@ -20,11 +20,7 @@ module ExpressTemplates
         end
 
         def resource_class
-          if namespace = parent_form.namespace
-            "#{namespace}/#{resource_name}".classify
-          else
-            resource_name.classify
-          end
+          parent_form.resource_class
         end
 
         # Return the name attribute for the lable

@@ -7,7 +7,7 @@ module ExpressTemplates
       module OptionSupport
 
         def has_many_through_association
-          reflection = resource_class.constantize.reflect_on_association(field_name.to_sym)
+          reflection = resource_class.reflect_on_association(field_name.to_sym)
           return reflection if reflection && reflection.macro.eql?(:has_many) && reflection.options.keys.include?(:through)
         end
 
@@ -16,7 +16,7 @@ module ExpressTemplates
         # Returns nil if there was a problem reflecting.
         def belongs_to_association
           # assumes the belongs_to association uses <name>_id
-          reflection = resource_class.constantize.reflect_on_association(field_name.gsub(/_id$/, '').to_sym)
+          reflection = resource_class.reflect_on_association(field_name.gsub(/_id$/, '').to_sym)
           if reflection && reflection.macro.eql?(:belongs_to)
             return reflection
           end
