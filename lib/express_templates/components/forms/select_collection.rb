@@ -31,12 +31,7 @@ module ExpressTemplates
         end
 
         def field_options
-          selected_options_ruby = "@#{resource_name}.#{multi_field_name}"
-          class << selected_options_ruby
-            def inspect
-              super.to_s.gsub(/^"(.*)"$/,'\1').gsub('\#', '#')
-            end
-          end
+          selected_options_ruby = "@#{resource_name}.#{multi_field_name}".to_view_code
           super.merge(include_blank: false, selected: selected_options_ruby)
         end
 

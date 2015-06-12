@@ -1,5 +1,6 @@
 module ExpressTemplates
   require 'core_extensions/proc'
+  require 'core_extensions/string'
   require 'express_templates/indenter'
   require 'express_templates/macro'
   require 'express_templates/markup'
