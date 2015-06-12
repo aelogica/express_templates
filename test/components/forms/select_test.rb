@@ -131,4 +131,16 @@ class SelectTest < ActiveSupport::TestCase
                  ExpressTemplates.compile(&fragment)
   end
 
+  test "select_collection uses collection_select" do
+    fragment = -> {
+      express_form(:person) {
+        select_collection :taggings
+      }
+    }
+    assert_match 'tagging_ids', ExpressTemplates.compile(&fragment)
+    assert_match 'collection_select("person", "tagging_ids", Tagging.all.select(:id, :name).order(:name), :id, :name, {:include_blank=>false, :selected=>@person.tagging_ids}, multiple: true)',
+                 ExpressTemplates.compile(&fragment)
+  end
+
+
 end
