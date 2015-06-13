@@ -11,9 +11,9 @@ module ExpressTemplates
     # Example:
     #
     # ```ruby
-    # tree_for(:roles) do |role|
-    #   role.name
-    # end
+    # tree_for(:roles) {
+    #   "{{role.name}}"
+    # }
     # ```
     #
     # If the view has an @roles variable with a Role having children,
