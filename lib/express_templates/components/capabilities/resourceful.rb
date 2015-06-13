@@ -51,7 +51,7 @@ module ExpressTemplates
 
         def infer_path_prefix
           expander = @args.last
-          if expander.respond_to?(:template)
+          if expander.try(:template)
             path_parts = expander.template.virtual_path.split('/')
 
             case
