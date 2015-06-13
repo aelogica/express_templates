@@ -64,7 +64,7 @@ module ExpressTemplates
         return 'ExpressTemplates::Components::TreeFor.render_in(self) {
   node_renderer = '+node_renderer.gsub(/node/, member)+'
   ExpressTemplates::Indenter.for(:tree) do |ws, wsnl|
-    "#{ws}<ul id=\"roles\" class=\"roles tree\">" +
+    "#{ws}<ul id=\"'+@options[:id]+'\" class=\"'+@options[:id]+' tree\">" +
       '+collection+'.map do |'+member+'|
         node_renderer.call('+member+', node_renderer)
       end.join +
