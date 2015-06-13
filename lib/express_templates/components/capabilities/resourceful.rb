@@ -90,6 +90,10 @@ module ExpressTemplates
           "@#{collection_name}".to_sym
         end
 
+        def collection
+          @config[:collection] || collection_var
+        end
+
         def collection_path
           if namespace
             "#{namespace}.#{collection_name_with_prefix}_path"
