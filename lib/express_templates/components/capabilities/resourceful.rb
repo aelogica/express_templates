@@ -126,7 +126,7 @@ module ExpressTemplates
           end
         end
 
-        def columns
+        def attributes
           resource_class.columns
         end
       end
