@@ -59,7 +59,11 @@ module ExpressTemplates
       end
 
       def compile
-        collection = _variablize(@options[:id])
+        collection = if @options[:collection]
+            "#{@options[:collection].source}.call()"
+          else
+            _variablize(@options[:id])
+          end
         member = @options[:id].to_s.singularize
         return 'ExpressTemplates::Components::TreeFor.render_in(self) {
   node_renderer = '+node_renderer.gsub(/node/, member)+'
