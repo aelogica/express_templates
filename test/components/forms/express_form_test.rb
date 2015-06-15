@@ -72,16 +72,16 @@ class ExpressFormTest < ActiveSupport::TestCase
   end
 
   test "#form_action uses url helpers" do
-    assert_equal "{{foos_path}}", express_form.new(:foo).form_action
+    assert_equal "{{@foo.try(:persisted?) ? foo_path(@foo.id) : foos_path}}", express_form.new(:foo).form_action
   end
 
   test "#form_action uses correct path helper for update/patch" do
-    assert_equal "{{foo_path(@foo)}}", express_form.new(:foo, method: :put).form_action
+    assert_equal "{{@foo.try(:persisted?) ? foo_path(@foo.id) : foos_path}}", express_form.new(:foo, method: :put).form_action
   end
 
   test "simplest_form uses form_action for the action" do
     form_open_tag = compile_simplest_form.match(/<form[^>]*>/)[0]
-    assert_match 'action=\"#{resources_path}\"', form_open_tag
+    assert_match 'action=\"#{@resource.try(:persisted?) ? resource_path(@resource.id) : resources_path}\"', form_open_tag
   end
 
   test "express_form default method is POST" do

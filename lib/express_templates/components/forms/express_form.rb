@@ -5,6 +5,7 @@ module ExpressTemplates
         include Capabilities::Configurable
         include Capabilities::Parenting
         include Capabilities::Resourceful
+        include Forms::FormSupport
 
         emits -> {
           form( form_args ) {
@@ -19,16 +20,6 @@ module ExpressTemplates
 
         def form_method
           @config[:method]
-        end
-
-        def form_action
-          if _modifying_resource?
-            "{{#{resource_name_for_path}_path(@#{resource_name})}}"
-          else # posting a new to a collection
-            # We also have to take in to account singular resources 
-            # e.g. resource :config -> will throw an unknown method error of configs_path
-            "{{#{resource_name_for_path.pluralize}_path}}"
-          end
         end
 
 
