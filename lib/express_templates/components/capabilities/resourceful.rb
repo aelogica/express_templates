@@ -95,8 +95,8 @@ module ExpressTemplates
         end
 
         def collection_path
-          if namespace
-            "#{namespace}.#{collection_name_with_prefix}_path"
+          if @config[:collection_path]
+            @config[:collection_path]
           else
             "#{collection_name_with_prefix}_path"
           end
@@ -114,11 +114,7 @@ module ExpressTemplates
           if @config[:resource_path]
             @config[:resource_path]
           else
-            full_path_helper = namespace ?
-              "#{namespace.underscore}.#{resource_name_with_path_prefix}_path" :
-              "#{resource_name_with_path_prefix}_path"
-
-              "#{full_path_helper}(#{ivar ? '@' : ''}#{resource_name}.id)"
+            "#{resource_name_with_path_prefix}_path(#{ivar ? '@' : ''}#{resource_name})"
           end
         end
 

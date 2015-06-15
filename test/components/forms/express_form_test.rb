@@ -99,10 +99,10 @@ class ExpressFormTest < ActiveSupport::TestCase
     assert_equal 'foo', expanded_nodes.first.resource_name
   end
 
-  test "express_form has a namespace option with nil default" do
-    form = ExpressTemplates::Components::Forms::ExpressForm
-    assert_nil form.new(:person).namespace
-    assert_equal 'express_engine', form.new(:person, namespace: 'express_engine').namespace
-  end
+  # test "express_form has a namespace option with nil default" do
+  #   form = ExpressTemplates::Components::Forms::ExpressForm
+  #   assert_nil form.new(:person).namespace
+  #   assert_equal 'express_engine', form.new(:person, namespace: 'express_engine').namespace
+  # end
 
 end
