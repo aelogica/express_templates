@@ -33,9 +33,14 @@ module ExpressTemplates
 
         # Returns the options which will be supplied to the select_tag helper.
         def select_options
-          options_specified = [Array, Hash].include?(@args.second.class) && @args.size > 2
+          options_specified = [Array, Hash, Proc].include?(@args.second.class) && @args.size > 2
           if options_specified
-            options = @args.second
+            if @args.second.respond_to?(:source) # can be a proc
+              options = "#{@args.second.source}.call()"
+            else
+              options = @args.second
+            end
+
           else
             options = "@#{resource_var}.class.distinct(:#{field_name}).pluck(:#{field_name})"
           end
