@@ -30,7 +30,7 @@ module ExpressTemplates
 
         # Return the text content for the label
         def label_text
-          @options[:label] || field_name.titleize
+          @config[:label] || field_name.titleize
         end
 
         # Return the field_name as a string.  This taken from the first argument
