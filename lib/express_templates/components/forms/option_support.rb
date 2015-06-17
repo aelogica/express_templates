@@ -27,7 +27,11 @@ module ExpressTemplates
         def related_collection
           reflection = belongs_to_association || has_many_through_association
           if reflection && !reflection.polymorphic?
-            "#{reflection.klass}.all.select(:#{option_value_method}, :#{option_name_method}).order(:#{option_name_method})"
+            if cols.detect {|column| column.name.eql?('name') }
+              "#{reflection.klass}.all.select(:#{option_value_method}, :#{option_name_method}).order(:#{option_name_method})"
+            else
+              "#{reflection.klass}.all.sort_by(&:#{option_name_method})"
+            end
           end
         end
 
@@ -37,10 +41,14 @@ module ExpressTemplates
             :id
           end
 
+          def cols
+            @cols ||= (belongs_to_association||has_many_through_association).klass.columns
+          end
+
           def option_name_method
-            cols = (belongs_to_association||has_many_through_association).klass.columns
             @option_name_method ||=
-              if cols.detect {|column| column.name.eql?('name') }
+              if cols.detect {|column| column.name.eql?('name') } ||
+                 resource_class.instance_methods.include?(:name)
                 :name
               else
                 if string_col = cols.detect {|column| column.type.eql?(:string) }
