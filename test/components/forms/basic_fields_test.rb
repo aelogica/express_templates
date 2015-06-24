@@ -23,7 +23,7 @@ class BasicFieldsTest < ActiveSupport::TestCase
         }
       }
       assert_match '#{label_tag("foo_bar", "Bar")', ExpressTemplates.compile(&fragment)
-      assert_match "#{type}_field(:foo, :bar, nil)", ExpressTemplates.compile(&fragment)
+      assert_match "#{type}_field(:foo, :bar, {})", ExpressTemplates.compile(&fragment)
     end
   end
 
@@ -47,7 +47,7 @@ class BasicFieldsTest < ActiveSupport::TestCase
       }
     }
     assert_match '#{label_tag("foo_bar", "Bar")', ExpressTemplates.compile(&fragment)
-    assert_match "text_area(:foo, :bar, nil)", ExpressTemplates.compile(&fragment)
+    assert_match "text_area(:foo, :bar, {})", ExpressTemplates.compile(&fragment)
   end
 
   test "textarea passes additional html options to rails helper" do
@@ -67,7 +67,7 @@ class BasicFieldsTest < ActiveSupport::TestCase
       }
     }
     assert_no_match '#{label_tag("foo_bar", "Bar")', ExpressTemplates.compile(&fragment)
-    assert_match "hidden_field(:foo, :bar, nil)", ExpressTemplates.compile(&fragment)
+    assert_match "hidden_field(:foo, :bar, {})", ExpressTemplates.compile(&fragment)
   end
 
   test "hidden field passes additional html options to rails helper" do
