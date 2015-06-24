@@ -58,6 +58,10 @@ module ExpressTemplates
           return @my_form
         end
 
+        def html_options
+          @args[1].is_a?(Hash) ? @args[1] : @config[:html_options]
+        end
+
       end
     end
   end

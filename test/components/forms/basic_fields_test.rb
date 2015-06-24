@@ -23,7 +23,20 @@ class BasicFieldsTest < ActiveSupport::TestCase
         }
       }
       assert_match '#{label_tag("foo_bar", "Bar")', ExpressTemplates.compile(&fragment)
-      assert_match "#{type}_field(:foo, :bar)", ExpressTemplates.compile(&fragment)
+      assert_match "#{type}_field(:foo, :bar, nil)", ExpressTemplates.compile(&fragment)
+    end
+  end
+
+  test "passing html options to fields work" do
+    options = {class: 'form-field'}
+    BASIC_FIELDS.each do |type|
+      fragment = -> {
+        express_form(:foo) {
+          send(type, :bar, options)
+        }
+      }
+      assert_match '#{label_tag("foo_bar", "Bar")', ExpressTemplates.compile(&fragment)
+      assert_match "#{type}_field(:foo, :bar, class: \"form-field\")", ExpressTemplates.compile(&fragment)
     end
   end
 
@@ -34,9 +47,18 @@ class BasicFieldsTest < ActiveSupport::TestCase
       }
     }
     assert_match '#{label_tag("foo_bar", "Bar")', ExpressTemplates.compile(&fragment)
-    assert_match "text_area(:foo, :bar)", ExpressTemplates.compile(&fragment)
+    assert_match "text_area(:foo, :bar, nil)", ExpressTemplates.compile(&fragment)
   end
 
+  test "textarea passes additional html options to rails helper" do
+    fragment = -> {
+      express_form(:foo) {
+        textarea :bar, rows: 5, class: 'tinymce form-field'
+      }
+    }
+    assert_match '#{label_tag("foo_bar", "Bar")', ExpressTemplates.compile(&fragment)
+    assert_match "text_area(:foo, :bar, rows: 5, class: \"tinymce form-field\")", ExpressTemplates.compile(&fragment)
+  end
 
   test "hidden uses rails hidden_tag helper" do
     fragment = -> {
@@ -45,8 +67,17 @@ class BasicFieldsTest < ActiveSupport::TestCase
       }
     }
     assert_no_match '#{label_tag("foo_bar", "Bar")', ExpressTemplates.compile(&fragment)
-    assert_match "hidden_field(:foo, :bar)", ExpressTemplates.compile(&fragment)
+    assert_match "hidden_field(:foo, :bar, nil)", ExpressTemplates.compile(&fragment)
+  end
+
+  test "hidden field passes additional html options to rails helper" do
+    fragment = -> {
+      express_form(:foo) {
+        hidden :bar, class: 'hidden form-field', value: 'ninja'
+      }
+    }
+    assert_no_match '#{label_tag("foo_bar", "Bar")', ExpressTemplates.compile(&fragment)
+    assert_match "hidden_field(:foo, :bar, class: \"hidden form-field\", value: \"ninja\")", ExpressTemplates.compile(&fragment)
   end
 
 end
-
