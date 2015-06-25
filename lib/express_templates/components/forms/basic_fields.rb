@@ -12,7 +12,7 @@ module ExpressTemplates
               emits -> {
                 div(class: field_wrapper_class) {
                   label_tag(label_name, label_text)
-                  #{type}_field resource_var, field_name.to_sym
+                  #{type}_field resource_var, field_name.to_sym, html_options
                 }
               }
             end
@@ -35,19 +35,16 @@ RUBY
         emits -> {
           div(class: field_wrapper_class) {
             label_tag(label_name, label_text)
-            text_area resource_var, field_name.to_sym
+            text_area resource_var, field_name.to_sym, html_options
           }
         }
       end
 
       class Hidden < FormComponent
         emits -> {
-          hidden_field resource_var, field_name.to_sym
+          hidden_field resource_var, field_name.to_sym, html_options
         }
       end
-
-
     end
   end
 end
-
