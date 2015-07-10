@@ -37,17 +37,11 @@ module ExpressTemplates
     # * Capabilities::Wrapping
     # * Capabilities::Iterating
     #
-    class Base < Expander
-      include ExpressTemplates::Macro
+    class Base < Arbre::Component
       include Capabilities::Templating
       include Capabilities::Rendering
       include Capabilities::Wrapping
       include Capabilities::Iterating
-
-      def self.inherited(klass)
-        ExpressTemplates::Expander.register_macros_for klass
-      end
-
     end
 
   end

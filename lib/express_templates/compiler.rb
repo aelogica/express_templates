@@ -12,11 +12,18 @@ module ExpressTemplates
 
       template, src = _normalize(template_or_src)
 
-      expander = Expander.new(template)
+      compiled = <<-END
+Arbre::Context.new(assigns, self) {
+  #{src || block.source_body}
+}.to_s
+        END
 
-      compiled = expander.expand(src, &block).map(&:compile)
 
-      return Interpolator.transform(compiled.join("+").gsub('"+"', '')).tap do |s|
+      # expander = Expander.new(template)
+
+      # compiled = expander.expand(src, &block).map(&:compile)
+
+      return Interpolator.transform(compiled).tap do |s|
         puts("\n"+template.inspect+"\nSource:\n#{template.try(:source)}\nInterpolated:\n#{s}\n") if ENV['DEBUG'].eql?('true')
       end
     end

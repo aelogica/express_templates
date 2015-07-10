@@ -23,6 +23,7 @@ ETC = ExpressTemplates::Components
 ET = ExpressTemplates
 Interpolator = ExpressTemplates::Interpolator
 
-Tag = ExpressTemplates::Markup::Tag
+require 'arbre'
+Tag = Arbre::HTML::Tag
 
 ENV["ET_NO_INDENT_MARKUP"] = 'true'
