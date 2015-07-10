@@ -74,6 +74,15 @@ module ExpressTemplates
           # If field_otions is omitted the Expander will be
           # in last or 3rd position and we don't want that
           defaults = {include_blank: true}
+
+          if supplied_field_options[:select2]
+            if klasses = supplied_field_options[:class]
+              supplied_field_options[:class] << ' select2'
+            else
+              defaults.merge!(class: 'select2')
+            end
+          end
+
           defaults.merge(supplied_field_options.reject {|k,v| k.eql?(:select2)})
         end
 

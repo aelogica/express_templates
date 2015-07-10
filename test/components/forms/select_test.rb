@@ -2,7 +2,7 @@ require 'test_helper'
 require 'ostruct'
 class SelectTest < ActiveSupport::TestCase
 
-  test "select requires a parent component" do
+  test 'select requires a parent component' do
     fragment = -> {
       select :gender, ['Male', 'Female'], selected: 'Male'
     }
@@ -11,7 +11,7 @@ class SelectTest < ActiveSupport::TestCase
     }
   end
 
-  test "select comes with a label" do
+  test 'select comes with a label' do
     fragment = -> {
       express_form(:person) {
         select :gender
@@ -20,7 +20,7 @@ class SelectTest < ActiveSupport::TestCase
     assert_match '#{label_tag("person_gender", "Gender")}', ExpressTemplates.compile(&fragment)
   end
 
-  test "select uses options_for_select when values are specified" do
+  test 'select uses options_for_select when values are specified' do
     fragment = -> {
       express_form(:person) {
         select :gender, ['Male', 'Female'], selected: 'Male'
@@ -29,7 +29,7 @@ class SelectTest < ActiveSupport::TestCase
     assert_match 'options_for_select(["Male", "Female"], "Male")', ExpressTemplates.compile(&fragment)
   end
 
-  test "selected option is omitted selection is taken from model" do
+  test 'selected option is omitted selection is taken from model' do
     fragment = -> {
       express_form(:person) {
         select :gender, ['Male', 'Female']
@@ -38,7 +38,7 @@ class SelectTest < ActiveSupport::TestCase
     assert_match 'options_for_select(["Male", "Female"], @person.gender)', ExpressTemplates.compile(&fragment)
   end
 
-  test "select generates options from data when options omitted" do
+  test 'select generates options from data when options omitted' do
     fragment = -> {
       express_form(:person) {
         select :city
@@ -81,7 +81,7 @@ class SelectTest < ActiveSupport::TestCase
     end
   end
 
-  test "select uses options_from_collect... when field is relation" do
+  test 'select uses options_from_collect... when field is relation' do
     fragment = -> {
       express_form(:person) {
         select :gender
@@ -92,7 +92,7 @@ class SelectTest < ActiveSupport::TestCase
                   ExpressTemplates.compile(&fragment)
   end
 
-  test "select defaults to include_blank: true" do
+  test 'select defaults to include_blank: true' do
     fragment = -> {
       express_form(:person) {
         select :gender
@@ -102,7 +102,7 @@ class SelectTest < ActiveSupport::TestCase
   end
 
 
-  test "select defaults can be overridden" do
+  test 'select defaults can be overridden' do
     fragment = -> {
       express_form(:person) {
         select :gender, nil, include_blank: false
@@ -111,7 +111,7 @@ class SelectTest < ActiveSupport::TestCase
     assert_no_match 'include_blank: true', ExpressTemplates.compile(&fragment)
   end
 
-  test "select multiple: true if passed multiple true" do
+  test 'select multiple: true if passed multiple true' do
     fragment = -> {
       express_form(:person) {
         select :taggings, nil, include_blank: false, multiple: true
@@ -120,7 +120,7 @@ class SelectTest < ActiveSupport::TestCase
     assert_match 'multiple: true', ExpressTemplates.compile(&fragment)
   end
 
-  test "select multiple gets options from associated has_many_through collection" do
+  test 'select multiple gets options from associated has_many_through collection' do
     fragment = -> {
       express_form(:person) {
         select :taggings, nil, include_blank: false, multiple: true
@@ -131,7 +131,19 @@ class SelectTest < ActiveSupport::TestCase
                  ExpressTemplates.compile(&fragment)
   end
 
-  test "select_collection uses collection_select" do
+  test 'select has select2 class if passed select2: true' do
+    fragment = -> {
+      express_form(:person) {
+        select :taggings, nil, select2: true
+        select :gender, nil, select2: true, class: 'some-style-class another-class'
+      }
+    }
+
+    assert_match 'class: "select2"', ExpressTemplates.compile(&fragment)
+    assert_match 'class: "some-style-class another-class select2"', ExpressTemplates.compile(&fragment)
+  end
+
+  test 'select_collection uses collection_select' do
     fragment = -> {
       express_form(:person) {
         select_collection :taggings
