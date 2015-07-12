@@ -40,7 +40,7 @@ module ExpressTemplates
       def node_renderer
         return (-> (node, renderer) {
     ExpressTemplates::Indenter.for(:tree) do |ws, wsnl|
-      "#{wsnl}<li style=\"text-indent: " + (1 * node.nthchild).to_s + "rem;\">" +
+      "#{wsnl}<li>"+
       _yield +
       if node.children.any?
         ExpressTemplates::Indenter.for(:tree) do |ws, wsnl|
