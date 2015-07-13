@@ -1,5 +1,6 @@
 module ExpressTemplates
   require 'arbre'
+  require 'arbre/patches'
   require 'core_extensions/proc'
   require 'core_extensions/string'
   require 'express_templates/indenter'

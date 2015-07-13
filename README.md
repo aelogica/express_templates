@@ -108,27 +108,23 @@ We can make a simple component like so:
 
 ```ruby
 class ListComponent < ExpressTemplates::Components::Base
-  emits inner: -> {
-                    li {
-                      item
-                    }
-                  },
-        outer: -> {
-                    ul {
-                      _yield
-                    }
-                  }
-
-  for_each -> { @list }, emit: :inner
-
-  wrap_with :outer
+  def build(*args, &children)
+    ul {
+      # assumes view provides list
+      list.each do |item|
+        li {
+          item
+        }
+      end
+    }
+  end
 end
 ```
 
 This would be used in a view template just as if it were a tag, like so:
 
 ```ruby
-div.active {
+div(class: "active") {
   list_component
 }
 ```

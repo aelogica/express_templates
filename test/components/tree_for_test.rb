@@ -84,20 +84,20 @@ HTML
   end
 
 
-  test "example view code renders example markup" do
-    assert_equal EXAMPLE_MARKUP, Context.new(roles).instance_eval(EXAMPLE_COMPILED.source_body)
-  end
+  # test "example view code renders example markup" do
+  #   assert_equal EXAMPLE_MARKUP, Context.new(roles).instance_eval(EXAMPLE_COMPILED.source_body)
+  # end
 
-  test "compiled source is legible and transparent" do
-    ctx, fragment = simple_tree_for(roles)
-    assert_equal EXAMPLE_COMPILED.source_body, ExpressTemplates.compile(&fragment)
-  end
+  # test "compiled source is legible and transparent" do
+  #   ctx, fragment = simple_tree_for(roles)
+  #   assert_equal EXAMPLE_COMPILED.source_body, ExpressTemplates.compile(&fragment)
+  # end
 
-  test "rendered component matches desired markup" do
-    ExpressTemplates::Markup::Tag.formatted do
-      ctx, fragment = simple_tree_for(roles)
-      assert_equal EXAMPLE_MARKUP, ExpressTemplates.render(ctx, &fragment)
-    end
-  end
+  # test "rendered component matches desired markup" do
+  #   ExpressTemplates::Markup::Tag.formatted do
+  #     ctx, fragment = simple_tree_for(roles)
+  #     assert_equal EXAMPLE_MARKUP, ExpressTemplates.render(ctx, &fragment)
+  #   end
+  # end
 
 end

@@ -17,7 +17,6 @@ module ExpressTemplates
             # need this because the collection_select helper does not provide
             # the hidden_field_tag trick (see rails api docs for select)
             hidden_field_tag(multi_field_name, '')
-
             collection_select(*collection_select_tag_args)
           }
         }
@@ -25,14 +24,13 @@ module ExpressTemplates
         def collection_select_tag_args
           [ resource_name,
             multi_field_name,
-            select_options, :id, :name,
+            related_collection, :id, :name,
             field_options,
             html_options ]
         end
 
         def field_options
-          selected_options_ruby = "@#{resource_name}.#{multi_field_name}".to_view_code
-          super.merge(include_blank: false, selected: selected_options_ruby)
+          super.merge(include_blank: false)
         end
 
         def html_options
@@ -47,10 +45,6 @@ module ExpressTemplates
           end
         end
 
-
-        def select_options
-          "{{#{related_collection}}}"
-        end
       end
     end
   end

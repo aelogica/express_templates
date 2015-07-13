@@ -31,33 +31,35 @@ module ExpressTemplates
           args
         end
 
+        def options_specified?
+          [Array, Hash, Proc].include?(@args.first.class)
+        end
+
         # Returns the options which will be supplied to the select_tag helper.
         def select_options
-          options_specified = [Array, Hash, Proc].include?(@args.second.class) && @args.size > 2
-          if options_specified
-            if @args.second.respond_to?(:source) # can be a proc
-              options = "#{@args.second.source}.call()"
+          options = if options_specified?
+            if @args.first.respond_to?(:call) # can be a proc
+              @args.first.call()
             else
-              options = @args.second
+              @args.first
             end
-
           else
-            options = "@#{resource_var}.class.distinct(:#{field_name}).pluck(:#{field_name})"
+            resource.class.distinct(field_name.to_sym).pluck(field_name.to_sym)
           end
 
-          if belongs_to_association && !options_specified
+          if belongs_to_association && !options_specified?
             if belongs_to_association.polymorphic?
-              "{{options_for_select([[]])}}"
+              helpers.options_for_select([[]])
             else
-              "{{options_from_collection_for_select(#{related_collection}, :id, :#{option_name_method}, @#{resource_name}.#{field_name})}}"
+              helpers.options_from_collection_for_select(related_collection, :id, option_name_method, resource.send(field_name))
             end
           elsif has_many_through_association
-            "{{options_from_collection_for_select(#{related_collection}, :id, :#{option_name_method}, @#{resource_name}.#{field_name}.map(&:id))}}"
+            helpers.options_from_collection_for_select(related_collection, :id, option_name_method, resource.send(field_name).map(&:id))
           else
             if selection = field_options.delete(:selected)
-              "{{options_for_select(#{options}, \"#{selection}\")}}"
+              helpers.options_for_select(options, selection)
             else
-              "{{options_for_select(#{options}, @#{resource_name}.#{field_name})}}"
+              helpers.options_for_select(options, resource.send(field_name))
             end
           end
         end
@@ -93,16 +95,16 @@ module ExpressTemplates
         protected
 
           def supplied_field_options
-            if @args.size > 3 && @args[2].is_a?(Hash)
-              @args[2]
+            if @args[1] && @args[1].is_a?(Hash)
+              @args[1]
             else
               {}
             end
           end
 
           def supplied_html_options
-            if @args.size > 4 && @args[3].is_a?(Hash)
-              @args[3]
+            if @args[2] && @args[2].is_a?(Hash)
+              @args[2]
             else
               {}
             end

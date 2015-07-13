@@ -1,5 +1,6 @@
-
 content_for :title, "Dummy Show"
 
-h1 '{{@hello}}'
-p 'Find me in app/views/hello/show.html.express_templates'
+div {
+  h1 "#{hello}"
+  p 'Find me in app/views/hello/show.html.express_templates'
+}

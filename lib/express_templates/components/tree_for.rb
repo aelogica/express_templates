@@ -36,51 +36,14 @@ module ExpressTemplates
     #       </li>
     #     </ul>
     #
-    class TreeFor < Container
-      def node_renderer
-        return (-> (node, renderer) {
-    ExpressTemplates::Indenter.for(:tree) do |ws, wsnl|
-      "#{wsnl}<li>"+
-      _yield +
-      if node.children.any?
-        ExpressTemplates::Indenter.for(:tree) do |ws, wsnl|
-          "#{wsnl}<ul>" +
-            node.children.map do |child|
-              renderer.call(child, renderer)
-            end.join +
-          "#{wsnl}</ul>"
-        end +
-        "#{wsnl}</li>"
-      else
-        "</li>"
-      end
-    end
-  }).source.sub(/\W_yield\W/, compile_children.lstrip)
-      end
-
-      def compile
-        collection = if @options[:collection]
-            "#{@options[:collection].source}.call()"
-          else
-            _variablize(@options[:id])
-          end
-        member = @options[:id].to_s.singularize
-        return 'ExpressTemplates::Components::TreeFor.render_in(self) {
-  node_renderer = '+node_renderer.gsub(/node/, member)+'
-  ExpressTemplates::Indenter.for(:tree) do |ws, wsnl|
-    "#{ws}<ul id=\"'+@options[:id]+'\" class=\"'+@options[:id]+' tree\">" +
-      '+collection+'.map do |'+member+'|
-        node_renderer.call('+member+', node_renderer)
-      end.join +
-    "#{wsnl}</ul>\n"
-  end
-}'
-      end
-
-      private
-        def _variablize(sym)
-          "@#{sym}"
-        end
+    class TreeFor < Configurable
+      emits {
+        ul {
+          li {
+            "fix me"
+          }
+        }
+      }
     end
   end
 end

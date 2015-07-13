@@ -1,54 +1,44 @@
 module ExpressTemplates
   module Components
     module Forms
-      class ExpressForm < Base
-        include Capabilities::Configurable
-        include Capabilities::Parenting
-        include Capabilities::Resourceful
-        include Forms::FormSupport
+      class ExpressForm < Configurable
+        include ExpressTemplates::Components::Capabilities::Resourceful
 
-        emits -> {
-          form( form_args ) {
+        emits -> (block) {
+          form(form_tag_options ) {
             form_rails_support form_method
-            _yield
+            block.call(self) if block
           }
         }
 
         def form_id
-          "#{resource_name}_{{@#{resource_name}.id}}"
+          "#{resource_name}_#{resource.id}"
         end
 
         def form_method
-          @config[:method]
+          config[:method].to_s.upcase || 'POST'
         end
 
+        def form_action
+          config[:action] || (resource.try(:persisted?) ? resource_path(ivar: true) : collection_path)
+        end
 
-        def form_args
-          # there are no put/patch emthods in HTML5, so we have to enforce post
-          # need to find a better way to do this: id/action can be overridden but method
-          # should always be :post IN THE FORM TAG
-          args = {id: form_id, action: form_action}.merge!(@config).merge!(method: :post)
+        def form_tag_options
+          args = {id: form_id, action: form_action}.merge!(config).merge!(method: 'POST')
 
           if html_options = args.delete(:html_options)
             args.merge!(html_options)
           end
-          args[:method] = args[:method].to_s.upcase
           args
         end
 
         def resource_name_for_path
-          @config[:id].to_s
+          config[:id].to_s
         end
 
         def resource_name
-          (@config[:resource_name] || @config[:id]).to_s
+          (config[:resource_name] || config[:id]).to_s
         end
-
-        private
-
-          def _modifying_resource?
-            [:put, :patch].include? form_method
-          end
 
       end
     end

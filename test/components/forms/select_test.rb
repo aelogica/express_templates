@@ -2,166 +2,119 @@ require 'test_helper'
 require 'ostruct'
 class SelectTest < ActiveSupport::TestCase
 
-  test 'select requires a parent component' do
-    fragment = -> {
-      select :gender, ['Male', 'Female'], selected: 'Male'
-    }
+  def assigns
+    {resource: ::Person.new}
+  end
+
+
+  test "select requires a parent component" do
     assert_raises(RuntimeError) {
-      ExpressTemplates.compile(&fragment)
+      html = arbre {
+        select :gender, ['Male', 'Female'], selected: 'Male'
+      }
     }
   end
 
-  test 'select comes with a label' do
-    fragment = -> {
+  test "select comes with a label" do
+    html = arbre {
       express_form(:person) {
         select :gender
       }
     }
-    assert_match '#{label_tag("person_gender", "Gender")}', ExpressTemplates.compile(&fragment)
+    assert_match /<label.*for="person_gender"/, html
   end
 
-  test 'select uses options_for_select when values are specified' do
-    fragment = -> {
+  test "select uses options_for_select when values are specified" do
+    html = arbre {
       express_form(:person) {
         select :gender, ['Male', 'Female'], selected: 'Male'
       }
     }
-    assert_match 'options_for_select(["Male", "Female"], "Male")', ExpressTemplates.compile(&fragment)
+    assert_match /<option.*selected="selected" value="Male"/, html
+    assert_match /<option.*value="Female"/, html
   end
 
-  test 'selected option is omitted selection is taken from model' do
-    fragment = -> {
+  test "selected option is omitted selection is taken from model" do
+    html = arbre {
       express_form(:person) {
         select :gender, ['Male', 'Female']
       }
     }
-    assert_match 'options_for_select(["Male", "Female"], @person.gender)', ExpressTemplates.compile(&fragment)
+    assert_match /<option.*selected="selected" value="Male"/, html
+    assert_match /<option.*value="Female"/, html
   end
 
-  test 'select generates options from data when options omitted' do
-    fragment = -> {
+  test "select generates options from data when options omitted" do
+    html = arbre {
       express_form(:person) {
         select :city
       }
     }
-    assert_match 'options_for_select(@person.class.distinct(:city).pluck(:city), @person.city)', ExpressTemplates.compile(&fragment)
+    assert_match /<option.*selected="selected" value="San Francisco"/, html
+    assert_match /<option.*value="Hong Kong"/, html
   end
 
-  class ::Gender
-    def self.columns
-      [OpenStruct.new(name: 'id'), OpenStruct.new(name: 'name')]
-    end
-  end
-  class ::Tagging
-    def self.columns
-      [OpenStruct.new(name: 'id'), OpenStruct.new(name: 'name')]
-    end
-  end
-  class ::Person
-    def self.reflect_on_association(name)
-      if name.eql? :gender
-        dummy_belongs_to_association = Object.new
-        class << dummy_belongs_to_association
-          def macro ; :belongs_to ; end
-          def klass ; ::Gender ; end
-          def polymorphic? ; false ; end
-        end
-        return dummy_belongs_to_association
-      end
-      if name.eql? :taggings
-        dummy_has_many_through_association = Object.new
-        class << dummy_has_many_through_association
-          def macro ; :has_many ; end
-          def klass ; ::Tagging ; end
-          def options ; {:through => :peron_tags} ; end
-          def polymorphic? ; false ; end
-        end
-        return dummy_has_many_through_association
-      end
-    end
+  test "select uses options_from_collect... when field is relation" do
+    html = arbre {
+      express_form(:person) {
+        select :gender_id
+      }
+    }
+
+    assert_match /<option.*selected="selected" value="1"/, html
+    assert_match /<option.*value="2"/, html
   end
 
-  test 'select uses options_from_collect... when field is relation' do
-    fragment = -> {
+  test "select defaults to include_blank: true" do
+    html = arbre {
       express_form(:person) {
         select :gender
       }
     }
-
-    assert_match 'options_from_collection_for_select(Gender.all.select(:id, :name).order(:name), :id, :name, @person.gender)',
-                  ExpressTemplates.compile(&fragment)
-  end
-
-  test 'select defaults to include_blank: true' do
-    fragment = -> {
-      express_form(:person) {
-        select :gender
-      }
-    }
-    assert_match 'include_blank: true', ExpressTemplates.compile(&fragment)
+    assert_match '<option value=""></option>', html
   end
 
 
-  test 'select defaults can be overridden' do
-    fragment = -> {
+  test "select defaults can be overridden" do
+    html = arbre {
       express_form(:person) {
         select :gender, nil, include_blank: false
       }
     }
-    assert_no_match 'include_blank: true', ExpressTemplates.compile(&fragment)
+    assert_no_match 'include_blank: true', html
   end
 
-  test 'select multiple: true if passed multiple true' do
-    fragment = -> {
+  test "select multiple: true if passed multiple true" do
+    html = arbre {
       express_form(:person) {
         select :taggings, nil, include_blank: false, multiple: true
       }
     }
-    assert_match 'multiple: true', ExpressTemplates.compile(&fragment)
+    assert_match 'multiple="multiple"', html
   end
 
-  test 'select multiple: true and select2: true should have the select2 class' do
-    fragment = -> {
-      express_form(:person) {
-        select :taggings, nil, include_blank: false, multiple: true, select2: true
-      }
-    }
-    assert_match 'multiple: true', ExpressTemplates.compile(&fragment)
-    assert_match 'class: "select2"', ExpressTemplates.compile(&fragment)
-  end
-
-  test 'select multiple gets options from associated has_many_through collection' do
-    fragment = -> {
+  test "select multiple gets options from associated has_many_through collection" do
+    html = arbre {
       express_form(:person) {
         select :taggings, nil, include_blank: false, multiple: true
       }
     }
-    assert_match 'tagging_ids', ExpressTemplates.compile(&fragment)
-    assert_match 'options_from_collection_for_select(Tagging.all.select(:id, :name).order(:name), :id, :name, @person.taggings.map(&:id))',
-                 ExpressTemplates.compile(&fragment)
+    assert_match 'tagging_ids', html
+    assert_match /<option selected="selected" value="1">Friend<\/option>/, html
+    assert_match /<option selected="selected" value="2">Enemy<\/option>/, html
+    assert_match /<option value="3">Frenemy<\/option>/, html
   end
 
-  test 'select has select2 class if passed select2: true' do
-    fragment = -> {
-      express_form(:person) {
-        select :taggings, nil, select2: true
-        select :gender, nil, select2: true, class: 'some-style-class another-class'
-      }
-    }
-
-    assert_match 'class: "select2"', ExpressTemplates.compile(&fragment)
-    assert_match 'class: "some-style-class another-class select2"', ExpressTemplates.compile(&fragment)
-  end
-
-  test 'select_collection uses collection_select' do
-    fragment = -> {
+  test "select_collection works using collection_select" do
+    html = arbre {
       express_form(:person) {
         select_collection :taggings
       }
     }
-    assert_match 'tagging_ids', ExpressTemplates.compile(&fragment)
-    assert_match 'collection_select("person", "tagging_ids", Tagging.all.select(:id, :name).order(:name), :id, :name, {:include_blank=>false, :selected=>@person.tagging_ids}, multiple: true)',
-                 ExpressTemplates.compile(&fragment)
+    assert_match 'tagging_ids', html
+    assert_match /<option value="1">Friend<\/option>/, html
+    assert_match /<option value="2">Enemy<\/option>/, html
+    assert_match /<option value="3">Frenemy<\/option>/, html
   end
 
 

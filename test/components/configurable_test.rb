@@ -4,40 +4,46 @@ class ConfigurableTest < ActiveSupport::TestCase
 
   ETC = ExpressTemplates::Components
 
-  class ConfigurableComponent < ETC::Base
-    include ETC::Capabilities::Configurable
-    emits -> {
-      div.bar(my[:id])
-    }
-  end
-
-  test "a configurable component accepts an id argument" do
-    assert :foo, ConfigurableComponent.new(:foo).my[:id]
+  class ConfigurableComponent < ETC::Configurable
+    def markup
+      div(id: my[:id], class: 'bar')
+    end
   end
 
   test "renders id argument as dom id" do
-    compiled_src = ConfigurableComponent.new(:foo).compile
-    assert '<div id="foo" class="bar" />', compiled_src
+    compiled_src = ExpressTemplates.render(self) { configurable_component(:foo) }
+    assert_equal "<div id=\"foo\" class=\"bar\"></div>\n", compiled_src
   end
 
-  class ConfigurableContainerComponent < ETC::Base
-    include ETC::Capabilities::Configurable
-    include ETC::Capabilities::Parenting
+  class ConfigurableContainerComponent < ETC::Configurable
 
     # make sure a helper can take arguments
-    helper(:name) {|name| name.to_s }
+    # helper(:name) {|name| name.to_s }
+    def name(name)
+      name.to_s
+    end
 
-    emits -> {
-      div(my[:id]) {
+    def markup &block
+      div(id: my[:id]) {
         h1 { name(my[:id]) }
-        _yield
+        yield(block) if block
       }
-    }
+    end
+  end
+
+  def assigns
+    {}
   end
 
   test "a configurable component may have also be a container" do
-    html = ExpressTemplates.render { configurable_container_component(:foo) { p "bar" }}
-    assert_equal '<div id="foo"><h1>foo</h1><p>bar</p></div>', html
+    html = ExpressTemplates.render(self) { configurable_container_component(:foo) { |c| para 'bar'} }
+    expected = <<-HTML
+<div id=\"foo\">
+  <h1>foo</h1>
+  <p>bar</p>
+</div>
+HTML
+    assert_equal "<div id=\"foo\">\n  <h1>foo</h1>\n  <p>bar</p>\n</div>\n", html
   end
 
 end
