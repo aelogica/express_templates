@@ -120,6 +120,16 @@ class SelectTest < ActiveSupport::TestCase
     assert_match 'multiple: true', ExpressTemplates.compile(&fragment)
   end
 
+  test 'select multiple: true and select2: true should have the select2 class' do
+    fragment = -> {
+      express_form(:person) {
+        select :taggings, nil, include_blank: false, multiple: true, select2: true
+      }
+    }
+    assert_match 'multiple: true', ExpressTemplates.compile(&fragment)
+    assert_match 'class: "select2"', ExpressTemplates.compile(&fragment)
+  end
+
   test 'select multiple gets options from associated has_many_through collection' do
     fragment = -> {
       express_form(:person) {
