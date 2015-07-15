@@ -35,23 +35,11 @@ module ExpressTemplates
       end
 
       def indent_level
-        parent.try(:indent_level) || 0
+        parent_indent_level = parent.try(:indent_level) || 0
       end
 
       def to_s
-        content.html_safe
-      end
-
-      def tag_name
-        nil
-      end
-
-      def opening_tag
-        ''
-      end
-
-      def closing_tag
-        ''
+        children.to_s
       end
 
     end

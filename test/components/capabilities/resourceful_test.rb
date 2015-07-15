@@ -14,8 +14,8 @@ module AdminModule
       @args = [self]
     end
 
-    def template
-      self
+    def template_virtual_path
+      @virtual_path
     end
   end
 end

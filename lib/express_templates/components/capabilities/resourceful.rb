@@ -26,13 +26,17 @@ module ExpressTemplates
           end
         end
 
-        def template
-          arbre_context.respond_to?(:template) && arbre_context.template
+        def template_virtual_path
+          begin
+            super
+          rescue
+            nil
+          end
         end
 
         def infer_namespace
-          if template
-            path_parts = template.virtual_path.split('/')
+          if template_virtual_path
+            path_parts = template_virtual_path.split('/')
 
             case
             when path_parts.size == 4
@@ -53,8 +57,8 @@ module ExpressTemplates
         end
 
         def infer_path_prefix
-          if template
-            path_parts = template.virtual_path.split('/')
+          if template_virtual_path
+            path_parts = template_virtual_path.split('/')
 
             case
             when path_parts.size == 4
@@ -93,15 +97,15 @@ module ExpressTemplates
         end
 
         def collection
-          config[:collection] || collection_var
+          config[:collection] || helpers.collection
         end
 
         def collection_path
           if config[:collection_path]
             config[:collection_path]
           else
-            super
-            # "#{collection_name_with_prefix}_path"
+            #super
+            helpers.instance_eval "#{collection_name_with_prefix}_path"
           end
         end
 
@@ -113,12 +117,16 @@ module ExpressTemplates
           end
         end
 
+        def resource_path_helper
+          "#{resource_name_with_path_prefix}_path"
+        end
+
         def resource_path(ivar=false)
           if config[:resource_path]
             config[:resource_path]
           else
-            super
-            # "#{resource_name_with_path_prefix}_path(#{ivar ? '@' : ''}#{resource_name})"
+            # super
+            helpers.instance_eval("#{resource_path_helper}(#{ivar ? '@' : ''}#{resource_name})")
           end
         end
 

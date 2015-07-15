@@ -51,14 +51,21 @@ module ActiveSupport
       {}
     end
     def helpers
-      mock_action_view
+      mock_action_view(assigns)
     end
     def mock_action_view(assigns = {})
       controller = ActionView::TestCase::TestController.new
       ActionView::Base.send :include, ActionView::Helpers
       ActionView::Base.send :include, ActionView::Helpers::UrlHelper
       ActionView::Base.send :include, AdditionalHelpers
-      ActionView::Base.new(ActionController::Base.view_paths, assigns, controller)
+      view = ActionView::Base.new(ActionController::Base.view_paths, assigns, controller)
+      eigenklass = class << view
+        self
+      end
+      assigns.each do |helper_name,value|
+        eigenklass.send(:define_method, helper_name) { value }
+      end
+      view
     end
 
     def resource(persisted = true)
