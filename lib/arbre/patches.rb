@@ -1,4 +1,10 @@
 module Arbre
+  class Context
+    def resource
+      helpers.resource
+    end
+  end
+
   class Element
 
     module BuilderMethods

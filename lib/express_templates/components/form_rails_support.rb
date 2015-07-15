@@ -12,7 +12,7 @@ module ExpressTemplates
           # NOTE: This should be moved into the forms module and made a FormComponent
           #       to have access to the resource_name as this code assumes existence of
           #       a resource method which may not exist
-          add_child helpers.send(:method_tag, (config[:id] || ((helpers.resource.persisted? ? :put : :post) rescue :post)))
+          add_child helpers.send(:method_tag, (config[:id] || ((resource.persisted? ? :put : :post) rescue :post)))
           helpers.send(:token_tag)
         }
       }

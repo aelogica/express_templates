@@ -44,22 +44,22 @@ module ExpressTemplates
               @args.first
             end
           else
-            helpers.resource.class.distinct(field_name.to_sym).pluck(field_name.to_sym)
+            resource.class.distinct(field_name.to_sym).pluck(field_name.to_sym)
           end
 
           if belongs_to_association && !options_specified?
             if belongs_to_association.polymorphic?
               helpers.options_for_select([[]])
             else
-              helpers.options_from_collection_for_select(related_collection, :id, option_name_method, helpers.resource.send(field_name))
+              helpers.options_from_collection_for_select(related_collection, :id, option_name_method, resource.send(field_name))
             end
           elsif has_many_through_association
-            helpers.options_from_collection_for_select(related_collection, :id, option_name_method, helpers.resource.send(field_name).map(&:id))
+            helpers.options_from_collection_for_select(related_collection, :id, option_name_method, resource.send(field_name).map(&:id))
           else
             if selection = field_options.delete(:selected)
               helpers.options_for_select(options, selection)
             else
-              helpers.options_for_select(options, helpers.resource.send(field_name))
+              helpers.options_for_select(options, resource.send(field_name))
             end
           end
         end

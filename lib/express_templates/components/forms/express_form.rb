@@ -12,7 +12,7 @@ module ExpressTemplates
         }
 
         def form_id
-          "#{resource_name}_#{helpers.resource.id}"
+          "#{resource_name}_#{resource.id}"
         end
 
         def form_method
@@ -20,7 +20,7 @@ module ExpressTemplates
         end
 
         def form_action
-          config[:action] || (helpers.resource.try(:persisted?) ? resource_path(ivar: true) : collection_path)
+          config[:action] || (resource.try(:persisted?) ? resource_path(ivar: true) : collection_path)
         end
 
         def form_tag_options
