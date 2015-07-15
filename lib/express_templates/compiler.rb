@@ -13,11 +13,7 @@ module ExpressTemplates
 
       template, src = _normalize(template_or_src)
 
-      %Q|
-Arbre::Context.new(assigns.merge(template_virtual_path: @virtual_path), self) {
-  #{src || block.source_body}
-}.to_s
-|
+      %Q[Arbre::Context.new(assigns.merge(template_virtual_path: @virtual_path), self) { #{src || block.source_body} }.to_s]
     end
 
     private
