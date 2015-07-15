@@ -29,6 +29,9 @@ module ExpressTemplates
         raise "#build method must be overridden"
       end
 
+      def resource
+        helpers.resource
+      end
 
       def self.inherited(subclass)
         builder_method_and_class subclass.to_s.demodulize.underscore, subclass
