@@ -5,7 +5,6 @@ module ExpressTemplates
   end
 end
 
-require 'express_templates/components/forms/form_support'
 require 'express_templates/components/forms/express_form'
 require 'express_templates/components/forms/form_component'
 require 'express_templates/components/forms/option_support'

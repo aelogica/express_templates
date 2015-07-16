@@ -3,11 +3,15 @@ module ExpressTemplates
     module Forms
       class Submit < FormComponent
 
-        emits -> {
+        def build(*args)
           div(class: field_wrapper_class) {
-            submit_tag(value, html_options)
+            if args.first.is_a?(String) or args.empty?
+              submit_tag(args.first || 'Save', (args[1]||{}))
+            else
+              submit_tag 'Save', (args[1] || {})
+            end
           }
-        }
+        end
 
         def value
           if @args.first.is_a?(String)
@@ -17,9 +21,6 @@ module ExpressTemplates
           end
         end
 
-        def html_options
-          @config
-        end
       end
     end
   end

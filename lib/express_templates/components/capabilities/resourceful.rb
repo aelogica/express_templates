@@ -4,15 +4,15 @@ module ExpressTemplates
 
       module Resourceful
         def namespace
-          @config[:namespace] || infer_namespace
+          config[:namespace] || infer_namespace
         end
 
         def path_prefix
-          @config[:path_prefix] || infer_path_prefix
+          config[:path_prefix] || infer_path_prefix
         end
 
         def resource_class
-          resource_class = @config[:resource_class] || _namespaced_resource_class
+          resource_class = config[:resource_class] || _namespaced_resource_class
           resource_class.constantize
         end
 
@@ -26,10 +26,17 @@ module ExpressTemplates
           end
         end
 
+        def template_virtual_path
+          begin
+            super
+          rescue
+            nil
+          end
+        end
+
         def infer_namespace
-          expander = @args.last
-          if expander.try(:template)
-            path_parts = expander.template.virtual_path.split('/')
+          if template_virtual_path
+            path_parts = template_virtual_path.split('/')
 
             case
             when path_parts.size == 4
@@ -50,9 +57,8 @@ module ExpressTemplates
         end
 
         def infer_path_prefix
-          expander = @args.last
-          if expander.try(:template)
-            path_parts = expander.template.virtual_path.split('/')
+          if template_virtual_path
+            path_parts = template_virtual_path.split('/')
 
             case
             when path_parts.size == 4
@@ -75,7 +81,7 @@ module ExpressTemplates
         # TODO: this can now be inferred from the template.virtual_path
         # if not supplied...
         def resource_name
-          @config[:id].to_s.singularize
+          config[:id].to_s.singularize
         end
 
         def collection_member_name
@@ -91,14 +97,15 @@ module ExpressTemplates
         end
 
         def collection
-          @config[:collection] || collection_var
+          config[:collection] || helpers.collection
         end
 
         def collection_path
-          if @config[:collection_path]
-            @config[:collection_path]
+          if config[:collection_path]
+            config[:collection_path]
           else
-            "#{collection_name_with_prefix}_path"
+            #super
+            helpers.instance_eval "#{collection_name_with_prefix}_path"
           end
         end
 
@@ -110,11 +117,16 @@ module ExpressTemplates
           end
         end
 
+        def resource_path_helper
+          "#{resource_name_with_path_prefix}_path"
+        end
+
         def resource_path(ivar=false)
-          if @config[:resource_path]
-            @config[:resource_path]
+          if config[:resource_path]
+            config[:resource_path]
           else
-            "#{resource_name_with_path_prefix}_path(#{ivar ? '@' : ''}#{resource_name})"
+            # super
+            helpers.instance_eval("#{resource_path_helper}(#{ivar ? '@' : ''}#{resource_name})")
           end
         end
 
@@ -126,7 +138,7 @@ module ExpressTemplates
           end
         end
 
-        def attributes
+        def resource_attributes
           resource_class.columns
         end
       end

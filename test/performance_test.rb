@@ -13,7 +13,7 @@ html(lang: "en") {
   }
   body {
     h1 "Hello"
-    p "Some text"
+    para "Some text"
     javascript_include_tag "application"
   }
 }
@@ -64,7 +64,11 @@ HAML
     end
   # end
 
-  def time(count)
+  def assigns
+    {}
+  end
+
+  def measure_time(count)
     start_time = Time.now
     1.upto(100) { yield }
     end_time = Time.now
@@ -72,20 +76,20 @@ HAML
   end
 
   # test "performance is okay" do
-  #   duration = time(100) { ExpressTemplates.render(self, "#{GARA_EXAMPLE}") }
+  #   duration = measure_time(100) { ExpressTemplates.render(self, "#{GARA_EXAMPLE}") }
   #   assert_operator 1.0, :>, duration
   # end
 
   # test "performance no more than 3.5x slower than erubis" do
   #   eruby = Erubis::Eruby.new
-  #   duration_erb = time(100) { eval(eruby.convert(ERB_EXAMPLE)) }
-  #   duration_express_templates = time(100) { ExpressTemplates.render(self, "#{GARA_EXAMPLE}") }
+  #   duration_erb = measure_time(100) { eval(eruby.convert(ERB_EXAMPLE)) }
+  #   duration_express_templates = measure_time(100) { ExpressTemplates.render(self, "#{GARA_EXAMPLE}") }
   #   assert_operator 4.0, :>, (duration_express_templates/duration_erb)
   # end
 
   # test "performance better than haml" do
-  #   duration_haml = time(100) { Haml::Engine.new(HAML_EXAMPLE).render(self) }
-  #   duration_express_templates = time(100) { ExpressTemplates.render(self, "#{GARA_EXAMPLE}") }
+  #   duration_haml = measure_time(100) { Haml::Engine.new(HAML_EXAMPLE).render(self) }
+  #   duration_express_templates = measure_time(100) { ExpressTemplates.render(self, "#{GARA_EXAMPLE}") }
   #   assert_operator 0.5, :>, (duration_express_templates/duration_haml)
   # end
 

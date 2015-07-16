@@ -1,3 +1,4 @@
+require 'ostruct'
 module ExpressTemplates
   module Compiler
     def compile(template_or_src=nil, &block)
@@ -12,13 +13,7 @@ module ExpressTemplates
 
       template, src = _normalize(template_or_src)
 
-      expander = Expander.new(template)
-
-      compiled = expander.expand(src, &block).map(&:compile)
-
-      return Interpolator.transform(compiled.join("+").gsub('"+"', '')).tap do |s|
-        puts("\n"+template.inspect+"\nSource:\n#{template.try(:source)}\nInterpolated:\n#{s}\n") if ENV['DEBUG'].eql?('true')
-      end
+      %Q[Arbre::Context.new(assigns.merge(template_virtual_path: @virtual_path), self) { #{src || block.source_body} }.to_s]
     end
 
     private

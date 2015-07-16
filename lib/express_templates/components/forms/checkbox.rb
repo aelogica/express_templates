@@ -16,7 +16,7 @@ module ExpressTemplates
         end
 
         def label_after?
-          !!@config[:label_after]
+          !!config[:label_after]
         end
 
         def field_options

@@ -1,17 +1,11 @@
 module ExpressTemplates
   module Components
     module Forms
-      class FormComponent < Base
-        include Capabilities::Configurable
-        include Capabilities::Adoptable
-
-        def compile(*args)
-          raise "#{self.class} requires a parent ExpressForm" if parent.nil? or parent_form.nil?
-          super(*args)
-        end
+      class FormComponent < Configurable
 
         # Lookup the resource_name from the parent ExpressForm.
         def resource_name
+          raise "FormComponent must have a parent form" unless parent_form
           parent_form.resource_name
         end
 
@@ -30,13 +24,13 @@ module ExpressTemplates
 
         # Return the text content for the label
         def label_text
-          @config[:label] || field_name.titleize
+          config[:label] || field_name.titleize
         end
 
         # Return the field_name as a string.  This taken from the first argument
         # to the component macro in the template or fragment.
         def field_name
-          (@config[:id] || (@args.first.is_a?(String) && @args.first)).to_s
+          (config[:id] || (@args.first.is_a?(String) && @args.first)).to_s
         end
 
         # Return the field name attribute.  Currently handles only simple attributes
@@ -46,7 +40,7 @@ module ExpressTemplates
         end
 
         def field_wrapper_class
-          @config[:wrapper_class] || 'field-wrapper'
+          config[:wrapper_class] || 'field-wrapper'
         end
 
         # Search the parent graph until we find an ExpressForm.  Returns nil if none found.
@@ -58,10 +52,20 @@ module ExpressTemplates
           return @my_form
         end
 
-        def html_options
-          default_options = @config[:html_options] || {}
-          @args[1].is_a?(Hash) ? @args[1] : default_options
+        def default_html_options
+          (config || {}).reject {|k,v| k.eql?(:id)}
         end
+
+        def html_options
+          default_html_options.merge(config[:html_options] || {})
+        end
+
+        protected
+
+          def _process_args!(args)
+            @args = args
+            super(args)
+          end
 
       end
     end

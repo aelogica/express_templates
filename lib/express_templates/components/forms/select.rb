@@ -26,39 +26,63 @@ module ExpressTemplates
         }
 
         def select_tag_args
-          args = [field_name_attribute, select_options, field_options]
-          args << html_options unless html_options.nil? or html_options.empty?
+          args = [field_name_attribute, select_options, select_helper_options]
           args
+        end
+
+        def select_options_supplied?
+          [Array, Hash, Proc].include?(supplied_component_options[:options].class)
+        end
+
+        def use_supplied_options
+          opts = supplied_component_options[:options]
+          if opts.respond_to?(:call) # can be a proc
+            opts.call()
+          else
+            opts
+          end
+        end
+
+        def generate_options_from_field_values
+          resource.class.distinct(field_name.to_sym).pluck(field_name.to_sym)
+        end
+
+        def options_from_supplied_or_field_values
+          if select_options_supplied?
+            use_supplied_options
+          else
+            generate_options_from_field_values
+          end
+        end
+
+        def options_from_belongs_to
+          if belongs_to_association.polymorphic?
+            helpers.options_for_select([[]]) # we can't really handle polymorhic yet
+          else
+            helpers.options_from_collection_for_select(related_collection, :id, option_name_method, resource.send(field_name))
+          end
+        end
+
+        def options_from_has_many_through
+          helpers.options_from_collection_for_select(related_collection, :id, option_name_method, resource.send(field_name).map(&:id))
+        end
+
+        def simple_options_with_selection
+          if selection = field_options[:selected]
+            helpers.options_for_select(options_from_supplied_or_field_values, selection)
+          else
+            helpers.options_for_select(options_from_supplied_or_field_values, resource.send(field_name))
+          end
         end
 
         # Returns the options which will be supplied to the select_tag helper.
         def select_options
-          options_specified = [Array, Hash, Proc].include?(@args.second.class) && @args.size > 2
-          if options_specified
-            if @args.second.respond_to?(:source) # can be a proc
-              options = "#{@args.second.source}.call()"
-            else
-              options = @args.second
-            end
-
-          else
-            options = "@#{resource_var}.class.distinct(:#{field_name}).pluck(:#{field_name})"
-          end
-
-          if belongs_to_association && !options_specified
-            if belongs_to_association.polymorphic?
-              "{{options_for_select([[]])}}"
-            else
-              "{{options_from_collection_for_select(#{related_collection}, :id, :#{option_name_method}, @#{resource_name}.#{field_name})}}"
-            end
+          if belongs_to_association && !select_options_supplied?
+            options_from_belongs_to
           elsif has_many_through_association
-            "{{options_from_collection_for_select(#{related_collection}, :id, :#{option_name_method}, @#{resource_name}.#{field_name}.map(&:id))}}"
+            options_from_has_many_through
           else
-            if selection = field_options.delete(:selected)
-              "{{options_for_select(#{options}, \"#{selection}\")}}"
-            else
-              "{{options_for_select(#{options}, @#{resource_name}.#{field_name})}}"
-            end
+            simple_options_with_selection
           end
         end
 
@@ -74,35 +98,26 @@ module ExpressTemplates
           # If field_otions is omitted the Expander will be
           # in last or 3rd position and we don't want that
           defaults = {include_blank: true}
-
-          if supplied_field_options[:select2]
-            if klasses = supplied_field_options[:class]
-              supplied_field_options[:class] << ' select2'
-            else
-              defaults.merge!(class: 'select2')
-            end
-          end
-
-          defaults.merge(supplied_field_options.reject {|k,v| k.eql?(:select2)})
+          defaults.merge(supplied_component_options)
         end
 
-        def html_options
-          supplied_html_options
+        def select_helper_options
+          component_option_names = [:select2, :options, :selected]
+          add_select2_class( field_options.reject {|k,v| component_option_names.include?(k)})
         end
 
         protected
 
-          def supplied_field_options
-            if @args.size > 3 && @args[2].is_a?(Hash)
-              @args[2]
-            else
-              {}
-            end
+          def add_select2_class(helper_options)
+            add_class(helper_options[:class]) if helper_options[:class]
+            add_class('select2') if supplied_component_options[:select2] === true
+            helper_options[:class] = (class_list - ["select"]).to_s
+            helper_options
           end
 
-          def supplied_html_options
-            if @args.size > 4 && @args[3].is_a?(Hash)
-              @args[3]
+          def supplied_component_options
+            if @args.last && @args.last.is_a?(Hash)
+              @args.last
             else
               {}
             end

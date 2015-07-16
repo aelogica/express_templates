@@ -2,17 +2,20 @@ require 'test_helper'
 
 class RadioTest < ActiveSupport::TestCase
 
+  def assigns
+    {resource: resource}
+  end
+
   test "radio requires a parent component" do
-    fragment = -> {
-      radio :preferred_email_format, ['HTML', 'Text']
-    }
     assert_raises(RuntimeError) {
-      ExpressTemplates.compile(&fragment)
+      html = arbre {
+        radio :preferred_email_format, ['HTML', 'Text']
+      }
     }
   end
 
   def radio_with_array_options
-    fragment = -> {
+    html = arbre {
       express_form(:person) {
         radio :preferred_email_format, ['HTML', 'Text']
       }
@@ -20,18 +23,17 @@ class RadioTest < ActiveSupport::TestCase
   end
 
   test "radio has correct label field name and text" do
-    assert_match '#{label_tag("person_preferred_email_format", "Preferred Email Format")}',
-                  ExpressTemplates.compile(&radio_with_array_options)
+    assert_match /<label for="person_preferred_email_format"/,
+                  radio_with_array_options
   end
 
   test "radio options present with class 'radio'" do
-    compiled = ExpressTemplates.compile(&radio_with_array_options)
-    assert_match 'radio_button(:person, :preferred_email_format, "Text", class: "radio"', compiled
-    assert_match '_format, "HTML", class: "radio"', compiled
+    assert_match /<input.*class="radio"/,
+                 radio_with_array_options
   end
 
   def radio_with_hash_options
-    fragment = -> {
+    html = arbre {
       express_form(:person) {
         radio :subscribed, {1 => 'Yes', 0 => 'No'}, wrapper_class: 'my-wrapper'
       }
@@ -39,34 +41,36 @@ class RadioTest < ActiveSupport::TestCase
   end
 
   test "radio options may be specified with a hash" do
-    compiled = ExpressTemplates.compile(&radio_with_hash_options)
-    assert_match '<label class=\"my-wrapper\">', compiled
-    assert_match 'radio_button(:person, :subscribed, 0, class: "radio"', compiled
-    assert_match 'radio_button(:person, :subscribed, 1, class: "radio"', compiled
+    compiled = radio_with_hash_options
+    assert_match '<label class="my-wrapper">', compiled
+    assert_match 'input class="radio" type="radio" value="0" name="person[subscribed]" id="person_subscribed_0" />No', compiled
+    assert_match 'input class="radio" type="radio" value="1" name="person[subscribed]" id="person_subscribed_1" />Yes', compiled
   end
 
   test "radio throws error if given improper options" do
-    fragment = -> {
-      express_form(:person) {
-        radio :subscribed, "Garbage options"
-      }
-    }
     assert_raises(RuntimeError) {
-      ExpressTemplates.compile(&fragment)
+      html = arbre {
+        express_form(:person) {
+          radio :subscribed, "Garbage options"
+        }
+      }
     }
   end
 
   def radio_with_options_omitted
-    fragment = -> {
+    html = arbre {
       express_form(:employee) {
         radio :department_id
       }
     }
   end
 
-  class ::Department
-    def self.columns
-      [OpenStruct.new(name: 'id'), OpenStruct.new(name: 'name')]
+  class ::Department < ::Gender
+    def self.order(*)
+      all
+    end
+    def self.all
+      return [new(1, 'Accounting'), new(2, 'Marketing')]
     end
   end
   class ::Employee
@@ -84,8 +88,8 @@ class RadioTest < ActiveSupport::TestCase
   end
 
   test "radio options from collection when options omitted" do
-    assert_match 'collection_radio_buttons(:employee, :department_id, Department.all.select(:id, :name).order(:name), :id, :name, {}, {}',
-                  ExpressTemplates.compile(&radio_with_options_omitted)
+    assert_match /input type="radio" value="1" name="employee\[department_id\]" id="employee_department_id_1"/,
+                  radio_with_options_omitted
   end
 
   # test "radio supports html options"

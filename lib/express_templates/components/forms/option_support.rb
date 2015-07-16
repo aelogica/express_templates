@@ -28,9 +28,9 @@ module ExpressTemplates
           reflection = belongs_to_association || has_many_through_association
           if reflection && !reflection.polymorphic?
             if cols.detect {|column| column.name.eql?('name') }
-              "#{reflection.klass}.all.select(:#{option_value_method}, :#{option_name_method}).order(:#{option_name_method})"
+              reflection.klass.select(option_value_method.to_sym, option_name_method.to_sym).order(option_name_method.to_sym)
             else
-              "#{reflection.klass}.all.sort_by(&:#{option_name_method})"
+              reflection.klass.all.sort_by(&option_name_method.to_sym)
             end
           end
         end

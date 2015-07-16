@@ -6,7 +6,7 @@ module AdminModule
   class SmartThing
     include ExpressTemplates::Components::Capabilities::Resourceful
 
-    attr_accessor :virtual_path
+    attr_accessor :virtual_path, :config
 
     def initialize(virtual_path, config = {})
       @virtual_path = virtual_path
@@ -14,8 +14,8 @@ module AdminModule
       @args = [self]
     end
 
-    def template
-      self
+    def template_virtual_path
+      @virtual_path
     end
   end
 end

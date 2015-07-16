@@ -24,6 +24,7 @@ class Proc
   def source
     @source ||= begin
       file, line_no = source_location
+      raise "no file provided by source_location: #{self}" if file.nil?
       raise "no line number provided for source_location: #{self}" if line_no.nil?
       tokens =  Ripper.lex File.read(file)
       tokens_on_line = tokens.select {|pos, lbl, str| pos[0].eql?(line_no) }
