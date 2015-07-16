@@ -10,7 +10,7 @@ class SelectTest < ActiveSupport::TestCase
   test "select requires a parent component" do
     assert_raises(RuntimeError) {
       html = arbre {
-        select :gender, ['Male', 'Female'], selected: 'Male'
+        select :gender, options: ['Male', 'Female'], selected: 'Male'
       }
     }
   end
@@ -24,10 +24,10 @@ class SelectTest < ActiveSupport::TestCase
     assert_match /<label.*for="person_gender"/, html
   end
 
-  test "select uses options_for_select when values are specified" do
+  test "select generates correct options when values are specified" do
     html = arbre {
       express_form(:person) {
-        select :gender, ['Male', 'Female'], selected: 'Male'
+        select :gender, options: ['Male', 'Female'], selected: 'Male'
       }
     }
     assert_match /<option.*selected="selected" value="Male"/, html
@@ -37,7 +37,7 @@ class SelectTest < ActiveSupport::TestCase
   test "selected option is omitted selection is taken from model" do
     html = arbre {
       express_form(:person) {
-        select :gender, ['Male', 'Female']
+        select :gender, options: ['Male', 'Female']
       }
     }
     assert_match /<option.*selected="selected" value="Male"/, html
@@ -78,7 +78,7 @@ class SelectTest < ActiveSupport::TestCase
   test "select defaults can be overridden" do
     html = arbre {
       express_form(:person) {
-        select :gender, nil, include_blank: false
+        select :gender, include_blank: false
       }
     }
     assert_no_match 'include_blank: true', html
@@ -87,7 +87,7 @@ class SelectTest < ActiveSupport::TestCase
   test "select multiple: true if passed multiple true" do
     html = arbre {
       express_form(:person) {
-        select :taggings, nil, include_blank: false, multiple: true
+        select :taggings, include_blank: false, multiple: true
       }
     }
     assert_match 'multiple="multiple"', html
@@ -96,7 +96,7 @@ class SelectTest < ActiveSupport::TestCase
   test "select multiple gets options from associated has_many_through collection" do
     html = arbre {
       express_form(:person) {
-        select :taggings, nil, include_blank: false, multiple: true
+        select :taggings, include_blank: false, multiple: true
       }
     }
     assert_match 'tagging_ids', html
