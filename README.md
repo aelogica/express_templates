@@ -2,6 +2,10 @@
 
 Provides a DSL for HTML templates using a declarative style of Ruby as an alternative to Erb or HAML.
 
+Although originally we implemented our own DSL and used a code generation approach,
+this gem now uses [ActiveAdmin's arbre](https://github.com/activeadmin/arbre).  Arbre is widely
+used as part of ActiveAdmin, has a long history and many contributors and is conceptually much simpler.
+
 ## Usage
 
 Add this to your gemfile:
@@ -26,7 +30,7 @@ html(lang: "en") {
     csrf_meta_tags
   }
   body {
-    yield
+    current_arbre_element.add_child yield
     javascript_include_tag "application"
   }
 }
@@ -36,35 +40,18 @@ Everything should work as you would expect.
 
 Set your editor syntax for .et files to Ruby.
 
-You will now have also be able to utilize components which are found with documentation and examples in <tt>ExpressTemplates::Components<tt>.
+You can now utilize components which are found with documentation and examples in <tt>ExpressTemplates::Components<tt>.
 
-## History
+Components are the real strength of both arbre and express_templates.
 
-To understand ExpressTemplates, you must first understand the standard tools of ERB and Haml which have been with us for quite some time.
+express_templates now *is* arbre + some components + some conventions.  ExpressTemplates::Components::Base provides a little syntactic sugar in the form of the emits class method.
 
-![Haml/Erb Diagram](https://raw.githubusercontent.com/aelogica/express_templates/master/diagrams/diagram_haml_erb.png "Haml/Erb Diagram")
+In terms of conventions, we use brace blocks { } to indicate html structure and do/end blocks to indicate control flow.
 
-Both of these provide a language for embedding other languages.  Erb embeds Ruby between <% %> style tags.  This is similar to the way we worked with PHP and for those who can remember "embedded Perl" in 1990s.  Erb places no constraints on either the text into which the Ruby is embedded, nor on the Ruby which may be placed within the delimiters which comprise Erb's simple grammar.
+Control flow should only be used in Components.  This is currently not enforced but it will be in the future.
 
-Haml introduced a number of innovations or improvements upon Erb.  Through Haml's use of significant whitespace and indentation, it ensures well-formed markup.  This noticably slows template compilation, however, due to caching it generally goes unnoticed.  Haml added better support for mixing grammars in a single file as is common practice with Javascript.  Haml introduced abbreviated methods for specifying CSS classes and HTML entity attribute values with the result of generally cleaning up view code.
+The purpose of express_templates is to provide a foundation for a library of reusable UX components which we can enhance for drag-and-drop style UX construction and template editing.
 
-Both Haml and Erb compile down to Ruby code which must be eval()'d in a View Context as per the interface required by Rails' ActionView.
-
-## Expansion
-
-ExpressTemplates introduces an earlier step in this process, "expansion", which may be likened to a kind of macro system.  This is introduced to facilitate reusable view components in the form of normal object-oriented Ruby classes.
-
-![Diagram depciting Haml/Erb](https://raw.githubusercontent.com/aelogica/express_templates/master/diagrams/diagram_express_templates.png "Diagram depciting Haml/Erb")
-
-## Constraints - Important!
-
-ExpressTemplates imposes some constraints.  The most important constraint is that your view templates must be declarative in style.  They should not contain conditional logic.  Declarative code is easier to read and reason about.  It also requires fewer tests since declarative code is build on presumably well-tested primitives.
-
-With ExpressTemplates, one *must not* place conditional logic or iterators anywhere in template code.  All logic *must* be encapsulated in components.  Strange things will happen if you try to put logic in the template or a template fragment.  In the future I may issue warnings or disallow it by examinging the output of Ruby's tokenizer.
-
-If you have been around long enough to see a few Rails codebases grow out of control, and you have had to manage or watch the efforts of less-experienced developers closely, you know that one of the major causes of trouble and wasted effort is copy-and-paste code and logic errors in the view.  Another common problem is the "blank slate" issue wherein every view must be constructed new with little chance for higher-level reuse of code.  Diligent use of partials and helpers can do much to DRY up view code but deciding where to put them or how to share them between projects can be difficult.  Rarely is view logic tested except in integration.
-
-ExpressTemplates only enforces what is already considered a best practice by many, while introducing new possilibities for well-ordered UX libraries similar to what developers working with commercial frameworks for desktop operating systems or mobile devices enjoy.
 
 ## Block Structure
 
@@ -90,8 +77,6 @@ Let us suppose that an @three variable exists in the view context with the value
 </ul>
 ```
 
-yield and local variables which we may expect to be available in a ViewContext are also wrapped for evaluation later.
-
 ## Components
 
 Given the constraint that logic must not go in the template, where does one put it?  The answer is we make a component!
@@ -108,7 +93,7 @@ We can make a simple component like so:
 
 ```ruby
 class ListComponent < ExpressTemplates::Components::Base
-  def build(*args, &children)
+  emits -> {
     ul {
       # assumes view provides list
       list.each do |item|
@@ -117,7 +102,7 @@ class ListComponent < ExpressTemplates::Components::Base
         }
       end
     }
-  end
+  }
 end
 ```
 
