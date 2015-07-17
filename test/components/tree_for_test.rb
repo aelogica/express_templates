@@ -52,15 +52,24 @@ HTML
 
   def simple_tree_for
     arbre {
-      tree_for(:roles) {
-        role.name
+      tree_for(:roles)
+    }.to_s
+  end
+
+  test "tree_for renders correct markup with node.name as default" do
+    assert_equal EXAMPLE_MARKUP, simple_tree_for
+  end
+
+  def custom_tree_for
+    arbre {
+      tree_for(:roles) { |node|
+        text_node node.name.upcase
       }
     }
   end
 
-
-  test "simple_tree_for renders example markup" do
-    assert_equal EXAMPLE_MARKUP, simple_tree_for.to_s
+  test "tree_for accepts block with custom content" do
+    assert_match 'AUTHOR', custom_tree_for
   end
 
 end

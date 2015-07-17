@@ -38,7 +38,8 @@ module ExpressTemplates
     #
 
     class TreeFor < Configurable
-      emits {
+      emits -> (customize_block) {
+        @customize_block = customize_block
         ul(id: config[:id], class: "#{config[:id]} tree") {
           list_items(eval(config[:id].to_s))
         }
@@ -52,9 +53,13 @@ module ExpressTemplates
 
       def list_item(node)
         li {
-          text_node "#{node.name}#{"\n" if node.children.any?}"
+          if @customize_block
+            @customize_block.call(node)
+          else
+            text_node "#{node.name}#{"\n" if node.children.any?}"
+          end
           if node.children.any?
-            ul{
+            ul {
               list_items(node.children)
             }
           end
