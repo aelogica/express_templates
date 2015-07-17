@@ -36,14 +36,30 @@ module ExpressTemplates
     #       </li>
     #     </ul>
     #
+
     class TreeFor < Configurable
       emits {
-        ul {
-          li {
-            "fix me"
-          }
+        ul(id: config[:id], class: "#{config[:id]} tree") {
+          list_items(eval(config[:id].to_s))
         }
       }
+
+      def list_items(nodes)
+        nodes.each do |node|
+          list_item(node)
+        end
+      end
+
+      def list_item(node)
+        li {
+          text_node "#{node.name}#{"\n" if node.children.any?}"
+          if node.children.any?
+            ul{
+              list_items(node.children)
+            }
+          end
+        }
+      end
     end
   end
 end
