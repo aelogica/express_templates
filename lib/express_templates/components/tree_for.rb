@@ -11,8 +11,8 @@ module ExpressTemplates
     # Example:
     #
     # ```ruby
-    # tree_for(:roles) {
-    #   "{{role.name}}"
+    # tree_for(:roles) { |role|
+    #   role.name
     # }
     # ```
     #

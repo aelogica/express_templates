@@ -16,7 +16,6 @@ module ExpressTemplates
         }
 
         def use_options_from_collection_radio_buttons_helper
-          # Note {{ }} will get stripped.  This prevents the collection finder string being passed as string.
           collection_radio_buttons(resource_var, field_name.to_sym, collection_from_association,
                                    option_value_method, option_name_method,
                                    field_options, html_options) do |b|
