@@ -97,7 +97,15 @@ module ExpressTemplates
         end
 
         def collection
-          config[:collection] || helpers.collection
+          if config[:collection]
+            if config[:collection].respond_to?(:call)
+              config[:collection].call()
+            else
+              config[:collection]
+            end
+          else
+            helpers.collection
+          end
         end
 
         def collection_path

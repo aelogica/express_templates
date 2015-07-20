@@ -39,9 +39,21 @@ module Arbre
       elsif assigns && assigns.has_key?(name)
         assigns[name]
       elsif helpers.respond_to?(name)
-        current_arbre_element.add_child helpers.send(name, *args, &block)
+        helper_method(name, *args, &block)
       else
         super
+      end
+    end
+
+    # In order to not pollute our templates with helpers. prefixed
+    # everywhere we want to try to distinguish helpers that are almost
+    # always used as parameters to other methods such as path helpers
+    # and not add them as elements
+    def helper_method(name, *args, &block)
+      if name.match /_path$/
+        helpers.send(name, *args, &block)
+      else
+        current_arbre_element.add_child helpers.send(name, *args, &block)
       end
     end
 
