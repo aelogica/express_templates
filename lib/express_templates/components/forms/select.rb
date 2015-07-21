@@ -37,7 +37,7 @@ module ExpressTemplates
         def use_supplied_options
           opts = supplied_component_options[:options]
           if opts.respond_to?(:call) # can be a proc
-            opts.call()
+            opts.call(resource)
           else
             opts
           end
@@ -47,9 +47,23 @@ module ExpressTemplates
           resource.class.distinct(field_name.to_sym).pluck(field_name.to_sym)
         end
 
+        def normalize_for_helper(supplied_options)
+          supplied_options.map do |opt|
+            [opt.respond_to?(:name) ? opt.name : opt.to_s,
+             opt.respond_to?(:id) ? opt.id : opt.to_s]
+          end
+        end
+
+        def selected_value
+          field_options[:selected]||resource.send(field_name)
+        end
+
         def options_from_supplied_or_field_values
           if select_options_supplied?
-            use_supplied_options
+            helpers.options_for_select(
+                normalize_for_helper(use_supplied_options),
+                selected_value
+            )
           else
             generate_options_from_field_values
           end
@@ -68,11 +82,7 @@ module ExpressTemplates
         end
 
         def simple_options_with_selection
-          if selection = field_options[:selected]
-            helpers.options_for_select(options_from_supplied_or_field_values, selection)
-          else
-            helpers.options_for_select(options_from_supplied_or_field_values, resource.send(field_name))
-          end
+          helpers.options_for_select(options_from_supplied_or_field_values, selected_value)
         end
 
         # Returns the options which will be supplied to the select_tag helper.

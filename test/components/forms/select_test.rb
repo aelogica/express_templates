@@ -24,7 +24,7 @@ class SelectTest < ActiveSupport::TestCase
     assert_match /<label.*for="person_gender"/, html
   end
 
-  test "select generates correct options when values are specified" do
+  test "select generates correct options when values are specified as array" do
     html = arbre {
       express_form(:person) {
         select :gender, options: ['Male', 'Female'], selected: 'Male'
