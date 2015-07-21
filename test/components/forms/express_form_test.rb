@@ -40,7 +40,7 @@ class ExpressFormTest < ActiveSupport::TestCase
   end
 
   test "simplest_form contains submit" do
-    assert_match '<input type="submit" name="commit" value="Save" />', simplest_form
+    assert_match '<input type="submit" name="commit" value="Save it!" />', simplest_form
   end
 
   test "simplest_form uses form_action for the action" do

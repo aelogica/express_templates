@@ -8,7 +8,7 @@ module ExpressTemplates
             if args.first.is_a?(String) or args.empty?
               submit_tag(args.first || 'Save', (args[1]||{}))
             else
-              submit_tag 'Save', (args[1] || {})
+              submit_tag 'Save', (args.first || {})
             end
           }
         end
