@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "LICENSE", "Rakefile", "README.md"]
-  s.test_files = Dir["test/**/*"]
+  s.test_files = Dir["test/**/*"] - Dir["test/log/*", "test/tmp/*", "test/dummy/tmp/**/*", "test/dummy/log/*"]
 
   s.add_dependency "activesupport", "~> 4.2" # strictly speaking we only depend on active support
   s.add_dependency "parslet", "~> 1.6"
