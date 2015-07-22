@@ -25,19 +25,18 @@ class ConfigurableTest < ActiveSupport::TestCase
     assert_no_match /id="foo"/, render { configurable_component }
   end
 
-  class ConfigWithOptions < ETC::Configurable
+  class ConfigWithOption < ETC::Configurable
     has_option :thing, 'Something about things'
-    has_option :rows, 'Number of rows', type: :integer, default: 5
   end
 
   test "supports option declaration" do
-    compiled_src = render { config_with_options }
-    assert_equal %Q(<div class="config-with-options"></div>\n), compiled_src
+    markup = render { config_with_option }
+    assert_equal %Q(<div class="config-with-option"></div>\n), markup
   end
 
   test "does not pass declared options as html attributes" do
-    compiled_src = render { config_with_options(thing: 'whatever') }
-    assert_equal %Q(<div class="config-with-options"></div>\n), compiled_src
+    markup = render { config_with_option(thing: 'whatever') }
+    assert_equal %Q(<div class="config-with-option"></div>\n), markup
   end
 
   test "unrecognized options raises an exception" do
@@ -46,6 +45,20 @@ class ConfigurableTest < ActiveSupport::TestCase
         has_option :title, 'asdfasdf', something_unrecognized: 'whatever'
       end
     end
+  end
+
+  class ConfigWithDefaultOption < ETC::Configurable
+    has_option :rows, 'Number of rows', type: :integer, default: 5, attribute: true
+  end
+
+  test "default values are supported" do
+    markup = render { config_with_default_option }
+    assert_equal %Q(<div class="config-with-default-option" rows="5"></div>\n), markup
+  end
+
+  test "default values for attributes can be overridden" do
+    markup = render { config_with_default_option(rows: 999) }
+    assert_equal %Q(<div class="config-with-default-option" rows="999"></div>\n), markup
   end
 
   class ConfigWithRequiredOptions < ETC::Configurable

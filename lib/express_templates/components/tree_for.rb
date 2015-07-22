@@ -38,11 +38,18 @@ module ExpressTemplates
     #
 
     class TreeFor < Configurable
-      emits -> (customize_block) {
+
+      tag :ul
+
+      has_attributes :class => 'tree'
+
+      contains -> (&customize_block) {
         @customize_block = customize_block
-        ul(id: config[:id], class: "#{config[:id]} tree") {
-          list_items(eval(config[:id].to_s))
-        }
+        list_items(eval(config[:id].to_s))
+      }
+
+      before_build -> {
+        add_class config[:id]
       }
 
       def list_items(nodes)

@@ -25,7 +25,7 @@ class TreeForTest < ActiveSupport::TestCase
   end
 
   EXAMPLE_MARKUP = <<-HTML
-<ul id="roles" class="roles tree">
+<ul class="tree-for tree roles" id="roles">
   <li>
 SuperAdmin
     <ul>

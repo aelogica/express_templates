@@ -45,8 +45,19 @@ module ExpressTemplates
         _default_attributes.merge!(attribs)
       end
 
+      def self.before_build(proc_or_symbol = nil, &block)
+        if proc_or_symbol.kind_of?(Symbol)
+          define_method(:_before_build) do
+            self.send(proc_or_symbol)
+          end
+        else
+          define_method(:_before_build, &(proc_or_symbol || block))
+        end
+      end
+
       def build(*args, &block)
         _extract_class!(args)
+        _before_build if respond_to?(:_before_build)
         super(*args) {
           _build_body(&block) if respond_to?(:_build_body)
         }

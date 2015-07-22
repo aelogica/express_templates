@@ -2,6 +2,16 @@ require 'test_helper'
 
 class BaseTest < ActiveSupport::TestCase
 
+  class Context
+    def assigns
+      {}
+    end
+  end
+
+  def render(&block)
+    ExpressTemplates.render(Context.new, &block)
+  end
+
   class UnorderedList < ExpressTemplates::Components::Base
     tag :ul
 
@@ -40,6 +50,18 @@ class BaseTest < ActiveSupport::TestCase
     assert_match /class="[^"]*something[^"]*"/, markup
     assert_match /class="[^"]*unordered-list[^"]*"/, markup
     assert_match /class="[^"]*extra[^"]*"/, markup
+  end
+
+  class BeforeBuildHook < ExpressTemplates::Components::Base
+    before_build :add_my_foo
+
+    def add_my_foo
+      set_attribute('data-foo', 'bar')
+    end
+  end
+
+  test "before_build hook runs before build" do
+    assert_match /data-foo="bar"/, render { before_build_hook }
   end
 
 end
