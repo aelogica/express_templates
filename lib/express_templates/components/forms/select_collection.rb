@@ -1,24 +1,18 @@
 module ExpressTemplates
   module Components
     module Forms
-      # Provides a form Select component based on the Rails *select_tag* helper.
-      # Parameters:
-      # field_name, select_options, helper_options
-      #
-      # Select options may be specified as an Array or Hash which will be
-      # supplied to the *options_for_select* helper.
-      #
+      # Provides a form Select component based on the Rails *collection_select* helper.
       class SelectCollection < Select
 
-        emits -> {
-          div(class: field_wrapper_class) {
-            label_tag(label_name, label_text)
+        has_option :multiple, "Allow multiple selections.", default: true
 
-            # need this because the collection_select helper does not provide
-            # the hidden_field_tag trick (see rails api docs for select)
-            hidden_field_tag(multi_field_name, '')
-            collection_select(*collection_select_tag_args)
-          }
+        contains -> {
+          label_tag(label_name, label_text)
+
+          # need this because the collection_select helper does not provide
+          # the hidden_field_tag trick (see rails api docs for select)
+          hidden_field_tag(multi_field_name, '')
+          collection_select(*collection_select_tag_args)
         }
 
         def collection_select_tag_args
@@ -30,11 +24,11 @@ module ExpressTemplates
         end
 
         def field_options
-          super.merge(include_blank: false)
+          {include_blank: !!input_attributes.delete(:include_blank)}
         end
 
         def html_options
-          (super||{}).merge(multiple: true)
+          input_attributes.reject {|k,v| k.eql?(:include_blank)}.merge(multiple: config[:multiple])
         end
 
         def multi_field_name
