@@ -28,8 +28,10 @@ module ExpressTemplates
     class Configurable < Base
 
       class_attribute :supported_options
-
       self.supported_options = {}
+
+      class_attribute :supported_arguments
+      self.supported_arguments = {}
 
       def self.emits(*args, &block)
         warn ".emits is deprecrated"
@@ -45,26 +47,28 @@ module ExpressTemplates
         @config ||= {}
       end
 
-      def self.has_option(name, description, option_options = {})
+      def self.has_option(name, description, type: :text, required: nil, default: nil, attribute: nil)
         raise "name must be a symbol" unless name.kind_of?(Symbol)
-        _check_valid_keys(option_options)
-        option_definition = {description: description}.merge(option_options)
-        self.supported_options = self.supported_options.merge(name => option_definition)
+        option_definition = {description: description}
+        option_definition.merge!(type: type, required: required, default: default, attribute: attribute)
+        self.supported_options =
+          self.supported_options.merge(name => option_definition)
       end
 
       def required_options
         supported_options.select {|k,v| v[:required] unless v[:default] }
       end
 
-      protected
+      def self.has_argument(name, description, as: nil, type: :string, default: nil, optional: false)
+        raise "name must be a symbol" unless name.kind_of?(Symbol)
+        argument_definition = {description: description, as: as, type: type, default: default, optional: optional}
+        self.supported_arguments =
+          self.supported_arguments.merge(name => argument_definition)
+      end
 
-        def self._check_valid_keys(options)
-          recognized_keys = [:required, :type, :default, :attribute]
-          unrecognized_keys = options.keys - recognized_keys
-          if unrecognized_keys.any?
-            raise "unrecognized options for #{self.class}: #{unrecognized_keys.inspect}"
-          end
-        end
+      has_argument :id, "The id of the component.", type: :symbol, optional: true
+
+      protected
 
         def _default_options
           supported_options.select {|k,v| v[:default] }
@@ -87,11 +91,56 @@ module ExpressTemplates
           end
         end
 
-        def _set_id(args)
-          if args.first.kind_of?(Symbol)
-            config.merge!(id: args.shift)
-            attributes[:id] = config[:id]
+        def _valid_types(definition)
+          valid_type_names = if definition[:type].kind_of?(Symbol)
+              [definition[:type]]
+            elsif definition[:type].respond_to?(:keys)
+              definition[:type].keys
+            else
+              definition[:type] || []
+            end
+          valid_type_names.map(&:to_s).map(&:classify).map(&:constantize)
+        end
+
+        def _is_valid?(value, definition)
+          valid_types = _valid_types(definition)
+          if valid_types.empty? && value.kind_of?(String)
+            true
+          elsif valid_types.include?(value.class)
+            true
+          else
+            false
           end
+        end
+
+        def _optional_argument?(definition)
+          definition[:default] || definition[:optional]
+        end
+
+        def _required_argument?(definition)
+          !_optional_argument?(definition)
+        end
+
+        def _extract_supported_arguments!(args)
+          supported_arguments.each do |key, definition|
+            value = args.shift
+            if value.nil? && _required_argument?(definition)
+              raise "argument for #{key} not supplied"
+            end
+            unless _is_valid?(value, definition)
+              if _required_argument?(definition)
+                raise "argument for #{key} invalid (#{value.class}) '#{value.to_s}'; Allowable: #{_valid_types(definition).inspect}"
+              else
+                args.unshift value
+                next
+              end
+            end
+            config[key] = value || definition[:default]
+          end
+        end
+
+        def _set_id_attribute
+          attributes[:id] = config[:id]
         end
 
         def _extract_supported_options!(builder_options)
@@ -105,11 +154,12 @@ module ExpressTemplates
         end
 
         def _process_builder_args!(args)
-          _set_id(args)
+          _extract_supported_arguments!(args)
           builder_options = args.last.try(:kind_of?, Hash) ? args.last : {}
           _check_required_options(builder_options)
           _extract_supported_options!(builder_options)
           _set_defaults
+          _set_id_attribute
         end
 
     end

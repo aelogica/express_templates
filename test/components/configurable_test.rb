@@ -12,12 +12,12 @@ class ConfigurableTest < ActiveSupport::TestCase
     ExpressTemplates.render(Context.new, &block)
   end
 
-  ETC = ExpressTemplates::Components
+  ETCC = ExpressTemplates::Components::Configurable
 
-  class ConfigurableComponent < ETC::Configurable
+  class ConfigurableComponent < ETCC
   end
 
-  test "renders id argument as dom id" do
+  test "renders first argument as dom id" do
     assert_match /id="foo"/, render { configurable_component(:foo) }
   end
 
@@ -25,7 +25,7 @@ class ConfigurableTest < ActiveSupport::TestCase
     assert_no_match /id="foo"/, render { configurable_component }
   end
 
-  class ConfigWithOption < ETC::Configurable
+  class ConfigWithOption < ETCC
     has_option :thing, 'Something about things'
   end
 
@@ -40,14 +40,14 @@ class ConfigurableTest < ActiveSupport::TestCase
   end
 
   test "unrecognized options raises an exception" do
-    assert_raises(RuntimeError) do
-      class ConfigWithUnrecognizedOptions < ETC::Configurable
+    assert_raises(ArgumentError) do
+      class ConfigWithUnrecognizedOptions < ETCC
         has_option :title, 'asdfasdf', something_unrecognized: 'whatever'
       end
     end
   end
 
-  class ConfigWithDefaultOption < ETC::Configurable
+  class ConfigWithDefaultOption < ETCC
     has_option :rows, 'Number of rows', type: :integer, default: 5, attribute: true
   end
 
@@ -61,7 +61,7 @@ class ConfigurableTest < ActiveSupport::TestCase
     assert_equal %Q(<div class="config-with-default-option" rows="999"></div>\n), markup
   end
 
-  class ConfigWithRequiredOptions < ETC::Configurable
+  class ConfigWithRequiredOptions < ETCC
     has_option :title, 'adds a title', required: true
   end
 
@@ -78,6 +78,36 @@ class ConfigurableTest < ActiveSupport::TestCase
 
   test "options are inherited" do
     assert_equal [:title, :status], ConfigSubclass.supported_options.keys
+  end
+
+  class ConfigArgument < ETCC
+    has_argument :name, "The name.", type: :string
+
+    has_option :something, "else"
+
+    contains {
+      text_node config[:name]
+    }
+  end
+
+  test ".has_argument adds a positional configuration argument" do
+    assert_equal :name, ConfigArgument.new.supported_arguments.keys.last
+    assert_equal "The name.", ConfigArgument.new.supported_arguments.values.last[:description]
+  end
+
+  test ".has_argument makes builder arguments accessible by name according to position" do
+    html = render &-> {
+      config_argument :bar, 'Foo'
+    }
+    assert_match />Foo</, html
+  end
+
+  class ConfigAnotherArgument < ConfigArgument
+    has_argument :title, "comes after name", type: :string
+  end
+
+  test ".has_argument appends supported arguments in order of inheritence" do
+    assert [:id, :name, :title], ConfigAnotherArgument.new.supported_arguments.keys
   end
 
 end
