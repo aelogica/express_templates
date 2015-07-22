@@ -3,10 +3,19 @@ module ExpressTemplates
     module Forms
       class FormComponent < Configurable
 
+        attr :input_attributes
+
+        before_build -> {
+          set_attribute(:id, "#{resource_name}_#{field_name}_wrapper")
+        }
+
+        has_option :class, 'Override the class of the wrapping div of a form component', default: 'field-wrapper'
+        has_option :label, 'Override the inferred label of a form component'
+
         # Lookup the resource_name from the parent ExpressForm.
         def resource_name
           raise "FormComponent must have a parent form" unless parent_form
-          parent_form.resource_name
+          parent_form.config[:id].to_s
         end
 
         def resource_var
@@ -17,7 +26,7 @@ module ExpressTemplates
           parent_form.resource_class
         end
 
-        # Return the name attribute for the lable
+        # Return the name attribute for the label
         def label_name
           "#{resource_name.singularize}_#{field_name}"
         end
@@ -39,10 +48,6 @@ module ExpressTemplates
           "#{resource_name.singularize}[#{field_name}]"
         end
 
-        def field_wrapper_class
-          config[:wrapper_class] || 'field-wrapper'
-        end
-
         # Search the parent graph until we find an ExpressForm.  Returns nil if none found.
         def parent_form
           @my_form ||= parent
@@ -52,19 +57,14 @@ module ExpressTemplates
           return @my_form
         end
 
-        def default_html_options
-          (config || {}).reject {|k,v| k.eql?(:id)}
-        end
-
-        def html_options
-          default_html_options.merge(config[:html_options] || {})
-        end
-
         protected
 
-          def _process_args!(args)
-            @args = args
+          # saving attributes for passing to the input field
+          def _process_builder_args!(args)
             super(args)
+            @input_attributes = args.last if args.last.kind_of?(Hash)
+            @input_attributes ||= {}
+            args.clear
           end
 
       end

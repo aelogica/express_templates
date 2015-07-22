@@ -9,11 +9,9 @@ module ExpressTemplates
         ALL.each do |type|
           class_definition = <<-RUBY
             class #{type.classify} < FormComponent
-              emits -> {
-                div(class: field_wrapper_class) {
-                  label_tag(label_name, label_text)
-                  #{type}_field resource_var, field_name.to_sym, html_options
-                }
+              contains {
+                label_tag(label_name, label_text)
+                #{type}_field resource_var, field_name.to_sym, input_attributes
               }
             end
 RUBY
@@ -24,25 +22,22 @@ RUBY
       end
 
       # class Email < FormComponent
-      #   emits -> {
-      #     div(class: field_wrapper_class) {
-      #       email_field resource_var, field_name.to_sym
-      #     }
+      #   contains {
+      #      label_tag label_name, label_text
+      #      email_field resource_var, field_name.to_sym, input_attributes
       #   }
       # end
 
       class Textarea < FormComponent
-        emits -> {
-          div(class: field_wrapper_class) {
-            label_tag(label_name, label_text)
-            text_area resource_var, field_name.to_sym, html_options
-          }
+        contains {
+          label_tag(label_name, label_text)
+          text_area resource_var, field_name.to_sym, input_attributes
         }
       end
 
       class Hidden < FormComponent
-        emits -> {
-          hidden_field resource_var, field_name.to_sym, html_options
+        contains {
+          hidden_field resource_var, field_name.to_sym, input_attributes
         }
       end
     end
