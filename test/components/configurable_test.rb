@@ -2,48 +2,62 @@ require 'test_helper'
 
 class ConfigurableTest < ActiveSupport::TestCase
 
+  class Context
+    def assigns
+      {}
+    end
+  end
+
+  def render(&block)
+    ExpressTemplates.render(Context.new, &block)
+  end
+
   ETC = ExpressTemplates::Components
 
   class ConfigurableComponent < ETC::Configurable
-    def markup
-      div(id: my[:id], class: 'bar')
-    end
   end
 
   test "renders id argument as dom id" do
-    compiled_src = ExpressTemplates.render(self) { configurable_component(:foo) }
-    assert_equal "<div id=\"foo\" class=\"bar\"></div>\n", compiled_src
+    assert_match /id="foo"/, render { configurable_component(:foo) }
   end
 
-  class ConfigurableContainerComponent < ETC::Configurable
+  test "has no id attribute if not specified" do
+    assert_no_match /id="foo"/, render { configurable_component }
+  end
 
-    # make sure a helper can take arguments
-    # helper(:name) {|name| name.to_s }
-    def name(name)
-      name.to_s
+  class ConfigWithOptions < ETC::Configurable
+    has_option :thing, 'Something about things'
+    has_option :rows, 'Number of rows', type: :integer, default: 5
+  end
+
+  test "supports option declaration" do
+    compiled_src = render { config_with_options }
+    assert_equal %Q(<div class="config-with-options"></div>\n), compiled_src
+  end
+
+  test "does not pass declared options as html attributes" do
+    compiled_src = render { config_with_options(thing: 'whatever') }
+    assert_equal %Q(<div class="config-with-options"></div>\n), compiled_src
+  end
+
+  test "unrecognized options raises an exception" do
+    assert_raises(RuntimeError) do
+      class ConfigWithUnrecognizedOptions < ETC::Configurable
+        has_option :title, 'asdfasdf', something_unrecognized: 'whatever'
+      end
     end
+  end
 
-    def markup &block
-      div(id: my[:id]) {
-        h1 { name(my[:id]) }
-        yield(block) if block
-      }
+  class ConfigWithRequiredOptions < ETC::Configurable
+    has_option :title, 'adds a title', required: true
+  end
+
+  test "required options are required" do
+    assert_raises(RuntimeError) do
+      render { config_with_required_options }
     end
+    assert render { config_with_required_options(title: 'foo') }
   end
 
-  def assigns
-    {}
-  end
-
-  test "a configurable component may have also be a container" do
-    html = ExpressTemplates.render(self) { configurable_container_component(:foo) { |c| para 'bar'} }
-    expected = <<-HTML
-<div id=\"foo\">
-  <h1>foo</h1>
-  <p>bar</p>
-</div>
-HTML
-    assert_equal "<div id=\"foo\">\n  <h1>foo</h1>\n  <p>bar</p>\n</div>\n", html
-  end
 
 end

@@ -2,16 +2,6 @@ require 'test_helper'
 
 class BaseTest < ActiveSupport::TestCase
 
-  class Context
-    def assigns
-      {:foo => ['bar', 'baz']}
-    end
-  end
-
-  def render(&block)
-    ExpressTemplates.render(Context.new, &block)
-  end
-
   class UnorderedList < ExpressTemplates::Components::Base
     tag :ul
 
