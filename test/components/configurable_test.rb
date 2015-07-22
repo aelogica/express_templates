@@ -72,5 +72,12 @@ class ConfigurableTest < ActiveSupport::TestCase
     assert render { config_with_required_options(title: 'foo') }
   end
 
+  class ConfigSubclass < ConfigWithRequiredOptions
+    has_option :status, 'something'
+  end
+
+  test "options are inherited" do
+    assert_equal [:title, :status], ConfigSubclass.supported_options.keys
+  end
 
 end
