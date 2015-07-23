@@ -135,7 +135,8 @@ module ExpressTemplates
                 next
               end
             end
-            config[key] = value || definition[:default]
+            config_key = definition[:as] || key
+            config[config_key] = value || definition[:default]
           end
         end
 

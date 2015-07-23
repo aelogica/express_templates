@@ -107,7 +107,21 @@ class ConfigurableTest < ActiveSupport::TestCase
   end
 
   test ".has_argument appends supported arguments in order of inheritence" do
-    assert [:id, :name, :title], ConfigAnotherArgument.new.supported_arguments.keys
+    assert_equal [:id, :name, :title], ConfigAnotherArgument.new.supported_arguments.keys
   end
 
+  class ConfigOverwriteId < ConfigArgument
+    has_argument :id, 'Should overwrite :id',
+                      as: :foo, type: :symbol
+    contains -> {
+      text_node config[:foo]
+    }
+  end
+
+  test ".has_argument as: allows overwrite of inherited argument" do
+    html = render {
+      config_overwrite_id(:whatever, 'Ignore me')
+    }
+    assert_match /div.*>whatever/, html
+  end
 end
