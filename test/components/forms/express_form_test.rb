@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'ostruct'
 
   class Foo
     def self.columns ; [] ; end
@@ -21,6 +20,10 @@ class ExpressFormTest < ActiveSupport::TestCase
 
   test "simplest form renders" do
     assert simplest_form
+  end
+
+  test "simplest form will have the proper id" do
+    assert_match /<form.*id="resource_1"/, simplest_form
   end
 
   test "simplest form contains form tag" do

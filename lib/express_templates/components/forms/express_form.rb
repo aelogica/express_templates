@@ -25,7 +25,7 @@ module ExpressTemplates
         }
 
         def form_id
-          "#{config[:id]}_#{resource.id}"
+          [config[:id], resource.try(:id)].compact.join('_')
         end
 
         def form_action
