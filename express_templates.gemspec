@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "activesupport", "~> 4.2" # strictly speaking we only depend on active support
   s.add_dependency "parslet", "~> 1.6"
-  s.add_dependency "arbre"
+  s.add_dependency "arbre", "~> 1.0"
   s.add_development_dependency "rails", "~> 4.2"
   s.add_development_dependency "pry", "~> 0"
   s.add_development_dependency "erubis", "~> 2.7"
