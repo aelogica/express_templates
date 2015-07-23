@@ -3,7 +3,7 @@ require 'test_helper'
 module AdminModule
   module Engine
   end
-  class SmartThing
+  class SmartThing < ExpressTemplates::Components::Configurable
     include ExpressTemplates::Components::Capabilities::Resourceful
 
     attr_accessor :virtual_path, :config

@@ -2,45 +2,66 @@ require 'test_helper'
 
 class BaseTest < ActiveSupport::TestCase
 
-  def assigns
-    {}
-  end
-
-  class NoLogic < ExpressTemplates::Components::Base
-    emits {
-      h1 { span "Some stuff" }
-    }
-  end
-
-  test ".has_markup makes compile return the block passed through express compiled" do
-    assert_equal "<h1>\n  <span>Some stuff</span>\n</h1>\n", ExpressTemplates.render(self) { no_logic }
-  end
-
-  test "components register themselves as arbre builder methods" do
-    assert Arbre::Element::BuilderMethods.instance_methods.include?(:no_logic)
-  end
-
   class Context
     def assigns
-      {:foo => ['bar', 'baz']}
+      {}
     end
   end
 
-  class HelperExample < ECB
-    def title_helper
-      foo.first
-    end
+  def render(&block)
+    ExpressTemplates.render(Context.new, &block)
+  end
 
-    emits {
-      h1 {
-        title_helper
-      }
+  class UnorderedList < ExpressTemplates::Components::Base
+    tag :ul
+
+    has_attributes :class       => 'something',
+                   'data-foo'   => 'something-else'
+
+    contains {
+      li { "Some stuff" }
     }
-
   end
 
-  test "helpers defined in component are evaluated in context" do
-    assert_equal "<h1>bar</h1>\n", ExpressTemplates.render(Context.new) { helper_example }
+  test ".tag_name determines the enclosing tag" do
+    assert_match /^\<ul/, render { unordered_list }
+  end
+
+  test ".has_attributes creates default attributes" do
+    assert_match /class="[^"]*something[^"]*"/, render { unordered_list }
+    assert_match /data-foo="[^"]*something-else[^"]*"/, render { unordered_list }
+  end
+
+  test ".contains places fragment inside the enclosing tag" do
+    markup = render { unordered_list }
+    assert_match /\<ul.*\<li.*\/li\>.*\/ul\>/, markup.gsub("\n", '')
+  end
+
+  test "class name is dasherized instead of underscored" do
+    assert_match /class="[^"]*unordered-list[^"]*"/, render { unordered_list }
+  end
+
+  test "options are passed to html attributes" do
+    assert_match /rows="5"/, render { unordered_list(rows: 5) }
+  end
+
+  test "class option adds a class, does not override" do
+    markup = render { unordered_list(class: 'extra') }
+    assert_match /class="[^"]*something[^"]*"/, markup
+    assert_match /class="[^"]*unordered-list[^"]*"/, markup
+    assert_match /class="[^"]*extra[^"]*"/, markup
+  end
+
+  class BeforeBuildHook < ExpressTemplates::Components::Base
+    before_build :add_my_foo
+
+    def add_my_foo
+      set_attribute('data-foo', 'bar')
+    end
+  end
+
+  test "before_build hook runs before build" do
+    assert_match /data-foo="bar"/, render { before_build_hook }
   end
 
 end

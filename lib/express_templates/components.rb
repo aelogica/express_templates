@@ -5,6 +5,5 @@ end
 
 require 'express_templates/components/base'
 require 'express_templates/components/configurable'
-require 'express_templates/components/form_rails_support'
 require 'express_templates/components/tree_for'
 require 'express_templates/components/forms'

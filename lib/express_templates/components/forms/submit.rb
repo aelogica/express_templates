@@ -3,22 +3,26 @@ module ExpressTemplates
     module Forms
       class Submit < FormComponent
 
-        def build(*args)
-          div(class: field_wrapper_class) {
-            if args.first.is_a?(String) or args.empty?
-              submit_tag(args.first || 'Save', (args[1]||{}))
-            else
-              submit_tag 'Save', (args.first || {})
-            end
-          }
-        end
+        has_option :button_class, 'The css class of the input button.'
+        has_option :value, 'The value of the submit tag.  Text show in button.',
+                           default: 'Save'
+
+        contains -> {
+          submit_tag(value, input_attributes)
+        }
+
+        before_build -> {
+          # if we are not part of a form, we don't get a default id
+          begin
+            super()
+          rescue
+            add_class(config[:class])
+            remove_class('submit')
+          end
+        }
 
         def value
-          if @args.first.is_a?(String)
-            @args.first
-          else
-            'Save'
-          end
+          config[:value]
         end
 
       end

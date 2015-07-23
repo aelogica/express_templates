@@ -36,8 +36,8 @@ class BasicFieldsTest < ActiveSupport::TestCase
   end
 
   test "passing html options to fields work" do
-    options = {class: 'form-field'}
-    BASIC_FIELDS.each do |type|
+    options = {style: 'width: 10em;'}
+    ['email'].each do |type|
       html = arbre {
         express_form(:foo) {
           send(type, :bar, options)
@@ -45,7 +45,7 @@ class BasicFieldsTest < ActiveSupport::TestCase
       }
       assert_match label_html, html
       assert_match /input.*type="#{field_type_map[type]}"/, html
-      assert_match /input.*class="form-field"/, html
+      assert_match /input.*style="width: 10em;"/, html
     end
   end
 

@@ -3,12 +3,12 @@ module ExpressTemplates
     module Forms
       class Checkbox < FormComponent
 
-        emits -> {
-          div(class: field_wrapper_class) {
-            label_tag(label_name, label_text) if label_before?
-            check_box(resource_var, field_name.to_sym, field_options, checked_value, unchecked_value)
-            label_tag(label_name, label_text) if label_after?
-          }
+        has_option :label_after, 'Positions the option label after the checkbox.', default: false
+
+        contains {
+          label_tag(label_name, label_text) if label_before?
+          check_box(resource_var, field_name.to_sym, field_options, checked_value, unchecked_value)
+          label_tag(label_name, label_text) if label_after?
         }
 
         def label_before?

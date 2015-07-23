@@ -9,7 +9,7 @@ class RadioTest < ActiveSupport::TestCase
   test "radio requires a parent component" do
     assert_raises(RuntimeError) {
       html = arbre {
-        radio :preferred_email_format, ['HTML', 'Text']
+        radio :preferred_email_format, options: ['HTML', 'Text']
       }
     }
   end
@@ -17,7 +17,7 @@ class RadioTest < ActiveSupport::TestCase
   def radio_with_array_options
     html = arbre {
       express_form(:person) {
-        radio :preferred_email_format, ['HTML', 'Text']
+        radio :preferred_email_format, options: ['HTML', 'Text']
       }
     }
   end
@@ -35,7 +35,7 @@ class RadioTest < ActiveSupport::TestCase
   def radio_with_hash_options
     html = arbre {
       express_form(:person) {
-        radio :subscribed, {1 => 'Yes', 0 => 'No'}, wrapper_class: 'my-wrapper'
+        radio :subscribed, options: {1 => 'Yes', 0 => 'No'}, label_wrapper_class: 'my-wrapper'
       }
     }
   end

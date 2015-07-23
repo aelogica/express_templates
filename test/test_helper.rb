@@ -186,4 +186,7 @@ end
     def gender_id
       1
     end
+    def persisted?
+      false
+    end
   end

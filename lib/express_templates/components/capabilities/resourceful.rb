@@ -3,6 +3,18 @@ module ExpressTemplates
     module Capabilities
 
       module Resourceful
+
+        def self.included(base)
+          base.class_eval do
+            has_option :collection, 'Provide an explicit collection as a resource.'
+            has_option :collection_path, 'Provide an explicit path for the collection resource.'
+            has_option :resource_class, 'Overrides namespaced resource_class for using resources from a different module or namespace.'
+            has_option :resource_path, 'Overides the resource path which is otherwise inferred from the class name.'
+            has_option :path_prefix, 'Rarely used.  Override inferred path_prefix for path helpers.'
+            has_option :namespace, 'Rarely used.  Overrides inferred namespace for resources.'
+          end
+        end
+
         def namespace
           config[:namespace] || infer_namespace
         end
