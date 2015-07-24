@@ -16,7 +16,7 @@ module ExpressTemplates
           begin
             super()
           rescue
-            add_class(config[:class])
+            add_class(config[:wrapper_class])
             remove_class('submit')
           end
         }
