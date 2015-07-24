@@ -7,10 +7,10 @@ module ExpressTemplates
 
         before_build -> {
           set_attribute(:id, "#{resource_name}_#{field_name}_wrapper")
-          add_class(config[:class])
+          add_class(config[:wrapper_class])
         }
 
-        has_option :class, 'Override the class of the wrapping div of a form component', default: 'field-wrapper', attribute: true
+        has_option :wrapper_class, 'Override the class of the wrapping div of a form component', default: 'field-wrapper'
         has_option :label, 'Override the inferred label of a form component'
 
         # Lookup the resource_name from the parent ExpressForm.
