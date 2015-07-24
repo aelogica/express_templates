@@ -11,15 +11,14 @@ module ExpressTemplates
           submit_tag(value, input_attributes)
         }
 
-        before_build -> {
-          # if we are not part of a form, we don't get a default id
-          begin
-            super()
-          rescue
-            add_class(config[:wrapper_class])
-            remove_class('submit')
-          end
+        before_build(exclusive: true) {
+          add_class(config[:wrapper_class])
+          remove_class('submit')
         }
+
+        def resource_name
+          parent_form ? super : nil
+        end
 
         def value
           config[:value]

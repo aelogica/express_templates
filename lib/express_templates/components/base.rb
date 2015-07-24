@@ -12,6 +12,9 @@ module ExpressTemplates
     #
     class Base < Arbre::Component
 
+      class_attribute :before_build_hooks
+      self.before_build_hooks = []
+
       def self.builder_method_and_class(method_name, klass)
         Arbre::Element::BuilderMethods.class_eval <<-EOF, __FILE__, __LINE__
           def #{method_name}(*args, &block)
@@ -45,19 +48,21 @@ module ExpressTemplates
         _default_attributes.merge!(attribs)
       end
 
-      def self.before_build(proc_or_symbol = nil, &block)
-        if proc_or_symbol.kind_of?(Symbol)
-          define_method(:_before_build) do
-            self.send(proc_or_symbol)
-          end
+      def self.before_build(proc_or_symbol = nil, exclusive: false, &block)
+        hook = (proc_or_symbol || block)
+        unless hook.kind_of?(Symbol) or hook.respond_to?(:call)
+          raise "before_build requires symbol (method_name), proc or block"
+        end
+        if exclusive
+          self.before_build_hooks = [hook]
         else
-          define_method(:_before_build, &(proc_or_symbol || block))
+          self.before_build_hooks += [hook]
         end
       end
 
       def build(*args, &block)
         _extract_class!(args)
-        _before_build if respond_to?(:_before_build)
+        _run_before_build_hooks
         super(*args) {
           _build_body(&block) if respond_to?(:_build_body)
         }
@@ -82,6 +87,15 @@ module ExpressTemplates
 
 
       private
+        def _run_before_build_hooks
+          before_build_hooks.each do |hook|
+            if hook.kind_of?(Symbol)
+              self.send(hook)
+            else
+              instance_exec &hook
+            end
+          end
+        end
         def _extract_class!(args)
           add_class args.last.delete(:class) if args.last.try(:kind_of?, Hash)
         end
