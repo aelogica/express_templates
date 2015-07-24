@@ -1,7 +1,7 @@
 module ExpressTemplates
   module Components
     module Forms
-      class ExpressForm < Configurable
+      class ExpressForm < Container
         include ExpressTemplates::Components::Capabilities::Resourceful
 
         tag :form
@@ -9,13 +9,12 @@ module ExpressTemplates
         has_option :method, 'The form method', default: 'POST', attribute: true #, options: ['PUT', 'POST', 'GET', 'DELETE']
         has_option :action, 'The form action containing the resource path or url.'
 
-        contains -> (&block) {
+        prepends -> {
           div(style: 'display:none') {
             add_child helpers.utf8_enforcer_tag
             add_child helpers.send(:method_tag, resource.persisted? ? :put : :post)
             helpers.send(:token_tag)
           }
-          block.call(self) if block
         }
 
         before_build -> {
