@@ -27,4 +27,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "better_errors", "~> 2.0"
   s.add_development_dependency "binding_of_caller", "~> 0.7"
   s.add_development_dependency "pry-stack_explorer", "~> 0.4"
+  s.add_development_dependency "minitest-line"
 end
