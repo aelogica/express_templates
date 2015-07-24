@@ -71,6 +71,10 @@ module ExpressTemplates
         builder_method_and_class subclass.to_s.demodulize.underscore, subclass
       end
 
+      def self.descendants
+        ObjectSpace.each_object(Class).select { |klass| klass < self }
+      end
+
       protected
         def default_class_name
           self.class.name.demodulize.underscore.dasherize
