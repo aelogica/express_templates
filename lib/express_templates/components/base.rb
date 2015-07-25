@@ -73,7 +73,11 @@ module ExpressTemplates
       end
 
       def self.inherited(subclass)
-        builder_method_and_class subclass.to_s.demodulize.underscore, subclass
+        builder_method_and_class subclass.builder_method_name, subclass
+      end
+
+      def self.builder_method_name
+        to_s.demodulize.underscore
       end
 
       def self.descendants
