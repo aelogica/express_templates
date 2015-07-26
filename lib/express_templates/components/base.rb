@@ -80,6 +80,10 @@ module ExpressTemplates
         to_s.demodulize.underscore
       end
 
+      def builder_method_name
+        self.class.builder_method_name
+      end
+
       def self.descendants
         ObjectSpace.each_object(Class).select { |klass| klass < self }
       end
