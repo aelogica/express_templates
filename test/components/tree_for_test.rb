@@ -2,11 +2,6 @@ require 'test_helper'
 require 'ostruct'
 
 class TreeForTest < ActiveSupport::TestCase
-  class Context
-    def initialize(roles)
-      @roles = roles
-    end
-  end
 
   class Role
     attr :name, :children
@@ -17,7 +12,7 @@ class TreeForTest < ActiveSupport::TestCase
   end
 
   def roles
-    [Role.new('SuperAdmin', children:
+    @roles ||= [Role.new('SuperAdmin', children:
           [Role.new('Admin', children:
             [Role.new('Publisher', children:
               [Role.new('Author')]),
