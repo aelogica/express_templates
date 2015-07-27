@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'active_model'
 
 class BasicFieldsTest < ActiveSupport::TestCase
 
@@ -87,6 +88,54 @@ class BasicFieldsTest < ActiveSupport::TestCase
     }
     assert_no_match label_html, html
     assert_match /<input class="hidden form-field" value="ninja" type="hidden" name="foo\[bar\]" id="foo_bar"/, html
+  end
+
+  def resource_with_errors
+    mock_resource = resource
+    class << mock_resource
+      def errors
+        errors = ActiveModel::Errors.new(self)
+        errors.add(:name, "Can't be Foo")
+      end
+    end
+    mock_resource
+  end
+
+  def has_error_class
+    /(class=")+([([\D|\d])+\s]+|)(error)+([\D|\d]|)+"/
+  end
+
+  test "adds error class if there are errors on a field with no input attributes" do
+    html_with_error = arbre(resource: resource_with_errors) {
+      express_form(:foo) {
+       text :name
+      }
+    }
+    assert resource_with_errors.errors.any?
+    assert assigns[:resource].errors.any?
+    assert_match has_error_class, html_with_error
+  end
+
+    test "adds error class if there are errors on a field with no class set" do
+    html_with_error = arbre(resource: resource_with_errors) {
+      express_form(:foo) {
+       text :name, value: 'ninja'
+      }
+    }
+    assert resource_with_errors.errors.any?
+    assert assigns[:resource].errors.any?
+    assert_match has_error_class, html_with_error
+  end
+
+    test "adds error to class if there are errors on a field with existing class" do
+    html_with_error = arbre(resource: resource_with_errors) {
+      express_form(:foo) {
+       text :name, value: 'ninja', class: 'slug'
+      }
+    }
+    assert resource_with_errors.errors.any?
+    assert assigns[:resource].errors.any?
+    assert_match has_error_class, html_with_error
   end
 
 end

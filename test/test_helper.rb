@@ -44,11 +44,12 @@ end
 
 module ActiveSupport
   class TestCase
-    def arbre(&block)
-      Arbre::Context.new assigns, helpers, &block
+    def arbre(assigns = {}, &block)
+      @arbre_assigns.merge! assigns if @arbre_assigns
+      Arbre::Context.new @arbre_assigns, helpers, &block
     end
     def assigns
-      {}
+      @arbre_assigns ||={}
     end
     def helpers
       mock_action_view(assigns)
