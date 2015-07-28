@@ -78,4 +78,13 @@ class ProcTest < ActiveSupport::TestCase
     # assert_equal 'something :one, "two"', block.source_body
   end
 
+  def return_proc_value(*args, options)
+    options.values.first.values.first
+  end
+
+  test "#source works when a proc is inside a hash literal" do
+    block = return_proc_value(:one, two: {a: -> {'proc_inside'}})
+    assert_equal "-> {'proc_inside'}", block.source
+  end
+
 end

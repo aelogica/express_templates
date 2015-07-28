@@ -29,7 +29,8 @@ class Proc
       tokens =  Ripper.lex File.read(file)
       tokens_on_line = tokens.select {|pos, lbl, str| pos[0].eql?(line_no) }
       starting_token = tokens_on_line.detect do |pos, lbl, str|
-          TOKEN_PAIRS.keys.include? [lbl, str]
+          TOKEN_PAIRS.keys.include?([lbl, str]) &&
+          _actually_starting_a_proc?(tokens, [pos, lbl, str])
       end
       starting_token_type = [starting_token[1], starting_token[2]]
       ending_token_type = TOKEN_PAIRS[starting_token_type]
@@ -51,6 +52,17 @@ class Proc
         nesting -= 1 if is_ending_token
       end
       source_str
+    end
+  end
+
+  def _actually_starting_a_proc?(tokens, tok)
+    return true if tokens.index(tok).eql?(0)
+    look_back = tokens.slice(0..tokens.index(tok)-1)
+    look_back.pop if look_back.last.try(:[], 1).eql? :on_sp
+    if [:on_tlambeg, :on_tlambda].include?(tok[1])
+      true
+    else
+      ![:on_comma, :on_lparen, :on_label].include?(look_back.last.try(:[], 1))
     end
   end
 
