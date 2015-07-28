@@ -68,7 +68,7 @@ class ProcTest < ActiveSupport::TestCase
     assert_equal 'foo', Proc.from_source(src).call
   end
 
-  test ".source_body captures full body when parens around parameters not provided" do
+  test "#source_body captures full body when parens around parameters not provided" do
     block = return_block { something(:one, "two") }
     assert_equal 'something(:one, "two")', block.source_body
     block = return_block -> { something :one, "two" }
