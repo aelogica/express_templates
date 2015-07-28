@@ -6,6 +6,7 @@ module ExpressTemplates
 
         def self.included(base)
           base.class_eval do
+            has_argument :id, "The name of the collection", type: :symbol, optional: false
             has_option :collection, 'Provide an explicit collection as a resource.'
             has_option :collection_path, 'Provide an explicit path for the collection resource.'
             has_option :resource_class, 'Overrides namespaced resource_class for using resources from a different module or namespace.'
