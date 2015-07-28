@@ -99,7 +99,13 @@ module ExpressTemplates
             else
               definition[:type] || []
             end
-          valid_type_names.map(&:to_s).map(&:classify).map(&:constantize)
+          valid_type_names.map do |type_name|
+            if type_name.eql?(:boolean)
+              type_name
+            else
+              type_name.to_s.classify.constantize
+            end
+          end
         end
 
         def _is_valid?(value, definition)
@@ -107,6 +113,9 @@ module ExpressTemplates
           if valid_types.empty? && value.kind_of?(String)
             true
           elsif valid_types.include?(value.class)
+            true
+          elsif valid_types.include?(:boolean) &&
+                [1, 0, true, false].include?(value)
             true
           else
             false
