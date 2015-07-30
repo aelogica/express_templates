@@ -102,7 +102,7 @@ class BasicFieldsTest < ActiveSupport::TestCase
   end
 
   def has_error_class
-    /(class=")+([([\D|\d])+\s]+|)(error)+([\D|\d]|)+"/
+    /div[^>]*class="[^"]*error[^"]*"/
   end
 
   test "adds error class if there are errors on a field with no input attributes" do

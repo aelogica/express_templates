@@ -8,6 +8,7 @@ module ExpressTemplates
         before_build -> {
           set_attribute(:id, "#{resource_name}_#{field_name}_wrapper")
           add_class(config[:wrapper_class])
+          add_class('error') if resource.respond_to?(:errors) && resource.errors.any?
         }
 
         has_option :wrapper_class, 'Override the class of the wrapping div of a form component', default: 'field-wrapper'
@@ -63,18 +64,6 @@ module ExpressTemplates
           # saving attributes for passing to the input field
           def _process_builder_args!(args)
             super(args)
-            if resource.respond_to?(:errors) && resource.errors.any?
-              if !args.empty?
-                if args.find { |c| c[:class] }
-                  args.find { |c| c[:class] }[:class] << " error"
-                else
-                  args.last.update(class: "error") if args.last.kind_of?(Hash)
-                end
-              else
-                args.push(class: "error")
-              end
-            end
-
             @input_attributes = args.last if args.last.kind_of?(Hash)
             @input_attributes ||= {}
             args.clear

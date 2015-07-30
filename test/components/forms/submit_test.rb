@@ -7,6 +7,10 @@ class Stuff
 end
 
 class SubmitTest < ActiveSupport::TestCase
+
+  def assigns
+    {resource: nil}
+  end
   test "submit takes string param for value" do
     fragment = -> (ctx) {
       submit value: "Save it!"
