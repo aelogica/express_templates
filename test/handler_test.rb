@@ -121,4 +121,28 @@ class HandlerTest < ActiveSupport::TestCase
     assert_equal "<li>\n#{A_LINK}#{A_LINK}</li>\n", render
   end
 
+  test "raises warning if template has conditional logic" do
+    temp = "dd(class: 'date') {
+          if blog_post.publish_at
+            blog_post.publish_at
+          else
+            link_to('Edit', '#'')
+          end
+        }"
+    keywords = %w(if unless until case for do loop while)
+    tokens = []
+
+    if Ripper.lex(temp).select do |element|
+      element[1]==:on_kw
+    end.each { |match| tokens.push(match) if keywords.include? match[2] }
+      tokens.each do |first|
+       out, @err = capture_io do
+          warn 'foo'
+        end
+      end
+    end
+
+    assert_equal @err, "foo\n"
+  end
+
 end
