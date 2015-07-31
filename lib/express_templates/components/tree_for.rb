@@ -45,7 +45,7 @@ module ExpressTemplates
 
       contains -> (&customize_block) {
         @customize_block = customize_block
-        list_items(send(config[:id]))
+        list_items(helpers.send(config[:id]))
       }
 
       before_build -> {
