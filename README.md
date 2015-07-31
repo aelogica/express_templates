@@ -40,7 +40,7 @@ Everything should work as you would expect.
 
 Set your editor syntax for .et files to Ruby.
 
-You can now utilize components which are found with documentation and examples in <tt>ExpressTemplates::Components<tt>.
+You can now utilize components which are found with documentation and examples in <tt>ExpressTemplates::Components</tt>.
 
 Components are the real strength of both arbre and express_templates.
 
