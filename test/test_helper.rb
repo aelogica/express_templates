@@ -44,17 +44,16 @@ end
 
 module ActiveSupport
   class TestCase
-    def arbre(assigns = {}, &block)
-      @arbre_assigns.merge! assigns if @arbre_assigns
-      Arbre::Context.new @arbre_assigns, helpers, &block
+    def arbre(additional_assigns = {}, &block)
+      Arbre::Context.new assigns.merge(additional_assigns), helpers, &block
     end
     def assigns
       @arbre_assigns ||={}
     end
     def helpers
-      mock_action_view(assigns)
+      mock_action_view
     end
-    def mock_action_view(assigns = {})
+    def mock_action_view
       controller = ActionView::TestCase::TestController.new
       ActionView::Base.send :include, ActionView::Helpers
       ActionView::Base.send :include, ActionView::Helpers::UrlHelper
