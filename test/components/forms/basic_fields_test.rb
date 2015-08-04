@@ -96,6 +96,7 @@ class BasicFieldsTest < ActiveSupport::TestCase
       def errors
         errors = ActiveModel::Errors.new(self)
         errors.add(:name, "Can't be Foo")
+        errors
       end
     end
     mock_resource
@@ -105,15 +106,23 @@ class BasicFieldsTest < ActiveSupport::TestCase
     /div[^>]*class="[^"]*error[^"]*"/
   end
 
+  def has_error_class_on(field, html)
+    md = html.match(/(<div[^>]*id="[^"]*#{field}_wrapper[^"]*"[^>]*>)/)
+    assert md, "field has no wrapper"
+    return !!md[1].match(has_error_class)
+  end
+
   test "adds error class if there are errors on a field with no input attributes" do
     html_with_error = arbre(resource: resource_with_errors) {
       express_form(:foo) {
        text :name
+       text :body
       }
     }
     assert resource_with_errors.errors.any?
     assert assigns[:resource].errors.any?
-    assert_match has_error_class, html_with_error
+    assert has_error_class_on(:name, html_with_error), "name field has no error when expected"
+    refute has_error_class_on(:body, html_with_error), "body field has error class when it should not"
   end
 
     test "adds error class if there are errors on a field with no class set" do

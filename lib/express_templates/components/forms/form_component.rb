@@ -8,7 +8,8 @@ module ExpressTemplates
         before_build -> {
           set_attribute(:id, "#{resource_name}_#{field_name}_wrapper")
           add_class(config[:wrapper_class])
-          add_class('error') if resource.respond_to?(:errors) && resource.errors.any?
+          add_class('error') if resource.respond_to?(:errors) &&
+                                resource.errors.include?(field_name.to_sym)
         }
 
         has_option :wrapper_class, 'Override the class of the wrapping div of a form component', default: 'field-wrapper'
