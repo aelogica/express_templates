@@ -72,6 +72,19 @@ class ConfigurableTest < ActiveSupport::TestCase
     assert render { config_with_required_options(title: 'foo') }
   end
 
+  class ConfigWithOptionValues < ETCC
+    has_option :virtual, 'gets the virtual_attributes of a resource', values: -> (*) { resource_class.virtual_attributes }
+
+    def resource_class
+      OpenStruct.new(virtual_attributes: [:password, :password_confirmation])
+    end
+  end
+
+  test "values can be set for options" do
+    component = ConfigWithOptionValues.new
+    assert_equal [:password, :password_confirmation], component.instance_eval(&ConfigWithOptionValues.new.supported_options[:virtual][:values])
+  end
+
   class ConfigSubclass < ConfigWithRequiredOptions
     has_option :status, 'something'
   end
