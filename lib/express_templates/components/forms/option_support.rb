@@ -7,18 +7,22 @@ module ExpressTemplates
       module OptionSupport
 
         def has_many_through_association
-          reflection = resource_class.reflect_on_association(field_name.to_sym)
-          return reflection if reflection && reflection.macro.eql?(:has_many) && reflection.options.keys.include?(:through)
+          if resource_class.respond_to?(:reflect_on_association)
+            reflection = resource_class.reflect_on_association(field_name.to_sym)
+            return reflection if reflection && reflection.macro.eql?(:has_many) && reflection.options.keys.include?(:through)
+          end
         end
 
         # Reflect on any association and return it if the association type
         # is :belongs_to.  Returns false if the association is not :belongs_to.
         # Returns nil if there was a problem reflecting.
         def belongs_to_association
-          # assumes the belongs_to association uses <name>_id
-          reflection = resource_class.reflect_on_association(field_name.gsub(/_id$/, '').to_sym)
-          if reflection && reflection.macro.eql?(:belongs_to)
-            return reflection
+          if resource_class.respond_to?(:reflect_on_association)
+            # assumes the belongs_to association uses <name>_id
+            reflection = resource_class.reflect_on_association(field_name.gsub(/_id$/, '').to_sym)
+            if reflection && reflection.macro.eql?(:belongs_to)
+              return reflection
+            end
           end
         end
 
