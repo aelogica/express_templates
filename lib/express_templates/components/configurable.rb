@@ -47,7 +47,7 @@ module ExpressTemplates
         @config ||= {}
       end
 
-      def self.has_option(name, description, type: :text, required: nil, default: nil, attribute: nil, values: nil)
+      def self.has_option(name, description, type: :string, required: nil, default: nil, attribute: nil, values: nil)
         raise "name must be a symbol" unless name.kind_of?(Symbol)
         option_definition = {description: description}
         option_definition.merge!(type: type, required: required, default: default, attribute: attribute, values: values)
