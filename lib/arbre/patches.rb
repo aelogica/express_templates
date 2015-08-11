@@ -25,6 +25,16 @@ module Arbre
       end
     end
 
+    def possible_route_proxy(name)
+      if helpers.controller.class.parent &&
+        helpers.respond_to?(namespace = helpers.controller.class.parent.to_s.underscore)
+        if (route_proxy = helpers.send(namespace)).respond_to?(name)
+          return route_proxy
+        end
+      end
+      return nil
+    end
+
     # Implements the method lookup chain. When you call a method that
     # doesn't exist, we:
     #
@@ -40,6 +50,8 @@ module Arbre
         assigns[name]
       elsif helpers.respond_to?(name)
         helper_method(name, *args, &block)
+      elsif route_proxy = possible_route_proxy(name)
+        route_proxy.send(name, *args, &block)
       else
         super
       end
@@ -51,6 +63,8 @@ module Arbre
     # and not add them as elements
     def helper_method(name, *args, &block)
       if name.match /_path$/
+        helpers.send(name, *args, &block)
+      elsif (const_get([name, 'engine'].join('/').classify) rescue nil)
         helpers.send(name, *args, &block)
       else
         current_arbre_element.add_child helpers.send(name, *args, &block)
