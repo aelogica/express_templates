@@ -132,7 +132,11 @@ module ExpressTemplates
               config[:collection_path]
             end
           else
-            helpers.instance_eval collection_path_helper
+            if helpers.respond_to?(:collection_path)
+              helpers.collection_path
+            else
+              helpers.instance_eval collection_path_helper
+            end
           end
         end
 
@@ -178,11 +182,15 @@ module ExpressTemplates
               config[:resource_path]
             end
           else
-            if ivar_or_resource.respond_to?(:to_param) &&
-              ![true, false].include?(ivar_or_resource)
-              helpers.instance_eval("#{resource_path_helper}('#{ivar_or_resource.to_param}')")
+            if helpers.respond_to?(:resource_path)
+              helpers.resource_path
             else
-              helpers.instance_eval("#{resource_path_helper}(#{ivar_or_resource ? '@' : ''}#{resource_name})")
+              if ivar_or_resource.respond_to?(:to_param) &&
+                ![true, false].include?(ivar_or_resource)
+                helpers.instance_eval("#{resource_path_helper}('#{ivar_or_resource.to_param}')")
+              else
+                helpers.instance_eval("#{resource_path_helper}(#{ivar_or_resource ? '@' : ''}#{resource_name})")
+              end
             end
           end
         end
