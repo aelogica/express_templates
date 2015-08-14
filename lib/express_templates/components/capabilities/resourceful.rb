@@ -182,7 +182,8 @@ module ExpressTemplates
               config[:resource_path]
             end
           else
-            if helpers.respond_to?(:resource_path)
+            if helpers.respond_to?(:resource_path) &&
+               helpers.resource.to_param.present? # skip on nil resource
               helpers.resource_path
             else
               if ivar_or_resource.respond_to?(:to_param) &&
