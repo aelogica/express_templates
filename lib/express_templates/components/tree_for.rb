@@ -42,15 +42,24 @@ module ExpressTemplates
       tag :ul
 
       has_attributes :class => 'tree'
+      has_option :root, "Root of the tree.  Defaults to collection with the same as the id.", type: :proc
 
       contains -> (&customize_block) {
         @customize_block = customize_block
-        list_items(send(config[:id]))
+        list_items(root_node)
       }
 
       before_build -> {
         add_class config[:id]
       }
+
+      def root_node
+        if config[:root] && config[:root].respond_to?(:call)
+          config[:root].call
+        else
+          send(config[:id])
+        end
+      end
 
       def list_items(nodes)
         nodes.each do |node|
