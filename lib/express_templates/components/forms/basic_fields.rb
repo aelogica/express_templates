@@ -3,7 +3,7 @@ module ExpressTemplates
     module Forms
       module BasicFields
         ALL = %w(email phone text password color date datetime
-                datetime_local number range
+                datetime_local file number range
                 search telephone time url week)
 
         ALL.each do |type|
