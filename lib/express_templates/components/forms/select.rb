@@ -60,10 +60,14 @@ module ExpressTemplates
 
         def options_from_supplied_or_field_values
           if select_options_supplied?
-            helpers.options_for_select(
-                normalize_for_helper(use_supplied_options),
-                selected_value
-            )
+            supplied_options = use_supplied_options
+            if supplied_options.respond_to?(:map)
+              helpers.options_for_select(
+                  normalize_for_helper(supplied_options),
+                  selected_value)
+            else
+              supplied_options
+            end
           else
             generate_options_from_field_values
           end
