@@ -1,12 +1,22 @@
 require 'test_helper'
 
 class CheckboxTest < ActiveSupport::TestCase
+
   def assigns
-    {resource: resource}
+    {account: resource}
   end
 
+  def helpers
+    mock_action_view do
+      def accounts_path
+        '/accounts'
+      end
+    end
+  end
+
+
   test "checkbox places the label before the input" do
-    html = arbre {
+    html = arbre(account: resource) {
       express_form(:account) {
         checkbox :eula
       }
@@ -21,7 +31,7 @@ class CheckboxTest < ActiveSupport::TestCase
   end
 
   test "checkbox respects label_after: true " do
-    html = arbre {
+    html = arbre(account: resource) {
       express_form(:account) {
         checkbox :eula, label_after: true
       }

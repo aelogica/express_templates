@@ -6,16 +6,20 @@ require 'test_helper'
 
 class ExpressFormTest < ActiveSupport::TestCase
 
-  def assigns
-    {resource: resource}
-  end
-
   def simplest_form
-    arbre {
-      express_form(:resource) {
+    arbre(foo: resource) {
+      express_form(:foo) {
         submit value: 'Save it!'
       }
     }
+  end
+
+  def helpers
+    mock_action_view do
+      def foos_path
+        '/foos'
+      end
+    end
   end
 
   test "simplest form renders" do
@@ -23,7 +27,7 @@ class ExpressFormTest < ActiveSupport::TestCase
   end
 
   test "simplest form will have the proper id" do
-    assert_match /<form.*id="resource_1"/, simplest_form
+    assert_match /<form.*id="foo_1"/, simplest_form
   end
 
   test "simplest form contains form tag" do
@@ -48,7 +52,7 @@ class ExpressFormTest < ActiveSupport::TestCase
 
   test "simplest_form uses form_action for the action" do
     form_open_tag = simplest_form.match(/<form[^>]*>/)[0]
-    assert_match 'action="/resources"', form_open_tag
+    assert_match 'action="/foos"', form_open_tag
   end
 
   test "express_form default method is POST" do

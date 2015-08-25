@@ -3,7 +3,15 @@ require 'ostruct'
 class SelectTest < ActiveSupport::TestCase
 
   def assigns
-    {resource: ::Person.new}
+    {person: ::Person.new}
+  end
+
+  def helpers
+    mock_action_view do
+      def people_path
+        '/people'
+      end
+    end
   end
 
 
@@ -112,8 +120,8 @@ class SelectTest < ActiveSupport::TestCase
       }
     }
     assert_match 'tagging_ids', html
-    assert_match /<option value="1">Friend<\/option>/, html
-    assert_match /<option value="2">Enemy<\/option>/, html
+    assert_match /<option selected="selected" value="1">Friend<\/option>/, html
+    assert_match /<option selected="selected" value="2">Enemy<\/option>/, html
     assert_match /<option value="3">Frenemy<\/option>/, html
   end
 

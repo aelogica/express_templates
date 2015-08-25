@@ -28,7 +28,7 @@ module ExpressTemplates
         end
 
         def form_action
-          config[:action] || (resource.try(:persisted?) ? resource_path(true) : collection_path)
+          config[:action] || (resource.try(:persisted?) ? resource_path(resource) : collection_path)
         end
 
       end

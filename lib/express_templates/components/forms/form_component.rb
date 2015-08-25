@@ -15,14 +15,14 @@ module ExpressTemplates
         has_option :wrapper_class, 'Override the class of the wrapping div of a form component', default: 'field-wrapper'
         has_option :label, 'Override the inferred label of a form component'
 
+        def resource
+          self.send(resource_name)
+        end
+
         # Lookup the resource_name from the parent ExpressForm.
         def resource_name
           raise "FormComponent must have a parent form" unless parent_form
           parent_form.config[:id].to_s
-        end
-
-        def resource_var
-          resource_name.to_sym
         end
 
         def resource_class

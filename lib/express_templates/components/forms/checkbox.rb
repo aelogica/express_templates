@@ -7,7 +7,7 @@ module ExpressTemplates
 
         contains {
           label_tag(label_name, label_text) if label_before?
-          check_box(resource_var, field_name.to_sym, field_options, checked_value, unchecked_value)
+          check_box(resource_name, field_name.to_sym, field_options, checked_value, unchecked_value)
           label_tag(label_name, label_text) if label_after?
         }
 

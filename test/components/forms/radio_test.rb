@@ -3,7 +3,19 @@ require 'test_helper'
 class RadioTest < ActiveSupport::TestCase
 
   def assigns
-    {resource: resource}
+    {person: ::Person.new}
+  end
+
+  def helpers
+    mock_action_view do
+      def people_path
+        '/people'
+      end
+
+      def employees_path
+        '/employees'
+      end
+    end
   end
 
   test "radio requires a parent component" do
@@ -58,7 +70,7 @@ class RadioTest < ActiveSupport::TestCase
   end
 
   def radio_with_options_omitted
-    html = arbre {
+    html = arbre(employee: resource) {
       express_form(:employee) {
         radio :department_id
       }
