@@ -8,12 +8,16 @@ module ExpressTemplates
 
         has_option :method, 'The form method', default: 'POST', attribute: true #, options: ['PUT', 'POST', 'GET', 'DELETE']
         has_option :action, 'The form action containing the resource path or url.'
+        has_option :on_success, 'Pass a form value indicating where to go on a successful submission.'
+        has_option :on_failure, 'Pass a form value indicating where to go on a failed submission.'
 
         prepends -> {
           div(style: 'display:none') {
             add_child helpers.utf8_enforcer_tag
             add_child helpers.send(:method_tag, resource.persisted? ? :put : :post)
-            helpers.send(:token_tag)
+            add_child helpers.send(:token_tag)
+            hidden_field_tag :on_success, config[:on_success] if config[:on_success]
+            hidden_field_tag :on_failure, config[:on_failure] if config[:on_failure]
           }
         }
 

@@ -45,10 +45,22 @@ module ExpressTemplates
           (config[:id] || (@args.first.is_a?(String) && @args.first)).to_s
         end
 
+        def field_value
+          resource.send(field_name)
+        end
+
         # Return the field name attribute.  Currently handles only simple attributes
         # on the resource.  Does not handle attributes for associated resources.
         def field_name_attribute
           "#{resource_name.singularize}[#{field_name}]"
+        end
+
+        def field_id_attribute
+          "#{resource_name.singularize}_#{field_name}"
+        end
+
+        def field_helper_options
+          {id: field_id_attribute}.merge(input_attributes||nil)
         end
 
         # Search the parent graph until we find an ExpressForm.  Returns nil if none found.
