@@ -59,12 +59,7 @@ module ActiveSupport
       ActionView::Base.send :include, ActionView::Helpers::UrlHelper
       ActionView::Base.send :include, AdditionalHelpers
       view = ActionView::Base.new(ActionController::Base.view_paths, assigns, controller)
-      eigenklass = class << view
-        self
-      end
-      assigns.each do |helper_name,value|
-        eigenklass.send(:define_method, helper_name) { value }
-      end
+      eigenklass = class << view; self; end
       eigenklass.class_eval &block unless block.nil?
       view
     end
