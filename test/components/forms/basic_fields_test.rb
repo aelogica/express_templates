@@ -75,7 +75,7 @@ class BasicFieldsTest < ActiveSupport::TestCase
       }
     }
     assert_match label_html, html
-    assert_match /<textarea rows="5" class="tinymce form-field" name="foo\[bar\]" id="foo_bar"><\/textarea>/, html.gsub("\n", '') 
+    assert_match /<textarea name="foo\[bar\]" id="foo_bar" rows="5" class="tinymce form-field"><\/textarea>/, html.gsub("\n", '')
   end
 
   test "hidden uses rails hidden_tag helper" do
@@ -95,7 +95,7 @@ class BasicFieldsTest < ActiveSupport::TestCase
       }
     }
     assert_no_match label_html, html
-    assert_match /<input class="hidden form-field" value="ninja" type="hidden" name="foo\[bar\]" id="foo_bar"/, html
+    assert_match /<input type="hidden" name="foo\[bar\]" id="foo_bar" value="ninja" class="hidden form-field"/, html
   end
 
   def resource_with_errors

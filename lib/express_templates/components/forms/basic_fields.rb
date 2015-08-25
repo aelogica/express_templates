@@ -11,7 +11,7 @@ module ExpressTemplates
             class #{type.classify} < FormComponent
               contains {
                 label_tag(label_name, label_text)
-                #{type}_field resource_name, field_name.to_sym, input_attributes
+                #{type}_field_tag field_name_attribute, field_value, field_helper_options
               }
             end
 RUBY
@@ -24,20 +24,20 @@ RUBY
       # class Email < FormComponent
       #   contains {
       #      label_tag label_name, label_text
-      #      email_field resource_name, field_name.to_sym, input_attributes
+      #      email_field  field_name_attribute, field_value, field_helper_options
       #   }
       # end
 
       class Textarea < FormComponent
         contains {
           label_tag(label_name, label_text)
-          text_area resource_name, field_name.to_sym, input_attributes
+          text_area_tag field_name_attribute, field_value, field_helper_options
         }
       end
 
       class Hidden < FormComponent
         contains {
-          hidden_field resource_name, field_name.to_sym, input_attributes
+          hidden_field_tag field_name_attribute, field_value, field_helper_options
         }
       end
     end
