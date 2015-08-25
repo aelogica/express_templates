@@ -8,7 +8,15 @@ class BasicFieldsTest < ActiveSupport::TestCase
                     search telephone time url week)
 
   def assigns
-    {resource: resource}
+    {foo: resource}
+  end
+
+  def helpers
+    mock_action_view do
+      def foos_path
+        '/foos'
+      end
+    end
   end
 
   def field_type_map
@@ -113,37 +121,37 @@ class BasicFieldsTest < ActiveSupport::TestCase
   end
 
   test "adds error class if there are errors on a field with no input attributes" do
-    html_with_error = arbre(resource: resource_with_errors) {
+    html_with_error = arbre(foo: resource_with_errors) {
       express_form(:foo) {
        text :name
        text :body
       }
     }
     assert resource_with_errors.errors.any?
-    assert assigns[:resource].errors.any?
+    assert assigns[:foo].errors.any?
     assert has_error_class_on(:name, html_with_error), "name field has no error when expected"
     refute has_error_class_on(:body, html_with_error), "body field has error class when it should not"
   end
 
     test "adds error class if there are errors on a field with no class set" do
-    html_with_error = arbre(resource: resource_with_errors) {
+    html_with_error = arbre(foo: resource_with_errors) {
       express_form(:foo) {
        text :name, value: 'ninja'
       }
     }
     assert resource_with_errors.errors.any?
-    assert assigns[:resource].errors.any?
+    assert assigns[:foo].errors.any?
     assert_match has_error_class, html_with_error
   end
 
     test "adds error to class if there are errors on a field with existing class" do
-    html_with_error = arbre(resource: resource_with_errors) {
+    html_with_error = arbre(foo: resource_with_errors) {
       express_form(:foo) {
        text :name, value: 'ninja', class: 'slug'
       }
     }
     assert resource_with_errors.errors.any?
-    assert assigns[:resource].errors.any?
+    assert assigns[:foo].errors.any?
     assert_match has_error_class, html_with_error
   end
 

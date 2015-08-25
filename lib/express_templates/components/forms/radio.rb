@@ -17,7 +17,7 @@ module ExpressTemplates
         }
 
         def use_options_from_collection_radio_buttons_helper
-          collection_radio_buttons(resource_var, field_name.to_sym, collection_from_association,
+          collection_radio_buttons(resource_name, field_name.to_sym, collection_from_association,
                                    option_value_method, option_name_method,
                                    input_attributes) do |b|
             b.label(class: "radio") {
@@ -39,14 +39,14 @@ module ExpressTemplates
           when option_collection.kind_of?(Array)
             option_collection.each_with_index do |option, index|
               label(class: config[:label_wrapper_class]) {
-                radio_button(resource_var, field_name.to_sym, option, class: 'radio')
+                radio_button(resource_name, field_name.to_sym, option, class: 'radio')
                 current_arbre_element.add_child option
               }
             end
           when option_collection.kind_of?(Hash)
             option_collection.each_pair do |key, value|
               label(class: config[:label_wrapper_class]) {
-                radio_button(resource_var, field_name.to_sym, key, class: 'radio')
+                radio_button(resource_name, field_name.to_sym, key, class: 'radio')
                 current_arbre_element.add_child  value
               }
             end

@@ -53,7 +53,7 @@ module ActiveSupport
     def helpers
       mock_action_view
     end
-    def mock_action_view
+    def mock_action_view &block
       controller = ActionView::TestCase::TestController.new
       ActionView::Base.send :include, ActionView::Helpers
       ActionView::Base.send :include, ActionView::Helpers::UrlHelper
@@ -65,6 +65,7 @@ module ActiveSupport
       assigns.each do |helper_name,value|
         eigenklass.send(:define_method, helper_name) { value }
       end
+      eigenklass.class_eval &block unless block.nil?
       view
     end
 
@@ -85,16 +86,6 @@ module ActiveSupport
   end
 end
 
-
-  class ExpressTemplates::Components::Forms::ExpressForm
-    def resource_path(resource)
-      "/resource/1"
-    end
-
-    def collection_path
-      "/resources"
-    end
-  end
 
 
   class ::Gender
