@@ -38,7 +38,7 @@ module ExpressTemplates
           if namespace
             "#{namespace}/#{resource_name}".classify
           else
-            resource_name.classify
+            resource_name.to_s.classify
           end
         end
 
