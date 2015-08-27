@@ -120,7 +120,7 @@ module ExpressTemplates
               config[:collection]
             end
           else
-            helpers.collection
+            self.send(collection_name) # should be in view assigns
           end
         end
 
