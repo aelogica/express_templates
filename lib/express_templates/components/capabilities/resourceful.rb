@@ -170,14 +170,10 @@ module ExpressTemplates
             resource_class_name.split("::").first.try(:underscore) : nil
         end
 
-        # accepts boolean to indicate whether to use an ivar or not
-        # and also may accept a resource on which we call to_param
-        def resource_path(ivar_or_resource = nil)
+        def resource_path(object = nil)
           if config[:resource_path]
-            if config[:resource_path].respond_to?(:call) &&
-              ivar_or_resource.respond_to?(:to_param) &&
-              ![true, false].include?(ivar_or_resource)
-              config[:resource_path].call(ivar_or_resource)
+            if config[:resource_path].respond_to?(:call) && object.respond_to?(:to_param)
+              config[:resource_path].call(object)
             else
               config[:resource_path]
             end
@@ -186,11 +182,11 @@ module ExpressTemplates
                helpers.resource.to_param.present? # skip on nil resource
               helpers.resource_path
             else
-              if ivar_or_resource.respond_to?(:to_param) &&
-                ![true, false].include?(ivar_or_resource)
-                helpers.instance_eval("#{resource_path_helper}('#{ivar_or_resource.to_param}')")
+              if resource_path_helper.match(/\w+\.\w+/)
+                namespace, path_helper = resource_path_helper.split('.')
+                helpers.send(namespace).send(path_helper, object)
               else
-                helpers.instance_eval("#{resource_path_helper}(#{ivar_or_resource ? '@' : ''}#{resource_name})")
+                helpers.send(resource_path_helper, object)
               end
             end
           end
