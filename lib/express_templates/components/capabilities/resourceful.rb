@@ -165,7 +165,7 @@ module ExpressTemplates
         end
 
         def path_namespace
-          resource_class_name = resource.class.to_s
+          resource_class_name = resource_class.to_s
           resource_class_name.match(/::/) ?
             resource_class_name.split("::").first.try(:underscore) : nil
         end
