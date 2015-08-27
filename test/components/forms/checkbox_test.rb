@@ -1,5 +1,8 @@
 require 'test_helper'
 
+class Account
+end
+
 class CheckboxTest < ActiveSupport::TestCase
 
   def assigns
