@@ -86,7 +86,9 @@ module ExpressTemplates
             if !!value[:attribute]
               set_attribute key, value[:default]
             else
-              config[key] ||= value[:default]
+              if config[key].nil?
+                config[key] = value[:default]
+              end
             end
           end
         end
