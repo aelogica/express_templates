@@ -3,7 +3,7 @@ require 'active_model'
 
 class BasicFieldsTest < ActiveSupport::TestCase
 
-  BASIC_FIELDS = %w(email phone text password color date datetime
+  BASIC_FIELDS = %w(email phone text password color file date datetime
                     datetime_local number range
                     search telephone time url week)
 

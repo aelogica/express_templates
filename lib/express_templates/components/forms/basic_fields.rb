@@ -28,6 +28,13 @@ RUBY
       #   }
       # end
 
+      class File < FormComponent
+        contains {
+          label_tag(label_name, label_text)
+          file_field_tag field_name_attribute, field_helper_options
+        }
+      end
+
       class Textarea < FormComponent
         contains {
           label_tag(label_name, label_text)
