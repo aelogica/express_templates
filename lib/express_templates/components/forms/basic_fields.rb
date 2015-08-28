@@ -3,7 +3,7 @@ module ExpressTemplates
     module Forms
       module BasicFields
         ALL = %w(email phone text password color date datetime
-                datetime_local file number range
+                datetime_local number range
                 search telephone time url week)
 
         ALL.each do |type|
@@ -27,6 +27,13 @@ RUBY
       #      email_field  field_name_attribute, field_value, field_helper_options
       #   }
       # end
+
+      class File < FormComponent
+        contains {
+          label_tag(label_name, label_text)
+          file_field_tag field_name_attribute, field_helper_options
+        }
+      end
 
       class Textarea < FormComponent
         contains {
