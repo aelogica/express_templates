@@ -10,6 +10,7 @@ module ExpressTemplates
         has_option :action, 'The form action containing the resource path or url.'
         has_option :on_success, 'Pass a form value indicating where to go on a successful submission.'
         has_option :on_failure, 'Pass a form value indicating where to go on a failed submission.'
+        has_option :enctype, 'The enctype attribute specifies how the form-data should be encoded when submitting it to the server.'
 
         prepends -> {
           div(style: 'display:none') {
@@ -24,6 +25,7 @@ module ExpressTemplates
         before_build -> {
           set_attribute(:id, form_id)
           set_attribute(:action, form_action)
+          set_attribute(:enctype, form_enctype) if form_enctype
           add_class(config[:id])
         }
 
@@ -33,6 +35,10 @@ module ExpressTemplates
 
         def form_action
           config[:action] || (resource.try(:persisted?) ? resource_path(resource) : collection_path)
+        end
+
+        def form_enctype
+          config[:enctype]
         end
 
       end
