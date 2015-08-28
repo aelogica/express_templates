@@ -32,10 +32,6 @@ module ExpressTemplates
         add_class _default_classes
       end
 
-      def assigns
-        @assigns_with_indifferent_access ||= super.merge(helpers.assigns.with_indifferent_access)
-      end
-
       def self.contains(proc = nil, &block)
         define_method(:_build_body, &(proc || block))
       end

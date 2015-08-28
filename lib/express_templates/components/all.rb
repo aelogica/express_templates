@@ -7,7 +7,7 @@ module ExpressTemplates
       contains -> (&block) {
         prepended
         collection.each do |item|
-          assigns[member_name] = item
+          assigns[member_name.to_sym] = item
           block.call(self) if block
         end
         appended

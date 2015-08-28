@@ -46,8 +46,8 @@ module Arbre
     def method_missing(name, *args, &block)
       if current_arbre_element.respond_to?(name)
         current_arbre_element.send name, *args, &block
-      elsif assigns && assigns.has_key?(name)
-        assigns[name]
+      elsif assigns && assigns.has_key?(name.to_sym)
+        assigns[name.to_sym]
       elsif helpers.respond_to?(name)
         helper_method(name, *args, &block)
       elsif route_proxy = possible_route_proxy(name)
