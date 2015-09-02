@@ -15,12 +15,15 @@ module ExpressTemplates
       class_attribute :before_build_hooks
       self.before_build_hooks = []
 
+      class_attribute :builder_method_name
+
       def self.builder_method_and_class(method_name, klass)
         Arbre::Element::BuilderMethods.class_eval <<-EOF, __FILE__, __LINE__
           def #{method_name}(*args, &block)
             insert_tag ::#{klass.name}, *args, &block
           end
         EOF
+        self.builder_method_name = method_name
         # puts "added #{method_name} -> #{klass.name}"
       end
 
@@ -73,15 +76,11 @@ module ExpressTemplates
       end
 
       def self.inherited(subclass)
-        builder_method_and_class subclass.builder_method_name, subclass
+        subclass.builder_method_and_class subclass.to_s.demodulize.underscore, subclass
       end
 
-      def self.builder_method_name
-        to_s.demodulize.underscore
-      end
-
-      def builder_method_name
-        self.class.builder_method_name
+      def self.builder_method(name)
+        builder_method_and_class name, self
       end
 
       def self.descendants
