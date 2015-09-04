@@ -126,7 +126,7 @@ end
     end
   end
   class ::Person
-    attr :id, :city, :subscribed, :preferred_email_format
+    attr :id, :city, :subscribed, :preferred_email_format, :country_code
     def initialize(id = 1, city = 'San Francisco')
       @id, @city = id, city
     end
