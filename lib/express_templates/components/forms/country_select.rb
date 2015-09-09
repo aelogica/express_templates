@@ -1,4 +1,4 @@
-require 'iso3166'
+require 'countries'
 require_relative 'select'
 
 module ExpressTemplates
