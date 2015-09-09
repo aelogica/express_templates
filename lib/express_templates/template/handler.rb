@@ -10,9 +10,10 @@ module ExpressTemplates
       def call(template)
         # call ripper stuff method
 
-        warn_contains_logic("(#{ExpressTemplates.compile(template)}).html_safe")  # pass the source code
         # returns a string to be eval'd
-        "(#{ExpressTemplates.compile(template)}).html_safe"
+        source = "(#{ExpressTemplates.compile(template)}).html_safe"
+        warn_contains_logic(source)  # pass the source code
+        source
       end
 
       def warn_contains_logic(compiled_template)
