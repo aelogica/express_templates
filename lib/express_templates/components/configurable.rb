@@ -27,6 +27,8 @@ module ExpressTemplates
     #
     class Configurable < Base
 
+      abstract_component
+
       class_attribute :supported_options
       self.supported_options = {}
 

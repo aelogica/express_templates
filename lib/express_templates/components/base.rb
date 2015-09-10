@@ -17,6 +17,35 @@ module ExpressTemplates
 
       class_attribute :builder_method_name
 
+      # mark a component as abstract ie. can't be used
+      # in Express Designer
+      #
+      @is_abstract = false
+
+      def self.abstract_component(value = true)
+        @is_abstract = value
+      end
+
+      def self.abstract_component?
+        @is_abstract
+      end
+
+      abstract_component
+
+      # define the parent componennt ie. can't be used
+      # in Express Designer unless parent is present
+      #
+      @parent_component = nil
+
+      def self.require_parent(component)
+        raise "must pass a sublcass of ExpressTemplates::Components::Base" if !component.kind_of? ExpressTemplates::Components::Base
+        @parent_component = component
+      end
+
+      def self.required_parent
+        @parent_component
+      end
+
       def self.builder_method_and_class(method_name, klass)
         Arbre::Element::BuilderMethods.class_eval <<-EOF, __FILE__, __LINE__
           def #{method_name}(*args, &block)

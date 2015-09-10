@@ -2,6 +2,8 @@ module ExpressTemplates
   module Components
     class Container < Configurable
 
+      abstract_component
+
       class_attribute :prepended_blocks
       self.prepended_blocks = []
 
