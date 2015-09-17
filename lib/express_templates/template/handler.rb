@@ -12,7 +12,7 @@ module ExpressTemplates
 
         # returns a string to be eval'd
         source = "(#{ExpressTemplates.compile(template)}).html_safe"
-        warn_contains_logic(source)  # pass the source code
+        warn_contains_logic(source) if ENV['NO_TEMPLATE_WARN'].nil? # pass the source code
         source
       end
 
